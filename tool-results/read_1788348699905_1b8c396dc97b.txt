@@ -1,0 +1,945 @@
+     1→'use client';
+     2→
+     3→import React, { useState, useEffect, useCallback } from 'react';
+     4→import {
+     5→  Plus,
+     6→  Search,
+     7→  Eye,
+     8→  Pencil,
+     9→  Trash2,
+    10→  X,
+    11→  ChevronLeft,
+    12→  ChevronRight,
+    13→  Loader2,
+    14→  Truck,
+    15→  Building2,
+    16→  Phone,
+    17→  Mail,
+    18→  MapPin,
+    19→  FileText,
+    20→  ShoppingBag,
+    21→  AlertCircle,
+    22→} from 'lucide-react';
+    23→import { toast } from 'sonner';
+    24→
+    25→import { useAuth } from '@/lib/auth-context';
+    26→import { Button } from '@/components/ui/button';
+    27→import { Input } from '@/components/ui/input';
+    28→import { Badge } from '@/components/ui/badge';
+    29→import { Label } from '@/components/ui/label';
+    30→import { Textarea } from '@/components/ui/textarea';
+    31→import { Switch } from '@/components/ui/switch';
+    32→import { Skeleton } from '@/components/ui/skeleton';
+    33→import { Separator } from '@/components/ui/separator';
+    34→import {
+    35→  Table,
+    36→  TableBody,
+    37→  TableCell,
+    38→  TableHead,
+    39→  TableHeader,
+    40→  TableRow,
+    41→} from '@/components/ui/table';
+    42→import {
+    43→  Dialog,
+    44→  DialogContent,
+    45→  DialogHeader,
+    46→  DialogTitle,
+    47→  DialogDescription,
+    48→  DialogFooter,
+    49→} from '@/components/ui/dialog';
+    50→import {
+    51→  AlertDialog,
+    52→  AlertDialogAction,
+    53→  AlertDialogCancel,
+    54→  AlertDialogContent,
+    55→  AlertDialogDescription,
+    56→  AlertDialogFooter,
+    57→  AlertDialogHeader,
+    58→  AlertDialogTitle,
+    59→} from '@/components/ui/alert-dialog';
+    60→import {
+    61→  Card,
+    62→  CardContent,
+    63→} from '@/components/ui/card';
+    64→import {
+    65→  Tabs,
+    66→  TabsContent,
+    67→  TabsList,
+    68→  TabsTrigger,
+    69→} from '@/components/ui/tabs';
+    70→
+    71→// ==================== Types ====================
+    72→
+    73→interface Supplier {
+    74→  id: string;
+    75→  businessName: string;
+    76→  contactPerson?: string | null;
+    77→  phone?: string | null;
+    78→  email?: string | null;
+    79→  address?: string | null;
+    80→  notes?: string | null;
+    81→  isActive: boolean;
+    82→  createdAt: string;
+    83→  _count?: { restocks: number };
+    84→}
+    85→
+    86→interface SupplierDetail extends Supplier {
+    87→  restockHistory: RestockItem[];
+    88→  totalPurchases: number;
+    89→  outstandingBalance: number;
+    90→}
+    91→
+    92→interface RestockItem {
+    93→  id: string;
+    94→  reference?: string | null;
+    95→  batchNumber?: string | null;
+    96→  dateReceived: string;
+    97→  totalCost: number;
+    98→  paymentStatus: string;
+    99→  notes?: string | null;
+   100→}
+   101→
+   102→interface SuppliersResponse {
+   103→  data: Supplier[];
+   104→  total: number;
+   105→  page: number;
+   106→  pageSize: number;
+   107→}
+   108→
+   109→interface SupplierFormData {
+   110→  businessName: string;
+   111→  contactPerson: string;
+   112→  phone: string;
+   113→  email: string;
+   114→  address: string;
+   115→  notes: string;
+   116→  isActive: boolean;
+   117→}
+   118→
+   119→// ==================== Helpers ====================
+   120→
+   121→const formatCurrency = (amount: number): string => {
+   122→  return `\u20B5${amount.toFixed(2)}`;
+   123→};
+   124→
+   125→const formatStatus = (status: string) => {
+   126→  switch (status) {
+   127→    case 'paid':
+   128→      return <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 font-normal">Paid</Badge>;
+   129→    case 'partially_paid':
+   130→      return <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 font-normal">Partial</Badge>;
+   131→    default:
+   132→      return <Badge variant="outline" className="bg-rose-50 text-rose-700 border-rose-200 font-normal">Unpaid</Badge>;
+   133→  }
+   134→};
+   135→
+   136→const formatDate = (dateStr: string) => {
+   137→  return new Date(dateStr).toLocaleDateString('en-US', {
+   138→    year: 'numeric',
+   139→    month: 'short',
+   140→    day: 'numeric',
+   141→  });
+   142→};
+   143→
+   144→const defaultFormData: SupplierFormData = {
+   145→  businessName: '',
+   146→  contactPerson: '',
+   147→  phone: '',
+   148→  email: '',
+   149→  address: '',
+   150→  notes: '',
+   151→  isActive: true,
+   152→};
+   153→
+   154→// ==================== Table Skeleton ====================
+   155→
+   156→function TableSkeleton() {
+   157→  return (
+   158→    <div className="rounded-lg border">
+   159→      <Table>
+   160→        <TableHeader>
+   161→          <TableRow>
+   162→            <TableHead>Business Name</TableHead>
+   163→            <TableHead className="hidden md:table-cell">Contact</TableHead>
+   164→            <TableHead className="hidden lg:table-cell">Phone</TableHead>
+   165→            <TableHead className="hidden xl:table-cell">Email</TableHead>
+   166→            <TableHead className="hidden xl:table-cell">Address</TableHead>
+   167→            <TableHead className="text-right">Purchases</TableHead>
+   168→            <TableHead className="text-right">Balance</TableHead>
+   169→            <TableHead>Status</TableHead>
+   170→            <TableHead className="w-[100px]">Actions</TableHead>
+   171→          </TableRow>
+   172→        </TableHeader>
+   173→        <TableBody>
+   174→          {Array.from({ length: 8 }).map((_, i) => (
+   175→            <TableRow key={i}>
+   176→              <TableCell><Skeleton className="h-4 w-[140px]" /></TableCell>
+   177→              <TableCell className="hidden md:table-cell"><Skeleton className="h-4 w-[100px]" /></TableCell>
+   178→              <TableCell className="hidden lg:table-cell"><Skeleton className="h-4 w-[110px]" /></TableCell>
+   179→              <TableCell className="hidden xl:table-cell"><Skeleton className="h-4 w-[140px]" /></TableCell>
+   180→              <TableCell className="hidden xl:table-cell"><Skeleton className="h-4 w-[120px]" /></TableCell>
+   181→              <TableCell><Skeleton className="h-4 w-[80px] ml-auto" /></TableCell>
+   182→              <TableCell><Skeleton className="h-4 w-[80px] ml-auto" /></TableCell>
+   183→              <TableCell><Skeleton className="h-5 w-[60px]" /></TableCell>
+   184→              <TableCell><Skeleton className="h-8 w-[70px]" /></TableCell>
+   185→            </TableRow>
+   186→          ))}
+   187→        </TableBody>
+   188→      </Table>
+   189→    </div>
+   190→  );
+   191→}
+   192→
+   193→// ==================== Supplier Form Dialog ====================
+   194→
+   195→function SupplierFormDialog({
+   196→  open,
+   197→  onOpenChange,
+   198→  supplier,
+   199→  onSuccess,
+   200→}: {
+   201→  open: boolean;
+   202→  onOpenChange: (open: boolean) => void;
+   203→  supplier: Supplier | null;
+   204→  onSuccess: () => void;
+   205→}) {
+   206→  const { user } = useAuth();
+   207→  const isEditing = !!supplier;
+   208→  const [submitting, setSubmitting] = useState(false);
+   209→  const [form, setForm] = useState<SupplierFormData>(defaultFormData);
+   210→  const [errors, setErrors] = useState<Record<string, string>>({});
+   211→
+   212→  useEffect(() => {
+   213→    if (open) {
+   214→      setForm({
+   215→        businessName: supplier?.businessName || '',
+   216→        contactPerson: supplier?.contactPerson || '',
+   217→        phone: supplier?.phone || '',
+   218→        email: supplier?.email || '',
+   219→        address: supplier?.address || '',
+   220→        notes: supplier?.notes || '',
+   221→        isActive: supplier?.isActive !== false,
+   222→      });
+   223→      setErrors({});
+   224→    }
+   225→  }, [open, supplier]);
+   226→
+   227→  const updateField = (field: keyof SupplierFormData, value: string | boolean) => {
+   228→    setForm((prev) => ({ ...prev, [field]: value }));
+   229→    if (errors[field]) {
+   230→      setErrors((prev) => {
+   231→        const next = { ...prev };
+   232→        delete next[field];
+   233→        return next;
+   234→      });
+   235→    }
+   236→  };
+   237→
+   238→  const validate = (): boolean => {
+   239→    const newErrors: Record<string, string> = {};
+   240→    if (!form.businessName.trim()) {
+   241→      newErrors.businessName = 'Business name is required';
+   242→    }
+   243→    if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+   244→      newErrors.email = 'Invalid email format';
+   245→    }
+   246→    setErrors(newErrors);
+   247→    return Object.keys(newErrors).length === 0;
+   248→  };
+   249→
+   250→  const handleSubmit = async (e: React.FormEvent) => {
+   251→    e.preventDefault();
+   252→    if (!user || !validate()) return;
+   253→
+   254→    setSubmitting(true);
+   255→    try {
+   256→      const body: Record<string, unknown> = {
+   257→        businessName: form.businessName.trim(),
+   258→        contactPerson: form.contactPerson.trim() || undefined,
+   259→        phone: form.phone.trim() || undefined,
+   260→        email: form.email.trim() || undefined,
+   261→        address: form.address.trim() || undefined,
+   262→        notes: form.notes.trim() || undefined,
+   263→      };
+   264→
+   265→      if (isEditing) {
+   266→        body.isActive = form.isActive;
+   267→      }
+   268→
+   269→      const url = isEditing
+   270→        ? `/api/suppliers/${supplier.id}`
+   271→        : '/api/suppliers';
+   272→      const method = isEditing ? 'PUT' : 'POST';
+   273→
+   274→      const res = await fetch(url, {
+   275→        method,
+   276→        headers: {
+   277→          'Content-Type': 'application/json',
+   278→          'x-user-id': user.id,
+   279→        },
+   280→        body: JSON.stringify(body),
+   281→      });
+   282→
+   283→      if (!res.ok) {
+   284→        const err = await res.json();
+   285→        throw new Error(err.error || 'Failed to save supplier');
+   286→      }
+   287→
+   288→      toast.success(
+   289→        isEditing
+   290→          ? 'Supplier updated successfully'
+   291→          : 'Supplier created successfully'
+   292→      );
+   293→      onOpenChange(false);
+   294→      onSuccess();
+   295→    } catch (err) {
+   296→      toast.error(
+   297→        err instanceof Error ? err.message : 'Failed to save supplier'
+   298→      );
+   299→    } finally {
+   300→      setSubmitting(false);
+   301→    }
+   302→  };
+   303→
+   304→  return (
+   305→    <Dialog open={open} onOpenChange={onOpenChange}>
+   306→      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+   307→        <DialogHeader>
+   308→          <DialogTitle>
+   309→            {isEditing ? 'Edit Supplier' : 'Add New Supplier'}
+   310→          </DialogTitle>
+   311→          <DialogDescription>
+   312→            {isEditing
+   313→              ? 'Update the supplier details below.'
+   314→              : 'Fill in the details to add a new supplier.'}
+   315→          </DialogDescription>
+   316→        </DialogHeader>
+   317→
+   318→        <form onSubmit={handleSubmit} className="space-y-4">
+   319→          <div className="space-y-2">
+   320→            <Label htmlFor="businessName">
+   321→              Business Name <span className="text-destructive">*</span>
+   322→            </Label>
+   323→            <Input
+   324→              id="businessName"
+   325→              placeholder="e.g., Accra Wholesale Ltd"
+   326→              value={form.businessName}
+   327→              onChange={(e) => updateField('businessName', e.target.value)}
+   328→              aria-invalid={!!errors.businessName}
+   329→            />
+   330→            {errors.businessName && (
+   331→              <p className="text-xs text-destructive">{errors.businessName}</p>
+   332→            )}
+   333→          </div>
+   334→
+   335→          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+   336→            <div className="space-y-2">
+   337→              <Label htmlFor="contactPerson">Contact Person</Label>
+   338→              <Input
+   339→                id="contactPerson"
+   340→                placeholder="John Doe"
+   341→                value={form.contactPerson}
+   342→                onChange={(e) => updateField('contactPerson', e.target.value)}
+   343→              />
+   344→            </div>
+   345→            <div className="space-y-2">
+   346→              <Label htmlFor="phone">Phone</Label>
+   347→              <Input
+   348→                id="phone"
+   349→                placeholder="+233 24 000 0000"
+   350→                value={form.phone}
+   351→                onChange={(e) => updateField('phone', e.target.value)}
+   352→              />
+   353→            </div>
+   354→          </div>
+   355→
+   356→          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+   357→            <div className="space-y-2">
+   358→              <Label htmlFor="email">Email</Label>
+   359→              <Input
+   360→                id="email"
+   361→                type="email"
+   362→                placeholder="supplier@example.com"
+   363→                value={form.email}
+   364→                onChange={(e) => updateField('email', e.target.value)}
+   365→                aria-invalid={!!errors.email}
+   366→              />
+   367→              {errors.email && (
+   368→                <p className="text-xs text-destructive">{errors.email}</p>
+   369→              )}
+   370→            </div>
+   371→            <div className="space-y-2">
+   372→              <Label htmlFor="address">Address</Label>
+   373→              <Input
+   374→                id="address"
+   375→                placeholder="123 Business Street"
+   376→                value={form.address}
+   377→                onChange={(e) => updateField('address', e.target.value)}
+   378→              />
+   379→            </div>
+   380→          </div>
+   381→
+   382→          <div className="space-y-2">
+   383→            <Label htmlFor="notes">Notes</Label>
+   384→            <Textarea
+   385→              id="notes"
+   386→              placeholder="Additional notes..."
+   387→              value={form.notes}
+   388→              onChange={(e) => updateField('notes', e.target.value)}
+   389→              rows={3}
+   390→            />
+   391→          </div>
+   392→
+   393→          {isEditing && (
+   394→            <div className="flex items-center justify-between rounded-lg border p-3">
+   395→              <div>
+   396→                <Label htmlFor="isActive" className="text-sm font-medium">
+   397→                  Status
+   398→                </Label>
+   399→                <p className="text-xs text-muted-foreground">
+   400→                  {form.isActive ? 'Active supplier' : 'Inactive supplier'}
+   401→                </p>
+   402→              </div>
+   403→              <Switch
+   404→                id="isActive"
+   405→                checked={form.isActive}
+   406→                onCheckedChange={(checked) => updateField('isActive', checked)}
+   407→              />
+   408→            </div>
+   409→          )}
+   410→
+   411→          <DialogFooter>
+   412→            <Button
+   413→              type="button"
+   414→              variant="outline"
+   415→              onClick={() => onOpenChange(false)}
+   416→              disabled={submitting}
+   417→            >
+   418→              Cancel
+   419→            </Button>
+   420→            <Button type="submit" disabled={submitting}>
+   421→              {submitting && <Loader2 className="mr-2 size-4 animate-spin" />}
+   422→              {isEditing ? 'Update Supplier' : 'Add Supplier'}
+   423→            </Button>
+   424→          </DialogFooter>
+   425→        </form>
+   426→      </DialogContent>
+   427→    </Dialog>
+   428→  );
+   429→}
+   430→
+   431→// ==================== Supplier Profile Dialog ====================
+   432→
+   433→function SupplierProfileDialog({
+   434→  supplier,
+   435→  open,
+   436→  onOpenChange,
+   437→}: {
+   438→  supplier: SupplierDetail | null;
+   439→  open: boolean;
+   440→  onOpenChange: (open: boolean) => void;
+   441→}) {
+   442→  if (!open || !supplier) return null;
+   443→
+   444→  return (
+   445→    <Dialog open={open} onOpenChange={onOpenChange}>
+   446→      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+   447→        <DialogHeader>
+   448→          <DialogTitle className="flex items-center gap-2">
+   449→            <Building2 className="size-5" />
+   450→            {supplier?.businessName || 'Supplier Details'}
+   451→          </DialogTitle>
+   452→          <DialogDescription>
+   453→            Supplier profile and purchase history
+   454→          </DialogDescription>
+   455→        </DialogHeader>
+   456→
+   457→        {supplier ? (
+   458→          <Tabs defaultValue="overview">
+   459→            <TabsList>
+   460→              <TabsTrigger value="overview">Overview</TabsTrigger>
+   461→              <TabsTrigger value="history">Purchase History</TabsTrigger>
+   462→              <TabsTrigger value="products">Products Supplied</TabsTrigger>
+   463→            </TabsList>
+   464→
+   465→            <TabsContent value="overview" className="mt-4 space-y-6">
+   466→              {/* Summary Cards */}
+   467→              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+   468→                <Card>
+   469→                  <CardContent className="p-4">
+   470→                    <div className="flex items-center gap-3">
+   471→                      <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-emerald-50 text-emerald-600">
+   472→                        <ShoppingBag className="size-5" />
+   473→                      </div>
+   474→                      <div>
+   475→                        <p className="text-xs text-muted-foreground">Total Purchases</p>
+   476→                        <p className="text-lg font-semibold tabular-nums">
+   477→                          {formatCurrency(supplier.totalPurchases)}
+   478→                        </p>
+   479→                      </div>
+   480→                    </div>
+   481→                  </CardContent>
+   482→                </Card>
+   483→                <Card>
+   484→                  <CardContent className="p-4">
+   485→                    <div className="flex items-center gap-3">
+   486→                      <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-amber-50 text-amber-600">
+   487→                        <AlertCircle className="size-5" />
+   488→                      </div>
+   489→                      <div>
+   490→                        <p className="text-xs text-muted-foreground">Outstanding Balance</p>
+   491→                        <p className="text-lg font-semibold tabular-nums">
+   492→                          {formatCurrency(supplier.outstandingBalance)}
+   493→                        </p>
+   494→                      </div>
+   495→                    </div>
+   496→                  </CardContent>
+   497→                </Card>
+   498→                <Card>
+   499→                  <CardContent className="p-4">
+   500→                    <div className="flex items-center gap-3">
+   501→                      <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-violet-50 text-violet-600">
+   502→                        <FileText className="size-5" />
+   503→                      </div>
+   504→                      <div>
+   505→                        <p className="text-xs text-muted-foreground">Number of Orders</p>
+   506→                        <p className="text-lg font-semibold tabular-nums">
+   507→                          {supplier._count?.restocks ?? supplier.restockHistory?.length ?? 0}
+   508→                        </p>
+   509→                      </div>
+   510→                    </div>
+   511→                  </CardContent>
+   512→                </Card>
+   513→              </div>
+   514→
+   515→              {/* Supplier Info */}
+   516→              <div className="rounded-lg border p-4 space-y-3">
+   517→                <h4 className="text-sm font-medium text-muted-foreground">Supplier Information</h4>
+   518→                <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-6">
+   519→                  <InfoRow icon={<Building2 className="size-4" />} label="Business Name" value={supplier.businessName} />
+   520→                  <InfoRow icon={<Building2 className="size-4" />} label="Contact Person" value={supplier.contactPerson} />
+   521→                  <InfoRow icon={<Phone className="size-4" />} label="Phone" value={supplier.phone} />
+   522→                  <InfoRow icon={<Mail className="size-4" />} label="Email" value={supplier.email} />
+   523→                  <InfoRow icon={<MapPin className="size-4" />} label="Address" value={supplier.address} />
+   524→                  <InfoRow
+   525→                    icon={<Building2 className="size-4" />}
+   526→                    label="Status"
+   527→                    value={supplier.isActive ? 'Active' : 'Inactive'}
+   528→                  />
+   529→                </div>
+   530→                {supplier.notes && (
+   531→                  <>
+   532→                    <Separator />
+   533→                    <div>
+   534→                      <p className="text-sm font-medium text-muted-foreground mb-1">Notes</p>
+   535→                      <p className="text-sm whitespace-pre-wrap">{supplier.notes}</p>
+   536→                    </div>
+   537→                  </>
+   538→                )}
+   539→              </div>
+   540→            </TabsContent>
+   541→
+   542→            <TabsContent value="history" className="mt-4">
+   543→              {supplier.restockHistory && supplier.restockHistory.length > 0 ? (
+   544→                <div className="rounded-lg border">
+   545→                  <Table>
+   546→                    <TableHeader>
+   547→                      <TableRow>
+   548→                        <TableHead>Date</TableHead>
+   549→                        <TableHead>Reference</TableHead>
+   550→                        <TableHead>Batch</TableHead>
+   551→                        <TableHead className="text-right">Amount</TableHead>
+   552→                        <TableHead>Payment</TableHead>
+   553→                        <TableHead className="hidden sm:table-cell">Notes</TableHead>
+   554→                      </TableRow>
+   555→                    </TableHeader>
+   556→                    <TableBody>
+   557→                      {supplier.restockHistory.map((r) => (
+   558→                        <TableRow key={r.id}>
+   559→                          <TableCell className="whitespace-nowrap">{formatDate(r.dateReceived)}</TableCell>
+   560→                          <TableCell>{r.reference || '—'}</TableCell>
+   561→                          <TableCell>{r.batchNumber || '—'}</TableCell>
+   562→                          <TableCell className="text-right tabular-nums font-medium">{formatCurrency(r.totalCost)}</TableCell>
+   563→                          <TableCell>{formatStatus(r.paymentStatus)}</TableCell>
+   564→                          <TableCell className="hidden sm:table-cell max-w-[200px] truncate text-muted-foreground">
+   565→                            {r.notes || '—'}
+   566→                          </TableCell>
+   567→                        </TableRow>
+   568→                      ))}
+   569→                    </TableBody>
+   570→                  </Table>
+   571→                </div>
+   572→              ) : (
+   573→                <div className="flex flex-col items-center justify-center py-12 text-center">
+   574→                  <ShoppingBag className="size-10 text-muted-foreground/40 mb-3" />
+   575→                  <p className="text-sm text-muted-foreground">No purchase history yet.</p>
+   576→                </div>
+   577→              )}
+   578→            </TabsContent>
+   579→
+   580→            <TabsContent value="products" className="mt-4">
+   581→              <div className="flex flex-col items-center justify-center py-12 text-center">
+   582→                <Truck className="size-10 text-muted-foreground/40 mb-3" />
+   583→                <p className="text-sm text-muted-foreground">Product supply details will appear here once restock items are tracked.</p>
+   584→              </div>
+   585→            </TabsContent>
+   586→          </Tabs>
+   587→        ) : null}
+   588→      </DialogContent>
+   589→    </Dialog>
+   590→  );
+   591→}
+   592→
+   593→// ==================== Info Row Helper ====================
+   594→
+   595→function InfoRow({ icon, label, value }: { icon: React.ReactNode; label: string; value?: string | null }) {
+   596→  return (
+   597→    <div className="flex items-start gap-3">
+   598→      <div className="mt-0.5 text-muted-foreground">{icon}</div>
+   599→      <div className="min-w-0">
+   600→        <p className="text-xs text-muted-foreground">{label}</p>
+   601→        <p className="text-sm font-medium truncate">{value || '—'}</p>
+   602→      </div>
+   603→    </div>
+   604→  );
+   605→}
+   606→
+   607→// ==================== Main Component ====================
+   608→
+   609→export default function SuppliersPage() {
+   610→  const { user } = useAuth();
+   611→
+   612→  // List state
+   613→  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+   614→  const [total, setTotal] = useState(0);
+   615→  const [loading, setLoading] = useState(true);
+   616→  const [search, setSearch] = useState('');
+   617→  const [page, setPage] = useState(1);
+   618→  const pageSize = 20;
+   619→
+   620→  // Dialog state
+   621→  const [formDialogOpen, setFormDialogOpen] = useState(false);
+   622→  const [editingSupplier, setEditingSupplier] = useState<Supplier | null>(null);
+   623→  const [viewDialogOpen, setViewDialogOpen] = useState(false);
+   624→  const [viewingSupplier, setViewingSupplier] = useState<SupplierDetail | null>(null);
+   625→  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+   626→  const [deletingSupplier, setDeletingSupplier] = useState<Supplier | null>(null);
+   627→  const [deleting, setDeleting] = useState(false);
+   628→
+   629→  const totalPages = Math.ceil(total / pageSize) || 1;
+   630→
+   631→  // Fetch suppliers
+   632→  const fetchSuppliers = useCallback(async () => {
+   633→    setLoading(true);
+   634→    try {
+   635→      const params = new URLSearchParams({
+   636→        page: String(page),
+   637→        pageSize: String(pageSize),
+   638→      });
+   639→      if (search.trim()) {
+   640→        params.set('search', search.trim());
+   641→      }
+   642→      const res = await fetch(`/api/suppliers?${params}`);
+   643→      if (!res.ok) throw new Error('Failed to fetch suppliers');
+   644→      const data: SuppliersResponse = await res.json();
+   645→      setSuppliers(data.data);
+   646→      setTotal(data.total);
+   647→    } catch {
+   648→      toast.error('Failed to load suppliers');
+   649→    } finally {
+   650→      setLoading(false);
+   651→    }
+   652→  }, [page, search]);
+   653→
+   654→  useEffect(() => {
+   655→    fetchSuppliers();
+   656→  }, [fetchSuppliers]);
+   657→
+   658→  // Reset page on search change
+   659→  useEffect(() => {
+   660→    setPage(1);
+   661→  }, [search]);
+   662→
+   663→  // Handlers
+   664→  const handleAdd = () => {
+   665→    setEditingSupplier(null);
+   666→    setFormDialogOpen(true);
+   667→  };
+   668→
+   669→  const handleEdit = (supplier: Supplier) => {
+   670→    setEditingSupplier(supplier);
+   671→    setFormDialogOpen(true);
+   672→  };
+   673→
+   674→  const handleView = async (supplier: Supplier) => {
+   675→    try {
+   676→      const res = await fetch(`/api/suppliers/${supplier.id}`);
+   677→      if (!res.ok) throw new Error();
+   678→      const detail: SupplierDetail = await res.json();
+   679→      setViewingSupplier(detail);
+   680→    } catch {
+   681→      toast.error('Failed to load supplier details');
+   682→      setViewingSupplier(supplier as SupplierDetail);
+   683→    }
+   684→    setViewDialogOpen(true);
+   685→  };
+   686→
+   687→  const handleDeleteClick = (supplier: Supplier) => {
+   688→    setDeletingSupplier(supplier);
+   689→    setDeleteDialogOpen(true);
+   690→  };
+   691→
+   692→  const handleDeleteConfirm = async () => {
+   693→    if (!user || !deletingSupplier) return;
+   694→    setDeleting(true);
+   695→    try {
+   696→      const res = await fetch(`/api/suppliers/${deletingSupplier.id}`, {
+   697→        method: 'DELETE',
+   698→        headers: { 'x-user-id': user.id },
+   699→      });
+   700→      if (!res.ok) {
+   701→        const err = await res.json();
+   702→        throw new Error(err.error || 'Failed to delete supplier');
+   703→      }
+   704→      toast.success('Supplier deactivated');
+   705→      setDeleteDialogOpen(false);
+   706→      setDeletingSupplier(null);
+   707→      fetchSuppliers();
+   708→    } catch (err) {
+   709→      toast.error(err instanceof Error ? err.message : 'Failed to delete supplier');
+   710→    } finally {
+   711→      setDeleting(false);
+   712→    }
+   713→  };
+   714→
+   715→  // Pagination helpers
+   716→  const getPageNumbers = (): (number | '...')[] => {
+   717→    const pages: (number | '...')[] = [];
+   718→    if (totalPages <= 7) {
+   719→      for (let i = 1; i <= totalPages; i++) pages.push(i);
+   720→    } else {
+   721→      pages.push(1);
+   722→      if (page > 3) pages.push('...');
+   723→      const start = Math.max(2, page - 1);
+   724→      const end = Math.min(totalPages - 1, page + 1);
+   725→      for (let i = start; i <= end; i++) pages.push(i);
+   726→      if (page < totalPages - 2) pages.push('...');
+   727→      pages.push(totalPages);
+   728→    }
+   729→    return pages;
+   730→  };
+   731→
+   732→  // ==================== RENDER ====================
+   733→
+   734→  return (
+   735→    <div className="space-y-4">
+   736→      {/* Toolbar */}
+   737→      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+   738→        <div className="relative flex-1 max-w-sm">
+   739→          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+   740→          <Input
+   741→            placeholder="Search suppliers..."
+   742→            value={search}
+   743→            onChange={(e) => setSearch(e.target.value)}
+   744→            className="pl-9"
+   745→          />
+   746→          {search && (
+   747→            <button
+   748→              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+   749→              onClick={() => setSearch('')}
+   750→              type="button"
+   751→            >
+   752→              <X className="size-4" />
+   753→            </button>
+   754→          )}
+   755→        </div>
+   756→        <Button onClick={handleAdd}>
+   757→          <Plus className="size-4 mr-1.5" />
+   758→          Add Supplier
+   759→        </Button>
+   760→      </div>
+   761→
+   762→      {/* Table */}
+   763→      {loading ? (
+   764→        <TableSkeleton />
+   765→      ) : suppliers.length === 0 ? (
+   766→        <div className="flex flex-col items-center justify-center py-16 text-center">
+   767→          <Truck className="size-12 text-muted-foreground/40 mb-3" />
+   768→          <h3 className="font-medium">No suppliers yet</h3>
+   769→          <p className="text-sm text-muted-foreground mt-1 mb-4 max-w-sm">
+   770→            Add your first supplier to start tracking purchases and orders.
+   771→          </p>
+   772→          <Button onClick={handleAdd}>
+   773→            <Plus className="size-4 mr-1.5" />
+   774→            Add Supplier
+   775→          </Button>
+   776→        </div>
+   777→      ) : (
+   778→        <div className="rounded-lg border">
+   779→          <Table>
+   780→            <TableHeader>
+   781→              <TableRow>
+   782→                <TableHead>Business Name</TableHead>
+   783→                <TableHead className="hidden md:table-cell">Contact Person</TableHead>
+   784→                <TableHead className="hidden lg:table-cell">Phone</TableHead>
+   785→                <TableHead className="hidden xl:table-cell">Email</TableHead>
+   786→                <TableHead className="hidden xl:table-cell">Address</TableHead>
+   787→                <TableHead className="text-right">Total Purchases</TableHead>
+   788→                <TableHead className="text-right">Outstanding</TableHead>
+   789→                <TableHead>Status</TableHead>
+   790→                <TableHead className="w-[120px]">Actions</TableHead>
+   791→              </TableRow>
+   792→            </TableHeader>
+   793→            <TableBody>
+   794→              {suppliers.map((s) => (
+   795→                <TableRow key={s.id}>
+   796→                  <TableCell className="font-medium">{s.businessName}</TableCell>
+   797→                  <TableCell className="hidden md:table-cell">{s.contactPerson || '—'}</TableCell>
+   798→                  <TableCell className="hidden lg:table-cell">{s.phone || '—'}</TableCell>
+   799→                  <TableCell className="hidden xl:table-cell">{s.email || '—'}</TableCell>
+   800→                  <TableCell className="hidden xl:table-cell max-w-[180px] truncate">{s.address || '—'}</TableCell>
+   801→                  <TableCell className="text-right tabular-nums">{formatCurrency(0)}</TableCell>
+   802→                  <TableCell className="text-right tabular-nums">{formatCurrency(0)}</TableCell>
+   803→                  <TableCell>
+   804→                    <Badge
+   805→                      variant="outline"
+   806→                      className={s.isActive
+   807→                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200 font-normal'
+   808→                        : 'bg-rose-50 text-rose-700 border-rose-200 font-normal'
+   809→                      }
+   810→                    >
+   811→                      {s.isActive ? 'Active' : 'Inactive'}
+   812→                    </Badge>
+   813→                  </TableCell>
+   814→                  <TableCell>
+   815→                    <div className="flex items-center gap-1">
+   816→                      <Button
+   817→                        variant="ghost"
+   818→                        size="icon"
+   819→                        className="h-8 w-8"
+   820→                        onClick={() => handleView(s)}
+   821→                        title="View"
+   822→                      >
+   823→                        <Eye className="size-4" />
+   824→                      </Button>
+   825→                      <Button
+   826→                        variant="ghost"
+   827→                        size="icon"
+   828→                        className="h-8 w-8"
+   829→                        onClick={() => handleEdit(s)}
+   830→                        title="Edit"
+   831→                      >
+   832→                        <Pencil className="size-4" />
+   833→                      </Button>
+   834→                      <Button
+   835→                        variant="ghost"
+   836→                        size="icon"
+   837→                        className="h-8 w-8 text-destructive hover:text-destructive"
+   838→                        onClick={() => handleDeleteClick(s)}
+   839→                        title="Delete"
+   840→                      >
+   841→                        <Trash2 className="size-4" />
+   842→                      </Button>
+   843→                    </div>
+   844→                  </TableCell>
+   845→                </TableRow>
+   846→              ))}
+   847→            </TableBody>
+   848→          </Table>
+   849→        </div>
+   850→      )}
+   851→
+   852→      {/* Pagination */}
+   853→      {!loading && total > pageSize && (
+   854→        <div className="flex items-center justify-between px-2 py-3">
+   855→          <p className="text-sm text-muted-foreground">
+   856→            Showing {(page - 1) * pageSize + 1}
+   857→            {Math.min(page * pageSize, total) < total
+   858→              ? `-${Math.min(page * pageSize, total)}`
+   859→              : `-${total}`}{' '}
+   860→            of {total} suppliers
+   861→          </p>
+   862→          <div className="flex items-center gap-1">
+   863→            <Button
+   864→              variant="outline"
+   865→              size="icon"
+   866→              className="h-8 w-8"
+   867→              disabled={page <= 1}
+   868→              onClick={() => setPage((p) => Math.max(1, p - 1))}
+   869→            >
+   870→              <ChevronLeft className="size-4" />
+   871→            </Button>
+   872→            {getPageNumbers().map((p, i) =>
+   873→              p === '...' ? (
+   874→                <span key={`dots-${i}`} className="px-1 text-muted-foreground">
+   875→                  ...
+   876→                </span>
+   877→              ) : (
+   878→                <Button
+   879→                  key={p}
+   880→                  variant={page === p ? 'default' : 'outline'}
+   881→                  size="icon"
+   882→                  className="h-8 w-8"
+   883→                  onClick={() => setPage(p)}
+   884→                >
+   885→                  {p}
+   886→                </Button>
+   887→              )
+   888→            )}
+   889→            <Button
+   890→              variant="outline"
+   891→              size="icon"
+   892→              className="h-8 w-8"
+   893→              disabled={page >= totalPages}
+   894→              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+   895→            >
+   896→              <ChevronRight className="size-4" />
+   897→            </Button>
+   898→          </div>
+   899→        </div>
+   900→      )}
+   901→
+   902→      {/* ==================== DIALOGS ==================== */}
+   903→
+   904→      {/* Add/Edit Supplier Dialog */}
+   905→      <SupplierFormDialog
+   906→        open={formDialogOpen}
+   907→        onOpenChange={setFormDialogOpen}
+   908→        supplier={editingSupplier}
+   909→        onSuccess={fetchSuppliers}
+   910→      />
+   911→
+   912→      {/* View Supplier Dialog */}
+   913→      <SupplierProfileDialog
+   914→        supplier={viewingSupplier}
+   915→        open={viewDialogOpen}
+   916→        onOpenChange={setViewDialogOpen}
+   917→      />
+   918→
+   919→      {/* Delete Confirmation */}
+   920→      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+   921→        <AlertDialogContent>
+   922→          <AlertDialogHeader>
+   923→            <AlertDialogTitle>Deactivate Supplier</AlertDialogTitle>
+   924→            <AlertDialogDescription>
+   925→              Are you sure you want to deactivate &quot;{deletingSupplier?.businessName}&quot;?
+   926→              This will mark the supplier as inactive. You can reactivate it later.
+   927→            </AlertDialogDescription>
+   928→          </AlertDialogHeader>
+   929→          <AlertDialogFooter>
+   930→            <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+   931→            <AlertDialogAction
+   932→              onClick={handleDeleteConfirm}
+   933→              disabled={deleting}
+   934→              className="bg-destructive text-white hover:bg-destructive/90"
+   935→            >
+   936→              {deleting && <Loader2 className="mr-2 size-4 animate-spin" />}
+   937→              Deactivate
+   938→            </AlertDialogAction>
+   939→          </AlertDialogFooter>
+   940→        </AlertDialogContent>
+   941→      </AlertDialog>
+   942→    </div>
+   943→  );
+   944→}
+   945→

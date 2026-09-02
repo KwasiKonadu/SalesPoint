@@ -1,0 +1,600 @@
+     1→     1→# POS & Inventory Management - Work Log
+     2→     2→
+     3→     3→## Task 1-a: Authentication System & Seed Data
+     4→     4→
+     5→     5→### Date: $(date -u +'%Y-%m-%d %H:%M UTC')
+     6→     6→
+     7→     7→### What was built:
+     8→     8→
+     9→     9→#### 1. Authentication System (NextAuth.js v4)
+    10→    10→
+    11→    11→- **`src/lib/auth.ts`** - NextAuth configuration
+    12→    12→  - `CredentialsProvider` with email/password authentication
+    13→    13→  - JWT session strategy (24h maxAge)
+    14→    14→  - bcryptjs password hashing & comparison
+    15→    15→  - JWT callback: injects `id`, `role`, `name` into token
+    16→    16→  - Session callback: exposes `id`, `role`, `name` from token to client
+    17→    17→  - TypeScript module augmentation for `next-auth` and `next-auth/jwt` to include custom fields
+    18→    18→  - Checks user `isActive` status before allowing login
+    19→    19→  - Custom error messages for invalid credentials and deactivated accounts
+    20→    20→
+    21→    21→- **`src/app/api/auth/[...nextauth]/route.ts`** - NextAuth API route handler
+    22→    22→  - Exports GET and POST handlers from `NextAuth(authOptions)`
+    23→    23→
+    24→    24→- **`.env`** - Added `NEXTAUTH_SECRET` and `NEXTAUTH_URL`
+    25→    25→
+    26→    26→#### 2. Seed Script (`prisma/seed.ts`)
+    27→    27→
+    28→    28→Comprehensive seed data creating:
+    29→    29→
+    30→    30→| Entity | Count | Details |
+    31→    31→|--------|-------|---------|
+    32→    32→| Users | 2 | Admin (`admin@pos.com`/`admin123`), Sales person (`sales@pos.com`/`sales123`) |
+    33→    33→| Business Settings | 15 | Name, address, phone, email, currency (GHS), tax settings, receipt config |
+    34→    34→| Product Types | 2 | Physical Product (tracks stock), Service (no stock tracking) |
+    35→    35→| Product Categories | 5 | Beverages, Snacks, Groceries, Personal Care, Household |
+    36→    36→| Units | 6 | Piece, Kilogram, Liter, Pack, Carton, Bag |
+    37→    37→| Suppliers | 3 | Accra Wholesale, Kumasi Supply Chain, Tema Import Hub |
+    38→    38→| Products | 12 | 11 physical products with inventory, 1 service product |
+    39→    39→| Inventory | 11 | Stock levels for all physical products |
+    40→    40→| Customers | 3 | 2 named customers + 1 walk-in customer |
+    41→    41→| Expense Categories | 4 | Rent, Utilities, Transportation, Salary |
+    42→    42→
+    43→    43→#### 3. Dependencies Added
+    44→    44→- `bcryptjs@3.0.3` - Password hashing
+    45→    45→- `@types/bcryptjs@3.0.0` - TypeScript types
+    46→    46→
+    47→    47→### Files Created:
+    48→    48→- `src/lib/auth.ts`
+    49→    49→- `src/app/api/auth/[...nextauth]/route.ts`
+    50→    50→- `prisma/seed.ts`
+    51→    51→
+    52→    52→### Files Modified:
+    53→    53→- `.env` (added NEXTAUTH_SECRET, NEXTAUTH_URL)
+    54→    54→- `package.json` (bcryptjs dependencies)
+    55→    55→
+    56→    56→### Verification:
+    57→    57→- ESLint: Clean, no errors
+    58→    58→- Dev server: Running, no errors in log
+    59→    59→- NextAuth CSRF endpoint: Responding correctly at `/api/auth/csrf`
+    60→    60→- Seed: Successfully populated all tables
+    61→    61→
+    62→    62→---
+    63→    63→
+    64→    64→## Task 2: Complete Backend API Routes
+    65→    65→
+    66→    66→### Date: 2026-09-02 10:33 UTC
+    67→    67→
+    68→    68→### What was built:
+    69→    69→
+    70→    70→Complete REST API backend for the POS application — 26 route files covering all entities.
+    71→    71→
+    72→    72→#### API Routes Created:
+    73→    73→
+    74→    74→| # | Route | Methods | Features |
+    75→    75→|---|-------|---------|----------|
+    76→    76→| 1 | `/api/products` | GET, POST | List with filters (category, search, status, pagination), create with auto-SKU generation, inventory creation, stock-aware (respects product type tracksStock) |
+    77→    77→| 2 | `/api/products/[id]` | GET, PUT, DELETE | Full detail with inventory+movements, update, soft delete |
+    78→    78→| 3 | `/api/categories` | GET, POST | List (active-only by default, ?all=true for all), create with duplicate check |
+    79→    79→| 4 | `/api/categories/[id]` | PUT, DELETE | Update, soft delete |
+    80→    80→| 5 | `/api/product-types` | GET, POST | List active types, create with duplicate check |
+    81→    81→| 6 | `/api/units` | GET, POST | List active units, create with duplicate check |
+    82→    82→| 7 | `/api/inventory` | GET | List with stock status (in_stock/low_stock/out_of_stock), product info, category, search, pagination |
+    83→    83→| 8 | `/api/inventory/adjust` | POST | Deduct inventory (damaged/expired/lost/adjustment), create movement record, transaction-wrapped |
+    84→    84→| 9 | `/api/restock` | GET, POST | List with supplier info, filters (supplier, payment status, date range), create with items — transaction: creates restock, increases inventory, creates movements per item |
+    85→    85→| 10 | `/api/restock/[id]` | GET | Full restock detail with items and product info |
+    86→    86→| 11 | `/api/suppliers` | GET, POST | List with search, create |
+    87→    87→| 12 | `/api/suppliers/[id]` | GET, PUT, DELETE | Detail with restock history, total purchases, outstanding balance; update; soft delete |
+    88→    88→| 13 | `/api/customers` | GET, POST | List with search, create |
+    89→    89→| 14 | `/api/customers/[id]` | GET, PUT, DELETE | Detail with sales history + total spent; update; soft delete |
+    90→    90→| 15 | `/api/sales` | GET, POST | List with filters (customer, payment, status, date range, search on transaction#/name), pagination; **Create** is fully transactional: validates stock, deducts inventory, creates movements, generates TXN-YYYYMMDD-XXXX number, creates Payment + Receipt |
+    91→    91→| 16 | `/api/sales/[id]` | GET | Full sale detail with items, customer, soldBy, payment, receipt, returns |
+    92→    92→| 17 | `/api/returns` | GET, POST | List with pagination; **Create** generates RET-YYYYMMDD-XXXX, restores inventory, creates movements, updates sale status (partial_refund/refunded) |
+    93→    93→| 18 | `/api/expenses` | GET, POST | List with category, date range filters; create |
+    94→    94→| 19 | `/api/expenses/[id]` | GET, PUT, DELETE | Full CRUD, hard delete for expenses |
+    95→    95→| 20 | `/api/expense-categories` | GET, POST | List with expense counts; create with duplicate check |
+    96→    96→| 21 | `/api/staff` | GET, POST | List (password excluded!), create with bcryptjs hashing |
+    97→    97→| 22 | `/api/staff/[id]` | GET, PUT, DELETE | Get/update/delete (soft delete), password excluded, optional password update on PUT |
+    98→    98→| 23 | `/api/dashboard` | GET | Aggregated dashboard: totalSales, salesChange, totalTransactions, transactionsChange, totalProfit, profitChange, avgOrderValue, avgOrderValueChange, totalCustomers, customersChange, salesByCategory, topProducts (top 5), lowStockProducts, recentSales (5), salesChart (30 days) |
+    99→    99→| 24 | `/api/reports` | GET | 13 report types: sales_overview, sales_by_product, sales_by_category, sales_by_staff, sales_by_customer, sales_by_payment, inventory_status, low_stock, stock_movements, top_customers, supplier_purchases, expenses_by_category, profit. Supports startDate/endDate/period params |
+   100→   100→| 25 | `/api/stock-movements` | GET | List with filters (type, productId, date range), pagination |
+   101→   101→| 26 | `/api/receipts/[id]` | GET | Receipt data with sale, items, product units, and business settings |
+   102→   102→
+   103→   103→#### Architecture Decisions:
+   104→   104→- **Auth**: All mutation endpoints (POST/PUT/DELETE) check `x-user-id` header; GET endpoints are public (read-only)
+   105→   105→- **Pagination**: Standard `page`+`pageSize` query params with `{ data, total, page, pageSize }` response
+   106→   106→- **Transactions**: Sales creation, returns, restocks, inventory adjustments all use `db.$transaction()`
+   107→   107→- **Transaction numbers**: `TXN-YYYYMMDD-XXXX` (sequential per day), `RET-YYYYMMDD-XXXX`, `RCP-YYYYMMDD-XXXX`
+   108→   108→- **Soft deletes**: Products, categories, suppliers, customers, staff use `isActive=false`; expenses use hard delete
+   109→   109→- **No `next-auth` in API routes**: Custom header-based auth (`x-user-id`)
+   110→   110→- **Staff passwords**: Never included in responses; hashed with bcryptjs (salt 10) on create/update
+   111→   111→
+   112→   112→### Files Created (26):
+   113→   113→- `src/app/api/products/route.ts`
+   114→   114→- `src/app/api/products/[id]/route.ts`
+   115→   115→- `src/app/api/categories/route.ts`
+   116→   116→- `src/app/api/categories/[id]/route.ts`
+   117→   117→- `src/app/api/product-types/route.ts`
+   118→   118→- `src/app/api/units/route.ts`
+   119→   119→- `src/app/api/inventory/route.ts`
+   120→   120→- `src/app/api/inventory/adjust/route.ts`
+   121→   121→- `src/app/api/restock/route.ts`
+   122→   122→- `src/app/api/restock/[id]/route.ts`
+   123→   123→- `src/app/api/suppliers/route.ts`
+   124→   124→- `src/app/api/suppliers/[id]/route.ts`
+   125→   125→- `src/app/api/customers/route.ts`
+   126→   126→- `src/app/api/customers/[id]/route.ts`
+   127→   127→- `src/app/api/sales/route.ts`
+   128→   128→- `src/app/api/sales/[id]/route.ts`
+   129→   129→- `src/app/api/returns/route.ts`
+   130→   130→- `src/app/api/expenses/route.ts`
+   131→   131→- `src/app/api/expenses/[id]/route.ts`
+   132→   132→- `src/app/api/expense-categories/route.ts`
+   133→   133→- `src/app/api/staff/route.ts`
+   134→   134→- `src/app/api/staff/[id]/route.ts`
+   135→   135→- `src/app/api/dashboard/route.ts`
+   136→   136→- `src/app/api/reports/route.ts`
+   137→   137→- `src/app/api/stock-movements/route.ts`
+   138→   138→- `src/app/api/receipts/[id]/route.ts`
+   139→   139→
+   140→   140→### Verification:
+   141→   141→- ESLint on `src/app/api/`: Clean, zero errors
+   142→   142→- Dev server: All routes compile and respond correctly
+   143→   143→- Tested: `/api/products` (returns 12 products with pagination), `/api/dashboard` (returns all metrics), `/api/staff` (passwords excluded), `/api/reports?type=inventory_status` (returns stock with computed values), `/api/reports?type=sales_by_payment`
+   144→   144→- Pre-existing lint warning in `auth-context.tsx` (from Task 1) — not related to this task
+   145→   145→
+   146→   146→---
+   147→   147→
+   148→   148→## Task 3a: Page Router & Dashboard Page
+   149→   149→
+   150→   150→### Date: 2026-09-02
+   151→   151→
+   152→   152→### What was built:
+   153→   153→
+   154→   154→#### 1. `src/app/page.tsx` — Main App Router Entry
+   155→   155→- `'use client'` component wrapping everything in `AuthProvider`
+   156→   156→- Three auth states: `loading` (full-screen spinner), `unauthenticated` (LoginPage), `authenticated` (AppShell)
+   157→   157→- AppShell: flex row layout with `AppSidebar` + main area (header + scrollable content)
+   158→   158→- Lazy-loaded page components via `React.lazy` + `Suspense` for all 11 pages
+   159→   159→- Content area renders the correct page based on `useAppStore().currentPage`
+   160→   160→- `Sonner` toast component included
+   161→   161→
+   162→   162→#### 2. `src/components/pages/dashboard-page.tsx` — Comprehensive Dashboard
+   163→   163→
+   164→   164→**KPI Cards Row** (5 cards, responsive 1/2/5 cols):
+   165→   165→- Total Sales (₵), Transactions, Total Profit, Avg Order Value, Customers
+   166→   166→- Each card: icon, label, large bold value, percentage change with up/down arrow, comparison text
+   167→   167→- Colored icon backgrounds; loading skeleton cards during fetch
+   168→   168→
+   169→   169→**Charts Row** (2 charts, 1/2 cols):
+   170→   170→- **Sales Overview**: AreaChart with gradient fill, 30-day default, period select (This Week/Month, MTD, This Year)
+   171→   171→- **Sales by Category**: Donut/PieChart with 6-color palette, legend with percentages
+   172→   172→
+   173→   173→**Three-Column Layout** (2:1 ratio):
+   174→   174→- Top Selling Products (list with colored placeholder, qty sold, revenue)
+   175→   175→- Recent Sales (table with transaction#, customer, amount, payment/status badges, date)
+   176→   176→- Low Stock Alert (colored badges: amber low / red out of stock)
+   177→   177→
+   178→   178→**Quick Actions Row**: 5 buttons navigating to POS, Products, Inventory, Customers, Expenses
+   179→   179→
+   180→   180→**States**: Loading skeletons, empty state (welcome + quick actions), error state (retry button)
+   181→   181→
+   182→   182→#### 3. Stub Pages (9 files)
+   183→   183→Placeholder components for all pages not yet built (pos, sales, products, inventory, customers, suppliers, expenses, reports, staff, settings)
+   184→   184→
+   185→   185→### Files Created/Modified:
+   186→   186→- `src/app/page.tsx` (updated)
+   187→   187→- `src/components/pages/dashboard-page.tsx` (new)
+   188→   188→- `src/components/pages/{pos,sales,products,inventory,customers,suppliers,expenses,reports,staff,settings}-page.tsx` (stubs)
+   189→   189→
+   190→   190→### Verification:
+   191→   191→- ESLint: Clean (only pre-existing auth-context.tsx error, not from this task)
+   192→   192→- Dev server: Compiled successfully, no new errors
+   193→   193→
+   194→   194→---
+   195→   195→
+   196→   196→## Task 4: Point of Sale (POS) Page
+   197→   197→
+   198→   198→### Date: 2026-09-02
+   199→   199→
+   200→   200→### What was built:
+   201→   201→
+   202→   202→Complete, production-ready POS interface — the primary transaction screen of the application.
+   203→   203→
+   204→   204→#### `src/components/pages/pos-page.tsx` — Full POS Page (~630 lines)
+   205→   205→
+   206→   206→**Layout**:
+   207→   207→- Full-height split layout: Left (flex-1, product browsing) | Right (w-[420px], cart/checkout)
+   208→   208→- No scroll on main container — product grid and cart items each have their own scroll areas
+   209→   209→
+   210→   210→**Left Side — Product Browsing Area**:
+   211→   211→- **Search Bar**: Large input with search icon, debounced search (300ms) fetching from `/api/products?search=...`, clear button
+   212→   212→- **Category Filters**: Horizontal scrollable pill buttons, fetched from `/api/categories`, "All" selected by default, filters product grid on click
+   213→   213→- **Product Grid**: Responsive grid (2/3/4 cols), each card shows:
+   214→   214→  - Colored placeholder with product initials (or image if exists)
+   215→   215→  - Product name (truncated), bold ₵ price, stock status badge
+   216→   216→  - Hover: border highlight + quick-add Plus icon appears
+   217→   217→  - Out-of-stock: dimmed, disabled, not clickable
+   218→   218→- **States**: Loading skeleton grid, error state with retry, empty state with clear-filters option
+   219→   219→
+   220→   220→**Right Side — Cart/Checkout Area**:
+   221→   221→- **Cart Header**: "Cart" title with item count badge, Clear button (trash icon)
+   222→   222→- **Cart Items**: ScrollArea with AnimatePresence (framer-motion) for smooth add/remove animations
+   223→   223→  - Each item: colored initials avatar, name, unit price, +/- quantity controls, subtotal, X remove
+   224→   224→  - Empty state: ShoppingBag icon + "No items in cart"
+   225→   225→- **Customer Selection**: Select dropdown (Walk-in default + all customers from API) + "Add Customer" button
+   226→   226→- **Discount Input**: Percentage input (0-100%) with clear button
+   227→   227→- **Summary**: Subtotal, discount, tax, separator, bold total
+   228→   228→- **Checkout Button**: Full-width, large (py-5), shows "Checkout • ₵[total]", disabled if empty
+   229→   229→
+   230→   230→**Checkout Dialog**:
+   231→   231→- Order summary (all items, subtotals, discount, tax, total)
+   232→   232→- Customer info display
+   233→   233→- Payment method radio group (Cash, Mobile Money, Card, Bank Transfer, Credit) with icons
+   234→   234→- Cash mode: Amount received input with quick-amount buttons (exact, nearest 5/10/20, 50, 100), animated change display in green
+   235→   235→- Confirm button with loading spinner state
+   236→   236→- Validation: checks minimum cash amount, prevents duplicate submission
+   237→   237→
+   238→   238→**Add Customer Dialog**:
+   239→   239→- Name (required) + Phone fields
+   240→   240→- Creates customer via POST `/api/customers`, auto-selects in cart
+   241→   241→- Enter key support on both fields
+   242→   242→
+   243→   243→**Receipt Success Dialog**:
+   244→   244→- Green CheckCircle2 icon + "Sale Complete!" + transaction number
+   245→   245→- Compact receipt preview (items, subtotal, discount, tax, total, received/change, payment method, customer)
+   246→   246→- Action buttons:
+   247→   247→  - **Print**: Opens new window with styled receipt HTML, auto-triggers `window.print()`
+   248→   248→  - **Download**: Generates `.txt` receipt file via Blob + URL.createObjectURL
+   249→   249→  - **Send Receipt**: Opens sub-dialog with WhatsApp/SMS/Email radio + recipient input
+   250→   250→  - **New Sale**: Clears all cart state, closes dialog, resets for next transaction
+   251→   251→- Dialog stays open until "New Sale" is clicked (per spec)
+   252→   252→
+   253→   253→**Send Receipt Sub-Dialog**:
+   254→   254→- WhatsApp / SMS / Email radio group
+   255→   255→- Phone or email input (pre-filled from customer data)
+   256→   256→- V1: shows success toast (real API integration would be added later)
+   257→   257→
+   258→   258→**State Management**:
+   259→   259→- All state is local `useState` (cart items, customer, discount, dialog open states, payment)
+   260→   260→- Uses `useAuth()` for user identity on sale creation
+   261→   261→- Cart operations: `addToCart`, `updateQuantity`, `removeFromCart`, `clearCart`
+   262→   262→- Stock-aware: checks `productType.tracksStock` and `inventory.quantity` before adding/increasing
+   263→   263→
+   264→   264→**API Calls**:
+   265→   265→- `GET /api/products?search=...&categoryId=...&status=active` — product listing with filters
+   266→   266→- `GET /api/categories` — category filter pills
+   267→   267→- `GET /api/customers` — customer dropdown
+   268→   268→- `POST /api/customers` — inline customer creation (x-user-id header)
+   269→   269→- `POST /api/sales` — checkout (sends soldById, customerId, items, discountAmount, taxAmount, paymentMethod, amountReceived)
+   270→   270→
+   271→   271→**Styling**:
+   272→   272→- Clean, modern POS aesthetic with shadcn/ui throughout
+   273→   273→- Product cards: rounded-xl, subtle border, hover:border-primary/50
+   274→   274→- Colored product placeholders (10-color hash-based palette)
+   275→   275→- ₵ currency formatting everywhere
+   276→   276→- `framer-motion`: `whileTap` on product cards, `AnimatePresence` on cart items, `motion.div` for cash input reveal
+   277→   277→- `sonner` toasts for: add-to-cart stock warnings, checkout errors, customer creation, receipt actions
+   278→   278→- Tabular nums for all currency amounts
+   279→   279→
+   280→   280→### Files Modified:
+   281→   281→- `src/components/pages/pos-page.tsx` (replaced stub with full implementation)
+   282→   282→
+   283→   283→### Verification:
+   284→   284→- ESLint: Clean (only pre-existing auth-context.tsx error, not from this task)
+   285→   285→- Dev server: Compiled successfully, no new errors
+   286→   286→
+   287→   287→---
+   288→   288→
+   289→   289→## Task 5: Products Page — Full CRUD with Table/Grid Views
+   290→   290→
+   291→   291→### Date: 2026-09-02
+   292→   292→
+   293→   293→### What was built:
+   294→   294→
+   295→   295→Complete Products management page with table and grid views, product CRUD, inline category management, search, filtering, and pagination.
+   296→   296→
+   297→   297→#### `src/components/pages/products-page.tsx` — Full Products Page (~920 lines)
+   298→   298→
+   299→   299→**Layout & Navigation**:
+   300→   300→- Tabs component with two tabs: **Products** (main) and **Categories** (management)
+   301→   301→- Products tab: toolbar + content area with table/grid view toggle
+   302→   302→- Categories tab: list of all categories with product counts, inline CRUD
+   303→   303→
+   304→   304→**Products Toolbar**:
+   305→   305→- Search input with debounced search (300ms) and clear button
+   306→   306→- Category filter dropdown (populated from `/api/categories`, active only)
+   307→   307→- Status filter: Active / All / Inactive
+   308→   308→- View toggle: Table / Grid (grouped toggle button)
+   309→   309→- Export button (disabled placeholder for V1)
+   310→   310→- Add Product button (primary)
+   311→   311→
+   312→   312→**Table View** (default):
+   313→   313→- shadcn Table with columns: Product (image placeholder + name + SKU), Category (outline badge), Type, Cost Price, Selling Price, Stock (color-coded badge), Status (active/inactive badge), Actions
+   314→   314→- Stock column: green (healthy), amber (low at/below minStockLevel), red (0), N/A for non-stock types
+   315→   315→- Actions per row: Edit button (Pencil icon), More menu (View Details, Edit, Activate/Deactivate, Delete)
+   316→   316→- Row hover effect, inactive products shown at 60% opacity
+   317→   317→- Pagination bar with Previous/Next, page numbers with ellipsis, and "Showing X-Y of Z" text
+   318→   318→
+   319→   319→**Grid View**:
+   320→   320→- Responsive grid: 1 col (mobile), 2 cols (sm), 3 cols (lg), 4 cols (xl)
+   321→   321→- Cards with: larger product image placeholder, name, SKU, category badge, selling price, stock badge, status badge
+   322→   322→- Hover effect (shadow + border highlight), click to edit
+   323→   323→- Same pagination as table view
+   324→   324→
+   325→   325→**Add/Edit Product Dialog** (max-w-2xl):
+   326→   326→- Uses react-hook-form with zod validation (`productFormSchema`)
+   327→   327→- Organized sections with h4 headings and separators:
+   328→   328→  - **Basic Information**: Product Name (required), SKU (required, auto-generated if empty), Description (textarea)
+   329→   329→  - **Classification**: Category (select), Product Type (select), Unit (select) — all fetched from respective APIs
+   330→   330→  - **Pricing**: Cost Price (required, ₵ prefix), Selling Price (required, ₵ prefix), Wholesale Price (optional)
+   331→   331→  - **Inventory & Tax**: Initial Stock (only for new products with stock-tracking type), Minimum Stock Level (default 5), Tax Enabled (switch), Tax Rate (shown when tax enabled)
+   332→   332→  - **Image & Status**: Image URL, Active switch (edit mode only)
+   333→   333→- Submit to POST `/api/products` or PUT `/api/products/[id]` with `x-user-id` header
+   334→   334→- Success toast on completion, dialog closes, list refreshes
+   335→   335→
+   336→   336→**View Product Dialog**:
+   337→   337→- Read-only detail view with product image, name, SKU, status badge
+   338→   338→- Grid of details: Category, Type, Unit, Stock, Cost Price, Selling Price, Wholesale Price, Min Stock Level, Tax Rate
+   339→   339→
+   340→   340→**Category Management** (separate tab):
+   341→   341→- List all categories (active + inactive via `?all=true`) with product counts from `_count.products`
+   342→   342→- Each row: Tag icon, name, description, product count badge, status badge, actions menu
+   343→   343→- Actions: Edit (inline dialog), Activate/Deactivate, Delete (with confirmation)
+   344→   344→- Empty state with "Add Category" button
+   345→   345→- Loading skeleton state
+   346→   346→
+   347→   347→**Category Form Dialog** (sm:max-w-md):
+   348→   348→- Name (required) + Description fields
+   349→   349→- POST/PUT to `/api/categories` or `/api/categories/[id]`
+   350→   350→
+   351→   351→**Delete Confirmations** (AlertDialog):
+   352→   352→- Product deactivation: explains product will be marked inactive
+   353→   353→- Category deactivation: explains products won't be deleted
+   354→   354→- Destructive-styled confirm button with loading spinner
+   355→   355→
+   356→   356→**Empty States**:
+   357→   357→- Products: Package icon + contextual message (no results vs no products yet) + "Add your first product" button
+   358→   358→- Categories: FolderOpen icon + message + "Add Category" button
+   359→   359→
+   360→   360→**Loading States**:
+   361→   361→- Table: 8 skeleton rows with image, text, and badge placeholders
+   362→   362→- Grid: 8 skeleton cards with centered image placeholder
+   363→   363→- Categories: 5 skeleton rows
+   364→   364→
+   365→   365→**Image Placeholders**:
+   366→   366→- Reuses same color palette as POS page (10 hash-based colors)
+   367→   367→- Three sizes: sm (36px for table), md (48px), lg (96px for grid)
+   368→   368→- Shows product name's first letter on colored background
+   369→   369→- Falls back to `<img>` tag when image URL exists
+   370→   370→
+   371→   371→**API Calls**:
+   372→   372→- `GET /api/products?page=&pageSize=&search=&categoryId=&status=` — paginated listing with filters
+   373→   373→- `POST /api/products` — create product
+   374→   374→- `PUT /api/products/[id]` — update product
+   375→   375→- `DELETE /api/products/[id]` — soft delete (deactivate)
+   376→   376→- `GET /api/categories` — active categories for filter dropdown
+   377→   377→- `GET /api/categories?all=true` — all categories for management tab (includes product counts)
+   378→   378→- `POST /api/categories` — create category
+   379→   379→- `PUT /api/categories/[id]` — update/activate/deactivate category
+   380→   380→- `DELETE /api/categories/[id]` — soft delete (deactivate) category
+   381→   381→- `GET /api/product-types` — populate type dropdown
+   382→   382→- `GET /api/units` — populate unit dropdown
+   383→   383→- All mutations include `x-user-id` header from `useAuth()`
+   384→   384→
+   385→   385→**Styling**:
+   386→   386→- Clean data table with proper padding and spacing
+   387→   387→- Row hover effects, inactive product dimming
+   388→   388→- Tabular nums (`tabular-nums`) for all currency amounts
+   389→   389→- ₵ (Cedi) currency formatting throughout
+   390→   390→- Responsive toolbar (stacks on mobile, row on desktop)
+   391→   391→- Consistent use of shadcn/ui components throughout
+   392→   392→
+   393→   393→### Files Modified:
+   394→   394→- `src/components/pages/products-page.tsx` (replaced stub with full implementation)
+   395→   395→
+   396→   396→### Verification:
+   397→   397→- ESLint: Clean (only pre-existing auth-context.tsx error, not from this task)
+   398→   398→- Dev server: Compiled successfully, no new errors
+   399→   399→
+   400→   400→---
+   401→   401→
+   402→   402→## Task 6: Inventory Page — Stock Overview, Movements & Restock Management
+   403→   403→
+   404→   404→### Date: 2026-09-02
+   405→   405→
+   406→   406→### What was built:
+   407→   407→
+   408→   408→Complete inventory management page with three tabbed views, admin dialogs, and comprehensive stock tracking.
+   409→   409→
+   410→   410→#### `src/components/pages/inventory-page.tsx` — Full Inventory Page (~1920 lines)
+   411→   411→
+   412→   412→**Layout & Navigation**:
+   413→   413→- Tabs component with three tabs: **Stock Overview**, **Stock Movements**, **Restock**
+   414→   414→- Each tab has its own toolbar, table, pagination, and state management
+   415→   415→- Page header with title and description
+   416→   416→
+   417→   417→**Tab 1 — Stock Overview**:
+   418→   418→
+   419→   419→- **Summary Cards** (4 cards, responsive 2/4 cols):
+   420→   420→  - Total Inventory Value (₵, sum of all stock × costPrice), Total Products, Low Stock Items, Out of Stock Items
+   421→   421→  - Each card: colored icon background, label, bold value, loading skeleton state
+   422→   422→  - Data computed by fetching all inventory in one call (pageSize=500)
+   423→   423→
+   424→   424→- **Toolbar**:
+   425→   425→  - Search input with debounced search (300ms)
+   426→   426→  - Category filter dropdown (fetched from /api/categories)
+   427→   427→  - Status filter pill buttons: All, In Stock, Low, Out — grouped in muted background
+   428→   428→  - "Adjust Stock" button (admin only, opens dialog)
+   429→   429→  - "Restock" button (admin only, switches to restock tab + opens new restock dialog)
+   430→   430→
+   431→   431→- **Table** (shadcn Table, responsive columns):
+   432→   432→  - Columns: Product (image placeholder + name + SKU), Category, Current Stock (large bold number, color-coded), Min Stock, Stock Value (quantity × costPrice, ₵ formatted), Status (badge), Last Updated
+   433→   433→  - Stock Status badges: In Stock (green), Low Stock (amber), Out of Stock (red)
+   434→   434→  - Sortable columns: click header to toggle asc/desc sorting
+   435→   435→  - Pagination with page numbers, ellipsis, showing X-Y of Z
+   436→   436→  - Loading skeleton rows, empty state with clear-filters button
+   437→   437→  - Column visibility: some hidden on smaller screens (md, lg, xl breakpoints)
+   438→   438→
+   439→   439→**Tab 2 — Stock Movements**:
+   440→   440→
+   441→   441→- **Toolbar**:
+   442→   442→  - Date range filter (from/to date inputs with calendar icon)
+   443→   443→  - Product filter (searchable select dropdown with SKU)
+   444→   444→  - Movement type filter pills: All, Initial Stock, Restock, Sale, Return, Damaged, Expired, Lost, Adjustment
+   445→   445→
+   446→   446→- **Table**:
+   447→   447→  - Columns: Date/Time, Product (name + SKU), Type (colored badge), Quantity (+/- with green/red), Reference, Note
+   448→   448→  - Type color coding: Restock=green, Sale=blue, Return=purple, Damaged=red, Expired=orange, Lost=red, Adjustment=gray, Initial=blue
+   449→   449→  - Quantity: +N in green for additions, -N in red for deductions
+   450→   450→  - Pagination, loading skeletons, empty state with clear-filters
+   451→   451→
+   452→   452→**Tab 3 — Restock**:
+   453→   453→
+   454→   454→- **Toolbar**:
+   455→   455→  - Supplier filter dropdown (fetched from /api/suppliers)
+   456→   456→  - Payment status filter (All, Paid, Partially Paid, Unpaid)
+   457→   457→  - "New Restock" button (admin only)
+   458→   458→
+   459→   459→- **Restock List Table**:
+   460→   460→  - Columns: Reference #, Supplier, Date, Items Count, Total Cost (₵), Payment Status (badge), Actions (View button)
+   461→   461→  - Payment status badges: Paid (green), Partially Paid (amber), Unpaid (red)
+   462→   462→  - Pagination, loading skeletons, empty state with "Create First Restock" button
+   463→   463→
+   464→   464→**Adjust Stock Dialog** (Admin only):
+   465→   465→- Product select (searchable, fetches from /api/products?status=active)
+   466→   466→- Adjustment type: RadioGroup with Damaged, Expired, Lost, Adjustment
+   467→   467→- Quantity number input, Note textarea
+   468→   468→- POST to /api/inventory/adjust with x-user-id header
+   469→   469→- Success toast, dialog closes, refreshes inventory + summary
+   470→   470→
+   471→   471→**New Restock Dialog** (Admin only, multi-step):
+   472→   472→- Step indicator bar (2 steps)
+   473→   473→- **Step 1**: Supplier (optional), Reference #, Batch Number, Date Received, Expiry Date, Payment Status select, Notes
+   474→   474→- **Step 2**: Product items — each item has: Product select (searchable), Quantity, Cost Price, Item Expiry Date. Add Another Item button. Running total at bottom.
+   475→   475→- POST to /api/restock with x-user-id header, creates restock with all items
+   476→   476→- Back/Next navigation, Cancel button
+   477→   477→
+   478→   478→**Restock Detail Dialog**:
+   479→   479→- Info grid: Supplier, Date Received, Batch Number, Payment Status, Created By, Expiry Date, Notes
+   480→   480→- Items table: Product, Qty, Cost Price, Total per item
+   481→   481→- Total cost in highlighted summary bar
+   482→   482→- Fetches detail from /api/restock/[id]
+   483→   483→
+   484→   484→**Shared Components**:
+   485→   485→- `ProductImage` — Colored placeholder (hash-based palette) or <img> tag
+   486→   486→- `StockStatusBadge` — Green/Amber/Red badges for stock status
+   487→   487→- `PaginationBar` — Reusable pagination with page numbers, ellipsis, prev/next
+   488→   488→
+   489→   489→**API Calls**:
+   490→   490→- `GET /api/inventory?status=&search=&categoryId=&page=&pageSize=` — stock overview table
+   491→   491→- `GET /api/inventory?pageSize=500` — summary computation
+   492→   492→- `POST /api/inventory/adjust` — stock adjustment (admin)
+   493→   493→- `GET /api/stock-movements?type=&productId=&startDate=&endDate=&page=&pageSize=` — movements table
+   494→   494→- `GET /api/restock?supplierId=&paymentStatus=&page=&pageSize=` — restock list
+   495→   495→- `POST /api/restock` — create restock (admin)
+   496→   496→- `GET /api/restock/[id]` — restock detail
+   497→   497→- `GET /api/categories` — category filter dropdowns
+   498→   498→- `GET /api/suppliers?pageSize=100` — supplier dropdowns
+   499→   499→- `GET /api/products?status=active&pageSize=200` — product selects in dialogs
+   500→   500→- All mutations include `x-user-id` header from `useAuth()`
+   501→   501→
+   502→   502→**Styling**:
+   503→   503→- Clean table design with consistent padding
+   504→   504→- Summary cards at top with colored icon backgrounds
+   505→   505→- Tab navigation using shadcn Tabs
+   506→   506→- ₵ (Cedi) currency formatting throughout with `tabular-nums`
+   507→   507→- Responsive column visibility (hidden on smaller screens)
+   508→   508→- Empty states with contextual messages and action buttons
+   509→   509→- Loading skeleton states for all tables
+   510→   510→- Consistent with existing pages (products-page, dashboard-page patterns)
+   511→   511→
+   512→   512→### Files Modified:
+   513→   513→- `src/components/pages/inventory-page.tsx` (replaced stub with full implementation)
+   514→   514→
+   515→   515→### Verification:
+   516→   516→- ESLint: Clean (only pre-existing auth-context.tsx error, not from this task)
+   517→   517→- Dev server: Compiled successfully, no new errors
+   518→   518→
+   519→   519→---
+   520→   520→
+   521→   521→## Task 7: Suppliers & Expenses Pages
+   522→   522→
+   523→   523→### Date: $(date -u +'%Y-%m-%d %H:%M UTC')
+   524→   524→
+   525→   525→### What was built:
+   526→   526→
+   527→   527→#### 1. Suppliers Page (`src/components/pages/suppliers-page.tsx`)
+   528→   528→
+   529→   529→Full-featured supplier management page with:
+   530→   530→
+   531→   531→- **Supplier List Table**: Business Name, Contact Person, Phone, Email, Address, Total Purchases (₵), Outstanding Balance (₵), Status badge, Actions (View/Edit/Delete)
+   532→   532→- **Toolbar**: Search input with clear button, "Add Supplier" button
+   533→   533→- **Pagination**: Page number buttons with ellipsis, showing X-Y of Z suppliers
+   534→   534→- **Empty State**: Truck icon, "No suppliers yet" message with CTA button
+   535→   535→- **Loading State**: Table skeleton with animated placeholders
+   536→   536→- **Add/Edit Supplier Dialog**: Business Name (required), Contact Person, Phone, Email, Address, Notes (textarea), Status switch (active/inactive) — only shown when editing
+   537→   537→- **Supplier Profile Dialog**: Three tabs:
+   538→   538→  - **Overview**: 3 summary cards (Total Purchases, Outstanding Balance, Number of Orders) + full supplier info grid with icons
+   539→   539→  - **Purchase History**: Table of restocks (Date, Reference, Batch, Amount, Payment Status, Notes) with status badges
+   540→   540→  - **Products Supplied**: Placeholder for future product tracking
+   541→   541→- **Delete Confirmation**: AlertDialog with "Deactivate" action
+   542→   542→- **Data Fetching**: View button fetches full supplier detail (with restockHistory, totalPurchases, outstandingBalance) via `/api/suppliers/[id]` before opening profile dialog
+   543→   543→
+   544→   544→#### 2. Expenses Page (`src/components/pages/expenses-page.tsx`)
+   545→   545→
+   546→   546→Comprehensive expense tracking page with:
+   547→   547→
+   548→   548→- **Summary Cards** (top): 4 cards showing Total Expenses (this month, ₵), vs Last Month (change % with up/down arrow and color), Top Category (name + amount), Number of Transactions
+   549→   549→- **Summary Skeleton**: Loading placeholders for all 4 cards
+   550→   550→- **Tabs**: "Expenses" | "Categories"
+   551→   551→
+   552→   552→**Expenses Tab:**
+   553→   553→- **Toolbar**: Search input, Category filter (Select), Date range (from/to date inputs), Payment Method filter (Select: Cash, Mobile Money, Card, Bank Transfer), "Add Expense" button
+   554→   554→- **Table**: Date, Category (badge), Description, Amount (₵, tabular-nums), Payment Method, Created By, Actions (Edit/Delete)
+   555→   555→- **Client-side filtering**: Search and payment method applied client-side; category and date range sent to API
+   556→   556→- **Pagination**: Same pattern as suppliers
+   557→   557→- **Empty State**: Contextual message (with/without filters), CTA button when no filters active
+   558→   558→
+   559→   559→**Categories Tab:**
+   560→   560→- Grid of category cards with colored initial avatar, name, description, expense count
+   561→   561→- Edit button on hover
+   562→   562→- "Add Category" button
+   563→   563→- Empty state with CTA
+   564→   564→
+   565→   565→- **Add/Edit Expense Dialog**: Category (Select), Amount (required, number input), Date (date input, default today), Payment Method (Select), Description (Textarea)
+   566→   566→- **Category Form Dialog**: Name (required), Description (Textarea)
+   567→   567→- **Delete Confirmation**: AlertDialog for expense deletion
+   568→   568→- **Summary Calculation**: Fetches this-month and last-month expenses (pageSize=1000) to compute totals, percentage change, and top category
+   569→   569→
+   570→   570→### API Integration:
+   571→   571→- `GET /api/suppliers?search=...&page=...&pageSize=...` (list with search + pagination)
+   572→   572→- `POST /api/suppliers` (create, x-user-id header)
+   573→   573→- `GET /api/suppliers/[id]` (detail with restockHistory, totalPurchases, outstandingBalance)
+   574→   574→- `PUT /api/suppliers/[id]` (update, x-user-id header)
+   575→   575→- `DELETE /api/suppliers/[id]` (soft-delete/deactivate, x-user-id header)
+   576→   576→- `GET /api/expenses?categoryId=...&startDate=...&endDate=...&page=...&pageSize=...` (list with filters)
+   577→   577→- `POST /api/expenses` (create, x-user-id header)
+   578→   578→- `PUT /api/expenses/[id]` (update, x-user-id header)
+   579→   579→- `DELETE /api/expenses/[id]` (hard delete, x-user-id header)
+   580→   580→- `GET /api/expense-categories` (list with _count.expenses)
+   581→   581→- `POST /api/expense-categories` (create, x-user-id header)
+   582→   582→
+   583→   583→### Styling & UX:
+   584→   584→- Clean shadcn/ui components throughout (Table, Dialog, AlertDialog, Tabs, Card, Badge, Select, etc.)
+   585→   585→- Currency formatted with ₵ (GHS) symbol using `\u20B5`
+   586→   586→- Responsive design: hidden columns at breakpoints (md, lg, xl)
+   587→   587→- Loading skeletons for table and summary cards
+   588→   588→- Contextual empty states
+   589→   589→- Consistent with existing pages (products-page, inventory-page patterns)
+   590→   590→- Sonner toast notifications for success/error feedback
+   591→   591→- `react-hooks/set-state-in-effect` lint rule compliance: supplier profile data fetched in event handler (not useEffect)
+   592→   592→
+   593→   593→### Files Created:
+   594→   594→- `src/components/pages/suppliers-page.tsx`
+   595→   595→- `src/components/pages/expenses-page.tsx`
+   596→   596→
+   597→   597→### Verification:
+   598→   598→- ESLint: Clean (only pre-existing auth-context.tsx error, not from this task)
+   599→   599→- Dev server: Compiled successfully, no new errors
+   600→   600→

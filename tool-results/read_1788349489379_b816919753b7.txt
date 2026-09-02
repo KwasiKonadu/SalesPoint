@@ -1,0 +1,1132 @@
+     1→'use client';
+     2→
+     3→import { useState, useEffect, useCallback } from 'react';
+     4→import { useAppStore } from '@/lib/store';
+     5→import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
+     6→import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+     7→import { Button } from '@/components/ui/button';
+     8→import { Input } from '@/components/ui/input';
+     9→import { Skeleton } from '@/components/ui/skeleton';
+    10→import {
+    11→  Table,
+    12→  TableHeader,
+    13→  TableBody,
+    14→  TableHead,
+    15→  TableRow,
+    16→  TableCell,
+    17→} from '@/components/ui/table';
+    18→import {
+    19→  DollarSign,
+    20→  Package,
+    21→  TrendingUp,
+    22→  Wallet,
+    23→  BarChart3,
+    24→  FileText,
+    25→  RefreshCw,
+    26→  ArrowUpRight,
+    27→  ArrowDownRight,
+    28→  CalendarDays,
+    29→  Users,
+    30→  Truck,
+    31→  ShoppingBag,
+    32→} from 'lucide-react';
+    33→import {
+    34→  AreaChart,
+    35→  Area,
+    36→  XAxis,
+    37→  YAxis,
+    38→  CartesianGrid,
+    39→  Tooltip,
+    40→  ResponsiveContainer,
+    41→  PieChart,
+    42→  Pie,
+    43→  Cell,
+    44→  BarChart,
+    45→  Bar,
+    46→  Legend,
+    47→} from 'recharts';
+    48→
+    49→// --- Constants ---
+    50→
+    51→const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16'];
+    52→
+    53→type PeriodKey = 'today' | 'this_week' | 'this_month' | 'last_month' | 'this_year' | 'custom';
+    54→
+    55→// --- Types ---
+    56→
+    57→interface SalesOverviewItem {
+    58→  date: string;
+    59→  amount: number;
+    60→}
+    61→
+    62→interface SalesOverview {
+    63→  data: SalesOverviewItem[];
+    64→  summary: {
+    65→    totalRevenue: number;
+    66→    totalTransactions: number;
+    67→    avgOrderValue: number;
+    68→  };
+    69→}
+    70→
+    71→interface SalesByProductItem {
+    72→  productId: string;
+    73→  productName: string;
+    74→  category: string;
+    75→  quantitySold: number;
+    76→  revenue: number;
+    77→  cost: number;
+    78→}
+    79→
+    80→interface SalesByCategoryItem {
+    81→  category: string;
+    82→  revenue: number;
+    83→  cost: number;
+    84→  quantity: number;
+    85→  profit: number;
+    86→  percentage: number;
+    87→}
+    88→
+    89→interface SalesByStaffItem {
+    90→  staffId: string;
+    91→  staffName: string;
+    92→  totalSales: number;
+    93→  transactions: number;
+    94→}
+    95→
+    96→interface SalesByPaymentItem {
+    97→  method: string;
+    98→  total: number;
+    99→  count: number;
+   100→  percentage: number;
+   101→}
+   102→
+   103→interface ExpensesByCategoryItem {
+   104→  category: string;
+   105→  total: number;
+   106→  count: number;
+   107→  percentage: number;
+   108→}
+   109→
+   110→interface ExpensesByCategory {
+   111→  data: ExpensesByCategoryItem[];
+   112→  summary: { totalExpenses: number };
+   113→}
+   114→
+   115→interface ProfitData {
+   116→  revenue: number;
+   117→  cogs: number;
+   118→  grossProfit: number;
+   119→  totalExpenses: number;
+   120→  netProfit: number;
+   121→  grossMargin: number;
+   122→  netMargin: number;
+   123→  totalTransactions: number;
+   124→  avgOrderValue: number;
+   125→}
+   126→
+   127→interface TopCustomerItem {
+   128→  customerId: string;
+   129→  customerName: string;
+   130→  phone: string | null;
+   131→  email: string | null;
+   132→  totalSpent: number;
+   133→  transactions: number;
+   134→  lastPurchase: string;
+   135→}
+   136→
+   137→interface SupplierPurchaseItem {
+   138→  supplierId: string;
+   139→  supplierName: string;
+   140→  totalPurchases: number;
+   141→  restockCount: number;
+   142→  outstandingBalance: number;
+   143→}
+   144→
+   145→interface ReportState {
+   146→  salesOverview: SalesOverview | null;
+   147→  salesByProduct: SalesByProductItem[] | null;
+   148→  salesByCategory: SalesByCategoryItem[] | null;
+   149→  salesByStaff: SalesByStaffItem[] | null;
+   150→  salesByPayment: SalesByPaymentItem[] | null;
+   151→  expensesByCategory: ExpensesByCategory | null;
+   152→  profit: ProfitData | null;
+   153→  topCustomers: TopCustomerItem[] | null;
+   154→  supplierPurchases: SupplierPurchaseItem[] | null;
+   155→  previousPeriodProfit: ProfitData | null;
+   156→}
+   157→
+   158→interface LoadingState {
+   159→  salesOverview: boolean;
+   160→  salesByProduct: boolean;
+   161→  salesByCategory: boolean;
+   162→  salesByStaff: boolean;
+   163→  salesByPayment: boolean;
+   164→  expensesByCategory: boolean;
+   165→  profit: boolean;
+   166→  topCustomers: boolean;
+   167→  supplierPurchases: boolean;
+   168→}
+   169→
+   170→// --- Helpers ---
+   171→
+   172→function formatCurrency(value: number): string {
+   173→  return `\u20A5${value.toLocaleString('en-GH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+   174→}
+   175→
+   176→function formatChartDate(dateStr: string): string {
+   177→  const d = new Date(dateStr + 'T00:00:00');
+   178→  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+   179→}
+   180→
+   181→function formatDateForInput(d: Date): string {
+   182→  const year = d.getFullYear();
+   183→  const month = String(d.getMonth() + 1).padStart(2, '0');
+   184→  const day = String(d.getDate()).padStart(2, '0');
+   185→  return `${year}-${month}-${day}`;
+   186→}
+   187→
+   188→function getPeriodDates(period: PeriodKey, customStart?: string, customEnd?: string) {
+   189→  const now = new Date();
+   190→  let startDate: Date;
+   191→  let endDate: Date;
+   192→
+   193→  switch (period) {
+   194→    case 'today':
+   195→      startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+   196→      endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+   197→      break;
+   198→    case 'this_week': {
+   199→      const day = now.getDay();
+   200→      const diff = day === 0 ? 6 : day - 1;
+   201→      startDate = new Date(now);
+   202→      startDate.setDate(now.getDate() - diff);
+   203→      startDate.setHours(0, 0, 0, 0);
+   204→      endDate = new Date(now);
+   205→      endDate.setHours(23, 59, 59, 999);
+   206→      break;
+   207→    }
+   208→    case 'this_month':
+   209→      startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+   210→      endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+   211→      break;
+   212→    case 'last_month':
+   213→      startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+   214→      endDate = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999);
+   215→      break;
+   216→    case 'this_year':
+   217→      startDate = new Date(now.getFullYear(), 0, 1);
+   218→      endDate = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);
+   219→      break;
+   220→    case 'custom':
+   221→      startDate = new Date(customStart || now);
+   222→      endDate = new Date(customEnd || now);
+   223→      endDate.setHours(23, 59, 59, 999);
+   224→      break;
+   225→  }
+   226→
+   227→  return {
+   228→    startDate: formatDateForInput(startDate),
+   229→    endDate: formatDateForInput(endDate),
+   230→  };
+   231→}
+   232→
+   233→function getPreviousPeriodDates(period: PeriodKey, currentStart: string, currentEnd: string) {
+   234→  const start = new Date(currentStart + 'T00:00:00');
+   235→  const end = new Date(currentEnd + 'T00:00:00');
+   236→  const diffMs = end.getTime() - start.getTime();
+   237→  const prevEnd = new Date(start.getTime() - 1);
+   238→  const prevStart = new Date(prevEnd.getTime() - diffMs);
+   239→  return {
+   240→    startDate: formatDateForInput(prevStart),
+   241→    endDate: formatDateForInput(prevEnd),
+   242→  };
+   243→}
+   244→
+   245→function calcChange(current: number, previous: number): number {
+   246→  if (previous === 0) return current > 0 ? 100 : 0;
+   247→  return ((current - previous) / previous) * 100;
+   248→}
+   249→
+   250→function getPaymentMethodLabel(method: string): string {
+   251→  const labels: Record<string, string> = {
+   252→    cash: 'Cash',
+   253→    card: 'Card',
+   254→    mobile_money: 'Mobile Money',
+   255→    bank_transfer: 'Bank Transfer',
+   256→    credit: 'Credit',
+   257→  };
+   258→  return labels[method] || method;
+   259→}
+   260→
+   261→// --- Sub Components ---
+   262→
+   263→function ChangeIndicator({ change }: { change: number | null }) {
+   264→  if (change === null || change === undefined) return null;
+   265→  const isPositive = change >= 0;
+   266→  return (
+   267→    <div className="flex items-center gap-1 text-xs mt-1">
+   268→      {isPositive ? (
+   269→        <ArrowUpRight className="w-3.5 h-3.5 text-emerald-600" />
+   270→      ) : (
+   271→        <ArrowDownRight className="w-3.5 h-3.5 text-red-500" />
+   272→      )}
+   273→      <span className={isPositive ? 'text-emerald-600 font-medium' : 'text-red-500 font-medium'}>
+   274→        {Math.abs(change).toFixed(1)}%
+   275→      </span>
+   276→      <span className="text-muted-foreground">vs prev. period</span>
+   277→    </div>
+   278→  );
+   279→}
+   280→
+   281→function SummaryCardSkeleton() {
+   282→  return (
+   283→    <Card className="shadow-sm">
+   284→      <CardHeader className="pb-2">
+   285→        <div className="flex items-center justify-between">
+   286→          <Skeleton className="h-4 w-24" />
+   287→          <Skeleton className="h-9 w-9 rounded-lg" />
+   288→        </div>
+   289→      </CardHeader>
+   290→      <CardContent className="pt-0">
+   291→        <Skeleton className="h-8 w-32 mb-2" />
+   292→        <Skeleton className="h-4 w-40" />
+   293→      </CardContent>
+   294→    </Card>
+   295→  );
+   296→}
+   297→
+   298→function SummaryCard({
+   299→  icon: Icon,
+   300→  label,
+   301→  value,
+   302→  change,
+   303→  iconBg,
+   304→}: {
+   305→  icon: React.ElementType;
+   306→  label: string;
+   307→  value: string;
+   308→  change: number | null;
+   309→  iconBg: string;
+   310→}) {
+   311→  return (
+   312→    <Card className="shadow-sm hover:shadow-md transition-shadow">
+   313→      <CardHeader className="pb-2">
+   314→        <div className="flex items-center justify-between">
+   315→          <p className="text-sm text-muted-foreground font-medium">{label}</p>
+   316→          <div className={`h-9 w-9 rounded-lg flex items-center justify-center ${iconBg}`}>
+   317→            <Icon className="w-4.5 h-4.5" />
+   318→          </div>
+   319→        </div>
+   320→      </CardHeader>
+   321→      <CardContent className="pt-0">
+   322→        <p className="text-2xl font-bold tracking-tight">{value}</p>
+   323→        <ChangeIndicator change={change} />
+   324→      </CardContent>
+   325→    </Card>
+   326→  );
+   327→}
+   328→}
+   329→
+   330→function ChartSkeleton() {
+   331→  return (
+   332→    <Card className="shadow-sm">
+   333→      <CardHeader>
+   334→        <Skeleton className="h-5 w-40" />
+   335→      </CardHeader>
+   336→      <CardContent>
+   337→        <Skeleton className="h-[350px] w-full rounded-lg" />
+   338→      </CardContent>
+   339→    </Card>
+   340→  );
+   341→}
+   342→
+   343→function TableSkeleton({ rows = 5 }: { rows?: number }) {
+   344→  return (
+   345→    <Card className="shadow-sm">
+   346→      <CardHeader>
+   347→        <Skeleton className="h-5 w-48" />
+   348→      </CardHeader>
+   349→      <CardContent>
+   350→        <div className="space-y-3">
+   351→          {Array.from({ length: rows }).map((_, i) => (
+   352→            <Skeleton key={i} className="h-10 w-full" />
+   353→          ))}
+   354→        </div>
+   355→      </CardContent>
+   356→    </Card>
+   357→  );
+   358→}
+   359→
+   360→function PieChartSkeleton() {
+   361→  return (
+   362→    <Card className="shadow-sm">
+   363→      <CardHeader>
+   364→        <Skeleton className="h-5 w-40" />
+   365→      </CardHeader>
+   366→      <CardContent>
+   367→        <Skeleton className="h-[300px] w-full rounded-lg" />
+   368→      </CardContent>
+   369→    </Card>
+   370→  );
+   371→}
+   372→
+   373→function EmptyState({ message }: { message: string }) {
+   374→  return (
+   375→    <div className="flex flex-col items-center justify-center py-16 text-center">
+   376→      <FileText className="w-10 h-10 text-muted-foreground/40 mb-3" />
+   377→      <p className="text-muted-foreground text-sm">{message}</p>
+   378→    </div>
+   379→  );
+   380→}
+   381→
+   382→// --- Custom Tooltips ---
+   383→
+   384→function AreaTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number }>; label?: string }) {
+   385→  if (!active || !payload?.length) return null;
+   386→  return (
+   387→    <div className="bg-popover border rounded-lg px-3 py-2 shadow-md">
+   388→      <p className="text-xs text-muted-foreground mb-1">{label}</p>
+   389→      <p className="text-sm font-semibold">{formatCurrency(payload[0].value)}</p>
+   390→    </div>
+   391→  );
+   392→}
+   393→
+   394→function PieTooltip({ active, payload }: { active?: boolean; payload?: Array<{ name: string; value: number; payload: { percentage?: number } }> }) {
+   395→  if (!active || !payload?.length) return null;
+   396→  const item = payload[0];
+   397→  return (
+   398→    <div className="bg-popover border rounded-lg px-3 py-2 shadow-md">
+   399→      <p className="text-sm font-semibold">{item.name}</p>
+   400→      <p className="text-xs text-muted-foreground">
+   401→        {formatCurrency(item.value)}
+   402→        {item.payload.percentage !== undefined ? ` (${item.payload.percentage.toFixed(1)}%)` : ''}
+   403→      </p>
+   404→    </div>
+   405→  );
+   406→}
+   407→
+   408→function BarTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number; dataKey: string }>; label?: string }) {
+   409→  if (!active || !payload?.length) return null;
+   410→  return (
+   411→    <div className="bg-popover border rounded-lg px-3 py-2 shadow-md">
+   412→      <p className="text-xs text-muted-foreground mb-1">{label}</p>
+   413→      <p className="text-sm font-semibold">{formatCurrency(payload[0].value)}</p>
+   414→    </div>
+   415→  );
+   416→}
+   417→
+   418→function CustomLegend({ payload }: { payload?: Array<{ value: string; color: string; payload?: { percentage?: number } }> }) {
+   419→  if (!payload) return null;
+   420→  return (
+   421→    <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 justify-center">
+   422→      {payload.map((entry, i) => (
+   423→        <div key={i} className="flex items-center gap-1.5 text-xs">
+   424→          <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: entry.color }} />
+   425→          <span className="text-muted-foreground">{entry.value}</span>
+   426→          {entry.payload?.percentage !== undefined && (
+   427→            <span className="font-medium">{entry.payload.percentage.toFixed(1)}%</span>
+   428→          )}
+   429→        </div>
+   430→      ))}
+   431→    </div>
+   432→  );
+   433→}
+   434→
+   435→// --- Render Label for Donut ---
+   436→
+   437→const renderPieLabel = ({ name, percent }: { name: string; percent: number }) => {
+   438→  if (percent < 0.05) return null;
+   439→  return `${(percent * 100).toFixed(0)}%`;
+   440→};
+   441→
+   442→// --- Main Component ---
+   443→
+   444→export default function ReportsPage() {
+   445→  const { setCurrentPage } = useAppStore();
+   446→
+   447→  const [period, setPeriod] = useState<PeriodKey>('this_month');
+   448→  const [customStart, setCustomStart] = useState('');
+   449→  const [customEnd, setCustomEnd] = useState('');
+   450→  const [refreshing, setRefreshing] = useState(false);
+   451→
+   452→  const [reports, setReports] = useState<ReportState>({
+   453→    salesOverview: null,
+   454→    salesByProduct: null,
+   455→    salesByCategory: null,
+   456→    salesByStaff: null,
+   457→    salesByPayment: null,
+   458→    expensesByCategory: null,
+   459→    profit: null,
+   460→    topCustomers: null,
+   461→    supplierPurchases: null,
+   462→    previousPeriodProfit: null,
+   463→  });
+   464→
+   465→  const [loading, setLoading] = useState<LoadingState>({
+   466→    salesOverview: true,
+   467→    salesByProduct: true,
+   468→    salesByCategory: true,
+   469→    salesByStaff: true,
+   470→    salesByPayment: true,
+   471→    expensesByCategory: true,
+   472→    profit: true,
+   473→    topCustomers: true,
+   474→    supplierPurchases: true,
+   475→  });
+   476→
+   477→  const [error, setError] = useState<string | null>(null);
+   478→
+   479→  useEffect(() => {
+   480→    setCurrentPage('reports');
+   481→  }, [setCurrentPage]);
+   482→
+   483→  const fetchReport = useCallback(async <T,>(type: string, startDate: string, endDate: string, key: keyof LoadingState): Promise<T | null> => {
+   484→    setLoading((prev) => ({ ...prev, [key]: true }));
+   485→    try {
+   486→      const res = await fetch(`/api/reports?type=${type}&startDate=${startDate}&endDate=${endDate}`);
+   487→      if (!res.ok) throw new Error('Failed to fetch report');
+   488→      const json = await res.json();
+   489→      if (json.error) throw new Error(json.error);
+   490→      return json.data as T;
+   491→    } catch {
+   492→      return null;
+   493→    } finally {
+   494→      setLoading((prev) => ({ ...prev, [key]: false }));
+   495→    }
+   496→  }, []);
+   497→
+   498→  const fetchAllReports = useCallback(async () => {
+   499→    const { startDate, endDate } = getPeriodDates(period, customStart, customEnd);
+   500→    setRefreshing(true);
+   501→    setError(null);
+   502→
+   503→    try {
+   504→      const [salesOverview, salesByProduct, salesByCategory, salesByStaff, salesByPayment, expensesByCategory, profit, topCustomers, supplierPurchases] = await Promise.all([
+   505→        fetchReport<SalesOverview>('sales_overview', startDate, endDate, 'salesOverview'),
+   506→        fetchReport<SalesByProductItem[]>('sales_by_product', startDate, endDate, 'salesByProduct'),
+   507→        fetchReport<SalesByCategoryItem[]>('sales_by_category', startDate, endDate, 'salesByCategory'),
+   508→        fetchReport<SalesByStaffItem[]>('sales_by_staff', startDate, endDate, 'salesByStaff'),
+   509→        fetchReport<SalesByPaymentItem[]>('sales_by_payment', startDate, endDate, 'salesByPayment'),
+   510→        fetchReport<ExpensesByCategory>('expenses_by_category', startDate, endDate, 'expensesByCategory'),
+   511→        fetchReport<ProfitData>('profit', startDate, endDate, 'profit'),
+   512→        fetchReport<TopCustomerItem[]>('top_customers', startDate, endDate, 'topCustomers'),
+   513→        fetchReport<SupplierPurchaseItem[]>('supplier_purchases', startDate, endDate, 'supplierPurchases'),
+   514→      ]);
+   515→
+   516→      // Fetch previous period profit for change indicators
+   517→      const prevDates = getPreviousPeriodDates(period, startDate, endDate);
+   518→      const previousPeriodProfit = await fetchReport<ProfitData>('profit', prevDates.startDate, prevDates.endDate, 'profit');
+   519→
+   520→      setReports({
+   521→        salesOverview,
+   522→        salesByProduct,
+   523→        salesByCategory,
+   524→        salesByStaff,
+   525→        salesByPayment,
+   526→        expensesByCategory,
+   527→        profit,
+   528→        topCustomers,
+   529→        supplierPurchases,
+   530→        previousPeriodProfit,
+   531→      });
+   532→    } catch {
+   533→      setError('Failed to load reports. Please try again.');
+   534→    } finally {
+   535→      setRefreshing(false);
+   536→    }
+   537→  }, [period, customStart, customEnd, fetchReport]);
+   538→
+   539→  useEffect(() => {
+   540→    fetchAllReports();
+   541→  }, [fetchAllReports]);
+   542→
+   543→  // --- Derived Values ---
+   544→
+   545→  const profitData = reports.profit;
+   546→  const prevProfit = reports.previousPeriodProfit;
+   547→
+   548→  const revenueChange = prevProfit ? calcChange(profitData?.revenue || 0, prevProfit.revenue) : null;
+   549→  const cogsChange = prevProfit ? calcChange(profitData?.cogs || 0, prevProfit.cogs) : null;
+   550→  const grossProfitChange = prevProfit ? calcChange(profitData?.grossProfit || 0, prevProfit.grossProfit) : null;
+   551→  const netProfitChange = prevProfit ? calcChange(profitData?.netProfit || 0, prevProfit.netProfit) : null;
+   552→
+   553→  const hasAnyData =
+   554→    (profitData && profitData.revenue > 0) ||
+   555→    (reports.salesOverview && reports.salesOverview.data.length > 0);
+   556→
+   557→  const periodLabels: Record<PeriodKey, string> = {
+   558→    today: 'Today',
+   559→    this_week: 'This Week',
+   560→    this_month: 'This Month',
+   561→    last_month: 'Last Month',
+   562→    this_year: 'This Year',
+   563→    custom: 'Custom',
+   564→  };
+   565→
+   566→  // --- Error State ---
+   567→  if (error && !hasAnyData) {
+   568→    return (
+   569→      <div className="p-6 space-y-6">
+   570→        <div className="flex items-center justify-between">
+   571→          <div>
+   572→            <h1 className="text-2xl font-bold tracking-tight">Reports</h1>
+   573→            <p className="text-muted-foreground text-sm mt-1">Analyze your business performance</p>
+   574→          </div>
+   575→        </div>
+   576→        <EmptyState message={error} />
+   577→      </div>
+   578→    );
+   579→  }
+   580→
+   581→  return (
+   582→    <div className="p-4 md:p-6 space-y-6">
+   583→      {/* Header + Period Selector */}
+   584→      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+   585→        <div>
+   586→          <h1 className="text-2xl font-bold tracking-tight">Reports</h1>
+   587→          <p className="text-muted-foreground text-sm mt-1">Analyze your business performance</p>
+   588→        </div>
+   589→        <div className="flex items-center gap-3">
+   590→          <Tabs
+   591→            value={period}
+   592→            onValueChange={(v) => setPeriod(v as PeriodKey)}
+   593→          >
+   594→            <TabsList className="flex-wrap h-auto gap-1">
+   595→              {(['today', 'this_week', 'this_month', 'last_month', 'this_year', 'custom'] as PeriodKey[]).map((p) => (
+   596→                <TabsTrigger key={p} value={p} className="text-xs px-3">
+   597→                  {periodLabels[p]}
+   598→                </TabsTrigger>
+   599→              ))}
+   600→            </TabsList>
+   601→          </Tabs>
+   602→          <Button
+   603→            size="sm"
+   604→            onClick={fetchAllReports}
+   605→            disabled={refreshing}
+   606→            className="shrink-0"
+   607→          >
+   608→            <RefreshCw className={`w-4 h-4 mr-1.5 ${refreshing ? 'animate-spin' : ''}`} />
+   609→            Refresh
+   610→          </Button>
+   611→        </div>
+   612→      </div>
+   613→
+   614→      {/* Custom Date Range */}
+   615→      {period === 'custom' && (
+   616→        <Card className="shadow-sm">
+   617→          <CardContent className="pt-0">
+   618→            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mt-2">
+   619→              <div className="flex items-center gap-2">
+   620→                <CalendarDays className="w-4 h-4 text-muted-foreground" />
+   621→                <span className="text-sm text-muted-foreground">From</span>
+   622→                <Input
+   623→                  type="date"
+   624→                  value={customStart}
+   625→                  onChange={(e) => setCustomStart(e.target.value)}
+   626→                  className="w-40"
+   627→                />
+   628→              </div>
+   629→              <div className="flex items-center gap-2">
+   630→                <span className="text-sm text-muted-foreground">To</span>
+   631→                <Input
+   632→                  type="date"
+   633→                  value={customEnd}
+   634→                  onChange={(e) => setCustomEnd(e.target.value)}
+   635→                  className="w-40"
+   636→                />
+   637→              </div>
+   638→              <Button
+   639→                size="sm"
+   640→                onClick={fetchAllReports}
+   641→                disabled={!customStart || !customEnd || refreshing}
+   642→              >
+   643→                Generate
+   644→              </Button>
+   645→            </div>
+   646→          </CardContent>
+   647→        </Card>
+   648→      )}
+   649→
+   650→      {/* === 1. Revenue Summary Cards === */}
+   651→      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+   652→        {loading.profit && !profitData ? (
+   653→          Array.from({ length: 4 }).map((_, i) => <SummaryCardSkeleton key={i} />)
+   654→        ) : (
+   655→          <>
+   656→            <SummaryCard
+   657→              icon={DollarSign}
+   658→              label="Total Revenue"
+   659→              value={formatCurrency(profitData?.revenue || 0)}
+   660→              change={revenueChange}
+   661→              iconBg="bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
+   662→            />
+   663→            <SummaryCard
+   664→              icon={Package}
+   665→              label="Cost of Goods"
+   666→              value={formatCurrency(profitData?.cogs || 0)}
+   667→              change={cogsChange}
+   668→              iconBg="bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300"
+   669→            />
+   670→            <SummaryCard
+   671→              icon={TrendingUp}
+   672→              label="Gross Profit"
+   673→              value={formatCurrency(profitData?.grossProfit || 0)}
+   674→              change={grossProfitChange}
+   675→              iconBg="bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300"
+   676→            />
+   677→            <SummaryCard
+   678→              icon={Wallet}
+   679→              label="Net Profit"
+   680→              value={formatCurrency(profitData?.netProfit || 0)}
+   681→              change={netProfitChange}
+   682→              iconBg="bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300"
+   683→            />
+   684→          </>
+   685→        )}
+   686→      </div>
+   687→
+   688→      {/* === 2. Sales Trend (Area Chart) === */}
+   689→      {loading.salesOverview && !reports.salesOverview ? (
+   690→        <ChartSkeleton />
+   691→      ) : (
+   692→        <Card className="shadow-sm">
+   693→          <CardHeader>
+   694→            <CardTitle className="text-base">Sales Trend</CardTitle>
+   695→            <CardDescription>Daily revenue over the selected period</CardDescription>
+   696→          </CardHeader>
+   697→          <CardContent>
+   698→            {reports.salesOverview && reports.salesOverview.data.length > 0 ? (
+   699→              <ResponsiveContainer width="100%" height={350}>
+   700→                <AreaChart data={reports.salesOverview.data} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
+   701→                  <defs>
+   702→                    <linearGradient id="salesGradient" x1="0" y1="0" x2="0" y2="1">
+   703→                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+   704→                      <stop offset="95%" stopColor="#10b981" stopOpacity={0.02} />
+   705→                    </linearGradient>
+   706→                  </defs>
+   707→                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+   708→                  <XAxis
+   709→                    dataKey="date"
+   710→                    tickFormatter={formatChartDate}
+   711→                    className="text-xs"
+   712→                    tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+   713→                    axisLine={false}
+   714→                    tickLine={false}
+   715→                  />
+   716→                  <YAxis
+   717→                    className="text-xs"
+   718→                    tickFormatter={(v) => `\u20A5${(v / 1000).toFixed(0)}k`}
+   719→                    tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+   720→                    axisLine={false}
+   721→                    tickLine={false}
+   722→                    width={60}
+   723→                  />
+   724→                  <Tooltip content={<AreaTooltip />} />
+   725→                  <Area
+   726→                    type="monotone"
+   727→                    dataKey="amount"
+   728→                    stroke="#10b981"
+   729→                    strokeWidth={2}
+   730→                    fill="url(#salesGradient)"
+   731→                  />
+   732→                </AreaChart>
+   733→              </ResponsiveContainer>
+   734→            ) : (
+   735→              <EmptyState message="Not enough data to generate this report" />
+   736→            )}
+   737→          </CardContent>
+   738→        </Card>
+   739→      )}
+   740→
+   741→      {/* === 3. Sales by Category (Donut) + Sales by Payment (Horizontal Bar) === */}
+   742→      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+   743→        {/* Sales by Category */}
+   744→        {loading.salesByCategory && !reports.salesByCategory ? (
+   745→          <PieChartSkeleton />
+   746→        ) : (
+   747→          <Card className="shadow-sm">
+   748→            <CardHeader>
+   749→              <CardTitle className="text-base">Sales by Category</CardTitle>
+   750→              <CardDescription>Revenue distribution across categories</CardDescription>
+   751→            </CardHeader>
+   752→            <CardContent>
+   753→              {reports.salesByCategory && reports.salesByCategory.length > 0 ? (
+   754→                <>
+   755→                  <ResponsiveContainer width="100%" height={300}>
+   756→                    <PieChart>
+   757→                      <Pie
+   758→                        data={reports.salesByCategory}
+   759→                        dataKey="revenue"
+   760→                        nameKey="category"
+   761→                        cx="50%"
+   762→                        cy="50%"
+   763→                        innerRadius={60}
+   764→                        outerRadius={100}
+   765→                        paddingAngle={3}
+   766→                        labelLine={false}
+   767→                        label={renderPieLabel}
+   768→                      >
+   769→                        {reports.salesByCategory.map((_, index) => (
+   770→                          <Cell key={`cat-${index}`} fill={COLORS[index % COLORS.length]} />
+   771→                        ))}
+   772→                      </Pie>
+   773→                      <Tooltip content={<PieTooltip />} />
+   774→                    </PieChart>
+   775→                  </ResponsiveContainer>
+   776→                  <Legend content={<CustomLegend />} payload={reports.salesByCategory.map((item, i) => ({
+   777→                    value: item.category,
+   778→                    color: COLORS[i % COLORS.length],
+   779→                    payload: { percentage: item.percentage },
+   780→                  }))} />
+   781→                </>
+   782→              ) : (
+   783→                <EmptyState message="Not enough data to generate this report" />
+   784→              )}
+   785→            </CardContent>
+   786→          </Card>
+   787→        )}
+   788→
+   789→        {/* Sales by Payment Method */}
+   790→        {loading.salesByPayment && !reports.salesByPayment ? (
+   791→          <ChartSkeleton />
+   792→        ) : (
+   793→          <Card className="shadow-sm">
+   794→            <CardHeader>
+   795→              <CardTitle className="text-base">Sales by Payment Method</CardTitle>
+   796→              <CardDescription>Revenue by payment type</CardDescription>
+   797→            </CardHeader>
+   798→            <CardContent>
+   799→              {reports.salesByPayment && reports.salesByPayment.length > 0 ? (
+   800→                <ResponsiveContainer width="100%" height={300}>
+   801→                  <BarChart
+   802→                    data={reports.salesByPayment}
+   803→                    layout="vertical"
+   804→                    margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
+   805→                  >
+   806→                    <CartesianGrid strokeDasharray="3 3" className="stroke-muted" horizontal={false} />
+   807→                    <XAxis
+   808→                      type="number"
+   809→                      tickFormatter={(v) => `\u20A5${(v / 1000).toFixed(0)}k`}
+   810→                      tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+   811→                      axisLine={false}
+   812→                      tickLine={false}
+   813→                    />
+   814→                    <YAxis
+   815→                      type="category"
+   816→                      dataKey="method"
+   817→                      tickFormatter={getPaymentMethodLabel}
+   818→                      tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
+   819→                      axisLine={false}
+   820→                      tickLine={false}
+   821→                      width={100}
+   822→                    />
+   823→                    <Tooltip content={<BarTooltip />} />
+   824→                    <Bar dataKey="total" radius={[0, 4, 4, 0]} maxBarSize={32}>
+   825→                      {reports.salesByPayment.map((_, index) => (
+   826→                        <Cell key={`pay-${index}`} fill={COLORS[index % COLORS.length]} />
+   827→                      ))}
+   828→                    </Bar>
+   829→                  </BarChart>
+   830→                </ResponsiveContainer>
+   831→              ) : (
+   832→                <EmptyState message="Not enough data to generate this report" />
+   833→              )}
+   834→            </CardContent>
+   835→          </Card>
+   836→        )}
+   837→      </div>
+   838→
+   839→      {/* === 4. Sales by Staff (Table) === */}
+   840→      {loading.salesByStaff && !reports.salesByStaff ? (
+   841→        <TableSkeleton rows={5} />
+   842→      ) : (
+   843→        <Card className="shadow-sm">
+   844→          <CardHeader>
+   845→            <CardTitle className="text-base">Sales by Staff</CardTitle>
+   846→            <CardDescription>Top 10 staff members by revenue</CardDescription>
+   847→          </CardHeader>
+   848→          <CardContent>
+   849→            {reports.salesByStaff && reports.salesByStaff.length > 0 ? (
+   850→              <div className="max-h-96 overflow-y-auto">
+   851→                <Table>
+   852→                  <TableHeader>
+   853→                    <TableRow>
+   854→                      <TableHead className="w-16">#</TableHead>
+   855→                      <TableHead>Name</TableHead>
+   856→                      <TableHead className="text-right">Transactions</TableHead>
+   857→                      <TableHead className="text-right">Revenue</TableHead>
+   858→                    </TableRow>
+   859→                  </TableHeader>
+   860→                  <TableBody>
+   861→                    {reports.salesByStaff.slice(0, 10).map((staff, i) => (
+   862→                      <TableRow key={staff.staffId}>
+   863→                        <TableCell className="font-medium text-muted-foreground">{i + 1}</TableCell>
+   864→                        <TableCell>
+   865→                          <div className="flex items-center gap-2">
+   866→                            <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-xs font-semibold text-primary">
+   867→                              {staff.staffName.charAt(0).toUpperCase()}
+   868→                            </div>
+   869→                            {staff.staffName}
+   870→                          </div>
+   871→                        </TableCell>
+   872→                        <TableCell className="text-right">{staff.transactions}</TableCell>
+   873→                        <TableCell className="text-right font-medium">{formatCurrency(staff.totalSales)}</TableCell>
+   874→                      </TableRow>
+   875→                    ))}
+   876→                  </TableBody>
+   877→                </Table>
+   878→              </div>
+   879→            ) : (
+   880→              <EmptyState message="Not enough data to generate this report" />
+   881→            )}
+   882→          </CardContent>
+   883→        </Card>
+   884→      )}
+   885→
+   886→      {/* === 5. Top Products (Table) === */}
+   887→      {loading.salesByProduct && !reports.salesByProduct ? (
+   888→        <TableSkeleton rows={5} />
+   889→      ) : (
+   890→        <Card className="shadow-sm">
+   891→          <CardHeader>
+   892→            <CardTitle className="text-base">Top Products</CardTitle>
+   893→            <CardDescription>Top 10 products by revenue</CardDescription>
+   894→          </CardHeader>
+   895→          <CardContent>
+   896→            {reports.salesByProduct && reports.salesByProduct.length > 0 ? (
+   897→              <div className="max-h-96 overflow-y-auto">
+   898→                <Table>
+   899→                  <TableHeader>
+   900→                    <TableRow>
+   901→                      <TableHead className="w-16">#</TableHead>
+   902→                      <TableHead>Product</TableHead>
+   903→                      <TableHead className="text-right">Qty Sold</TableHead>
+   904→                      <TableHead className="text-right">Revenue</TableHead>
+   905→                    </TableRow>
+   906→                  </TableHeader>
+   907→                  <TableBody>
+   908→                    {reports.salesByProduct.slice(0, 10).map((product, i) => (
+   909→                      <TableRow key={product.productId}>
+   910→                        <TableCell className="font-medium text-muted-foreground">{i + 1}</TableCell>
+   911→                        <TableCell>
+   912→                          <div className="flex flex-col">
+   913→                          <span className="font-medium">{product.productName}</span>
+   914→                          <span className="text-xs text-muted-foreground">{product.category}</span>
+   915→                          </div>
+   916→                        </TableCell>
+   917→                        <TableCell className="text-right">{product.quantitySold}</TableCell>
+   918→                        <TableCell className="text-right font-medium">{formatCurrency(product.revenue)}</TableCell>
+   919→                      </TableRow>
+   920→                    ))}
+   921→                  </TableBody>
+   922→                </Table>
+   923→              </div>
+   924→            ) : (
+   925→              <EmptyState message="Not enough data to generate this report" />
+   926→            )}
+   927→          </CardContent>
+   928→        </Card>
+   929→      )}
+   930→
+   931→      {/* === 6. Expenses by Category (Donut) + Expense Trend === */}
+   932→      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+   933→        {/* Expenses by Category */}
+   934→        {loading.expensesByCategory && !reports.expensesByCategory ? (
+   935→          <PieChartSkeleton />
+   936→        ) : (
+   937→          <Card className="shadow-sm">
+   938→            <CardHeader>
+   939→              <CardTitle className="text-base">Expenses by Category</CardTitle>
+   940→              <CardDescription>Breakdown of operating expenses</CardDescription>
+   941→            </CardHeader>
+   942→            <CardContent>
+   943→              {reports.expensesByCategory && reports.expensesByCategory.data.length > 0 ? (
+   944→                <>
+   945→                  <ResponsiveContainer width="100%" height={300}>
+   946→                    <PieChart>
+   947→                      <Pie
+   948→                        data={reports.expensesByCategory.data}
+   949→                        dataKey="total"
+   950→                        nameKey="category"
+   951→                        cx="50%"
+   952→                        cy="50%"
+   953→                        innerRadius={60}
+   954→                        outerRadius={100}
+   955→                        paddingAngle={3}
+   956→                        labelLine={false}
+   957→                        label={renderPieLabel}
+   958→                      >
+   959→                        {reports.expensesByCategory.data.map((_, index) => (
+   960→                          <Cell key={`exp-${index}`} fill={COLORS[index % COLORS.length]} />
+   961→                        ))}
+   962→                      </Pie>
+   963→                      <Tooltip content={<PieTooltip />} />
+   964→                    </PieChart>
+   965→                  </ResponsiveContainer>
+   966→                  <Legend content={<CustomLegend />} payload={reports.expensesByCategory.data.map((item, i) => ({
+   967→                    value: item.category,
+   968→                    color: COLORS[i % COLORS.length],
+   969→                    payload: { percentage: item.percentage },
+   970→                  }))} />
+   971→                </>
+   972→              ) : (
+   973→                <EmptyState message="Not enough data to generate this report" />
+   974→              )}
+   975→            </CardContent>
+   976→          </Card>
+   977→        )}
+   978→
+   979→        {/* Expense Summary / Total */}
+   980→        {loading.expensesByCategory && !reports.expensesByCategory ? (
+   981→          <ChartSkeleton />
+   982→        ) : (
+   983→          <Card className="shadow-sm">
+   984→            <CardHeader>
+   985→              <CardTitle className="text-base">Expense Breakdown</CardTitle>
+   986→              <CardDescription>Detailed expense amounts by category</CardDescription>
+   987→            </CardHeader>
+   988→            <CardContent>
+   989→              {reports.expensesByCategory && reports.expensesByCategory.data.length > 0 ? (
+   990→                <ResponsiveContainer width="100%" height={300}>
+   991→                  <BarChart
+   992→                    data={reports.expensesByCategory.data}
+   993→                    margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
+   994→                  >
+   995→                    <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+   996→                    <XAxis
+   997→                      dataKey="category"
+   998→                      tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+   999→                      axisLine={false}
+  1000→                      tickLine={false}
+  1001→                    />
+  1002→                    <YAxis
+  1003→                      tickFormatter={(v) => `\u20A5${(v / 1000).toFixed(0)}k`}
+  1004→                      tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+  1005→                      axisLine={false}
+  1006→                      tickLine={false}
+  1007→                      width={60}
+  1008→                    />
+  1009→                    <Tooltip content={<BarTooltip />} />
+  1010→                    <Bar dataKey="total" radius={[4, 4, 0, 0]} maxBarSize={50}>
+  1011→                      {reports.expensesByCategory.data.map((_, index) => (
+  1012→                        <Cell key={`expbar-${index}`} fill={COLORS[index % COLORS.length]} />
+  1013→                      ))}
+  1014→                    </Bar>
+  1015→                  </BarChart>
+  1016→                </ResponsiveContainer>
+  1017→              ) : (
+  1018→                <EmptyState message="Not enough data to generate this report" />
+  1019→              )}
+  1020→            </CardContent>
+  1021→          </Card>
+  1022→        )}
+  1023→      </div>
+  1024→
+  1025→      {/* === 7. Top Customers (Table) === */}
+  1026→      {loading.topCustomers && !reports.topCustomers ? (
+  1027→        <TableSkeleton rows={5} />
+  1028→      ) : (
+  1029→        <Card className="shadow-sm">
+  1030→          <CardHeader>
+  1031→            <CardTitle className="text-base">Top Customers</CardTitle>
+  1032→            <CardDescription>Customers ranked by total spending</CardDescription>
+  1033→          </CardHeader>
+  1034→          <CardContent>
+  1035→            {reports.topCustomers && reports.topCustomers.length > 0 ? (
+  1036→              <div className="max-h-96 overflow-y-auto">
+  1037→                <Table>
+  1038→                  <TableHeader>
+  1039→                    <TableRow>
+  1040→                      <TableHead className="w-16">#</TableHead>
+  1041→                      <TableHead>Customer</TableHead>
+  1042→                      <TableHead className="text-right">Purchases</TableHead>
+  1043→                      <TableHead className="text-right">Total Spent</TableHead>
+  1044→                    </TableRow>
+  1045→                  </TableHeader>
+  1046→                  <TableBody>
+  1047→                    {reports.topCustomers.map((customer, i) => (
+  1048→                      <TableRow key={customer.customerId}>
+  1049→                        <TableCell className="font-medium text-muted-foreground">{i + 1}</TableCell>
+  1050→                        <TableCell>
+  1051→                          <div className="flex items-center gap-2">
+  1052→                            <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-xs font-semibold text-primary">
+  1053→                              {customer.customerName.charAt(0).toUpperCase()}
+  1054→                            </div>
+  1055→                            <div>
+  1056→                              <span className="font-medium">{customer.customerName}</span>
+  1057→                              {customer.phone && (
+  1058→                                <span className="block text-xs text-muted-foreground">{customer.phone}</span>
+  1059→                              )}
+  1060→                            </div>
+  1061→                          </div>
+  1062→                        </TableCell>
+  1063→                        <TableCell className="text-right">{customer.transactions}</TableCell>
+  1064→                        <TableCell className="text-right font-medium">{formatCurrency(customer.totalSpent)}</TableCell>
+  1065→                      </TableRow>
+  1066→                    ))}
+  1067→                  </TableBody>
+  1068→                </Table>
+  1069→              </div>
+  1070→            ) : (
+  1071→              <EmptyState message="Not enough data to generate this report" />
+  1072→            )}
+  1073→          </CardContent>
+  1074→        </Card>
+  1075→      )}
+  1076→
+  1077→      {/* === 8. Supplier Purchases (Table) === */}
+  1078→      {loading.supplierPurchases && !reports.supplierPurchases ? (
+  1079→        <TableSkeleton rows={3} />
+  1080→      ) : (
+  1081→        <Card className="shadow-sm">
+  1082→          <CardHeader>
+  1083→            <CardTitle className="text-base">Supplier Purchases</CardTitle>
+  1084→            <CardDescription>Purchase summary by supplier for the period</CardDescription>
+  1085→          </CardHeader>
+  1086→          <CardContent>
+  1087→            {reports.supplierPurchases && reports.supplierPurchases.length > 0 ? (
+  1088→              <div className="max-h-96 overflow-y-auto">
+  1089→                <Table>
+  1090→                  <TableHeader>
+  1091→                    <TableRow>
+  1092→                      <TableHead className="w-16">#</TableHead>
+  1093→                      <TableHead>Supplier</TableHead>
+  1094→                      <TableHead className="text-right">Orders</TableHead>
+  1095→                      <TableHead className="text-right">Total Purchases</TableHead>
+  1096→                      <TableHead className="text-right">Outstanding</TableHead>
+  1097→                    </TableRow>
+  1098→                  </TableHeader>
+  1099→                  <TableBody>
+  1100→                    {reports.supplierPurchases.map((supplier, i) => (
+  1101→                      <TableRow key={supplier.supplierId}>
+  1102→                        <TableCell className="font-medium text-muted-foreground">{i + 1}</TableCell>
+  1103→                        <TableCell>
+  1104→                          <div className="flex items-center gap-2">
+  1105→                            <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-xs font-semibold text-primary">
+  1106→                              {supplier.supplierName.charAt(0).toUpperCase()}
+  1107→                            </div>
+  1108→                            {supplier.supplierName}
+  1109→                          </div>
+  1110→                        </TableCell>
+  1111→                        <TableCell className="text-right">{supplier.restockCount}</TableCell>
+  1112→                        <TableCell className="text-right font-medium">{formatCurrency(supplier.totalPurchases)}</TableCell>
+  1113→                        <TableCell className="text-right">
+  1114→                          <span className={supplier.outstandingBalance > 0 ? 'text-amber-600 font-medium' : 'text-muted-foreground'}>
+  1115→                            {formatCurrency(supplier.outstandingBalance)}
+  1116→                          </span>
+  1117→                        </TableCell>
+  1118→                      </TableRow>
+  1119→                    ))}
+  1120→                  </TableBody>
+  1121→                </Table>
+  1122→              </div>
+  1123→            ) : (
+  1124→              <EmptyState message="Not enough data to generate this report" />
+  1125→            )}
+  1126→          </CardContent>
+  1127→        </Card>
+  1128→      )}
+  1129→    </div>
+  1130→  );
+  1131→}
+  1132→

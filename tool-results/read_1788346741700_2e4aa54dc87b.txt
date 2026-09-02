@@ -1,0 +1,1418 @@
+     1→'use client';
+     2→
+     3→import React, { useState, useEffect, useCallback, useRef } from 'react';
+     4→import { motion, AnimatePresence } from 'framer-motion';
+     5→import {
+     6→  Search,
+     7→  ShoppingBag,
+     8→  Plus,
+     9→  Minus,
+    10→  X,
+    11→  Trash2,
+    12→  CheckCircle2,
+    13→  Printer,
+    14→  Download,
+    15→  Send,
+    16→  ChevronRight,
+    17→  CircleDot,
+    18→  AlertCircle,
+    19→  RotateCcw,
+    20→  UserPlus,
+    21→  Banknote,
+    22→  Smartphone,
+    23→  CreditCard,
+    24→  Building2,
+    25→  Wallet,
+    26→  Package,
+    27→} from 'lucide-react';
+    28→import { toast } from 'sonner';
+    29→
+    30→import { useAuth } from '@/lib/auth-context';
+    31→import { Button } from '@/components/ui/button';
+    32→import { Input } from '@/components/ui/input';
+    33→import { Badge } from '@/components/ui/badge';
+    34→import { Separator } from '@/components/ui/separator';
+    35→import { Label } from '@/components/ui/label';
+    36→import { ScrollArea } from '@/components/ui/scroll-area';
+    37→import { Skeleton } from '@/components/ui/skeleton';
+    38→import {
+    39→  Dialog,
+    40→  DialogContent,
+    41→  DialogHeader,
+    42→  DialogTitle,
+    43→  DialogDescription,
+    44→  DialogFooter,
+    45→} from '@/components/ui/dialog';
+    46→import {
+    47→  Select,
+    48→  SelectContent,
+    49→  SelectItem,
+    50→  SelectTrigger,
+    51→  SelectValue,
+    52→} from '@/components/ui/select';
+    53→import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+    54→
+    55→// ==================== Types ====================
+    56→
+    57→interface Product {
+    58→  id: string;
+    59→  name: string;
+    60→  sku: string;
+    61→  sellingPrice: number;
+    62→  image?: string | null;
+    63→  categoryId?: string | null;
+    64→  category?: { name: string } | null;
+    65→  inventory?: { quantity: number } | null;
+    66→  productType?: { tracksStock: boolean } | null;
+    67→  isActive: boolean;
+    68→}
+    69→
+    70→interface Category {
+    71→  id: string;
+    72→  name: string;
+    73→}
+    74→
+    75→interface Customer {
+    76→  id: string;
+    77→  name: string;
+    78→  phone?: string | null;
+    79→  email?: string | null;
+    80→}
+    81→
+    82→interface CartItem {
+    83→  product: Product;
+    84→  quantity: number;
+    85→}
+    86→
+    87→interface SaleResponse {
+    88→  id: string;
+    89→  transactionNumber: string;
+    90→  subtotal: number;
+    91→  discountAmount: number;
+    92→  taxAmount: number;
+    93→  totalAmount: number;
+    94→  paymentMethod: string;
+    95→  amountReceived?: number | null;
+    96→  changeAmount: number;
+    97→  customer?: { name: string } | null;
+    98→  soldBy: { name: string };
+    99→  items: {
+   100→    productName: string;
+   101→    quantity: number;
+   102→    unitPrice: number;
+   103→    subtotal: number;
+   104→  }[];
+   105→  createdAt: string;
+   106→}
+   107→
+   108→type PaymentMethod = 'cash' | 'mobile_money' | 'card' | 'bank_transfer' | 'credit';
+   109→
+   110→// ==================== Helpers ====================
+   111→
+   112→const formatCurrency = (amount: number): string => {
+   113→  return `₵${amount.toFixed(2)}`;
+   114→};
+   115→
+   116→const PRODUCT_COLORS = [
+   117→  'bg-emerald-500',
+   118→  'bg-amber-500',
+   119→  'bg-rose-500',
+   120→  'bg-violet-500',
+   121→  'bg-cyan-500',
+   122→  'bg-orange-500',
+   123→  'bg-teal-500',
+   124→  'bg-pink-500',
+   125→  'bg-lime-500',
+   126→  'bg-fuchsia-500',
+   127→];
+   128→
+   129→const getProductColor = (name: string): string => {
+   130→  let hash = 0;
+   131→  for (let i = 0; i < name.length; i++) {
+   132→    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+   133→  }
+   134→  return PRODUCT_COLORS[Math.abs(hash) % PRODUCT_COLORS.length];
+   135→};
+   136→
+   137→const getInitials = (name: string): string => {
+   138→  return name
+   139→    .split(' ')
+   140→    .map((w) => w[0])
+   141→    .join('')
+   142→    .toUpperCase()
+   143→    .slice(0, 2);
+   144→};
+   145→
+   146→const PAYMENT_METHODS: { value: PaymentMethod; label: string; icon: React.ReactNode }[] = [
+   147→  { value: 'cash', label: 'Cash', icon: <Banknote className="size-4" /> },
+   148→  { value: 'mobile_money', label: 'Mobile Money', icon: <Smartphone className="size-4" /> },
+   149→  { value: 'card', label: 'Card', icon: <CreditCard className="size-4" /> },
+   150→  { value: 'bank_transfer', label: 'Bank Transfer', icon: <Building2 className="size-4" /> },
+   151→  { value: 'credit', label: 'Credit', icon: <Wallet className="size-4" /> },
+   152→];
+   153→
+   154→// ==================== Component ====================
+   155→
+   156→export default function POSPage() {
+   157→  const { user } = useAuth();
+   158→
+   159→  // ---- Data state ----
+   160→  const [products, setProducts] = useState<Product[]>([]);
+   161→  const [categories, setCategories] = useState<Category[]>([]);
+   162→  const [customers, setCustomers] = useState<Customer[]>([]);
+   163→  const [productsLoading, setProductsLoading] = useState(true);
+   164→  const [productsError, setProductsError] = useState<string | null>(null);
+   165→
+   166→  // ---- Filter state ----
+   167→  const [searchQuery, setSearchQuery] = useState('');
+   168→  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
+   169→  const [searchDebounce, setSearchDebounce] = useState<NodeJS.Timeout | null>(null);
+   170→
+   171→  // ---- Cart state ----
+   172→  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+   173→  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+   174→  const [discountPercent, setDiscountPercent] = useState<number>(0);
+   175→
+   176→  // ---- Dialog state ----
+   177→  const [checkoutOpen, setCheckoutOpen] = useState(false);
+   178→  const [receiptOpen, setReceiptOpen] = useState(false);
+   179→  const [addCustomerOpen, setAddCustomerOpen] = useState(false);
+   180→  const [sendReceiptOpen, setSendReceiptOpen] = useState(false);
+   181→  const [lastSale, setLastSale] = useState<SaleResponse | null>(null);
+   182→
+   183→  // ---- Checkout state ----
+   184→  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cash');
+   185→  const [amountReceived, setAmountReceived] = useState<string>('');
+   186→  const [isProcessing, setIsProcessing] = useState(false);
+   187→
+   188→  // ---- Add customer state ----
+   189→  const [newCustomerName, setNewCustomerName] = useState('');
+   190→  const [newCustomerPhone, setNewCustomerPhone] = useState('');
+   191→  const [isAddingCustomer, setIsAddingCustomer] = useState(false);
+   192→
+   193→  // ---- Send receipt state ----
+   194→  const [sendMethod, setSendMethod] = useState<'whatsapp' | 'sms' | 'email'>('whatsapp');
+   195→  const [sendTo, setSendTo] = useState('');
+   196→
+   197→  // ---- Ref for receipt printing ----
+   198→  const receiptRef = useRef<HTMLDivElement>(null);
+   199→
+   200→  // ==================== Data Fetching ====================
+   201→
+   202→  const fetchProducts = useCallback(async (search = '', categoryId: string | null = null) => {
+   203→    try {
+   204→      setProductsError(null);
+   205→      const params = new URLSearchParams({ status: 'active' });
+   206→      if (search) params.set('search', search);
+   207→      if (categoryId) params.set('categoryId', categoryId);
+   208→      const res = await fetch(`/api/products?${params.toString()}`);
+   209→      if (!res.ok) throw new Error('Failed to load products');
+   210→      const data = await res.json();
+   211→      setProducts(data.data || data || []);
+   212→    } catch (err) {
+   213→      setProductsError(err instanceof Error ? err.message : 'Failed to load products');
+   214→    } finally {
+   215→      setProductsLoading(false);
+   216→    }
+   217→  }, []);
+   218→
+   219→  const fetchCategories = useCallback(async () => {
+   220→    try {
+   221→      const res = await fetch('/api/categories');
+   222→      if (res.ok) {
+   223→        const data = await res.json();
+   224→        setCategories(data.data || data || []);
+   225→      }
+   226→    } catch {
+   227→      // Non-critical
+   228→    }
+   229→  }, []);
+   230→
+   231→  const fetchCustomers = useCallback(async () => {
+   232→    try {
+   233→      const res = await fetch('/api/customers');
+   234→      if (res.ok) {
+   235→        const data = await res.json();
+   236→        setCustomers(data.data || data || []);
+   237→      }
+   238→    } catch {
+   239→      // Non-critical
+   240→    }
+   241→  }, []);
+   242→
+   243→  useEffect(() => {
+   244→    fetchProducts();
+   245→    fetchCategories();
+   246→    fetchCustomers();
+   247→  }, [fetchProducts, fetchCategories, fetchCustomers]);
+   248→
+   249→  // Debounced search
+   250→  const handleSearch = (value: string) => {
+   251→    setSearchQuery(value);
+   252→    if (searchDebounce) clearTimeout(searchDebounce);
+   253→    const timeout = setTimeout(() => {
+   254→      setProductsLoading(true);
+   255→      fetchProducts(value, selectedCategoryId);
+   256→    }, 300);
+   257→    setSearchDebounce(timeout);
+   258→  };
+   259→
+   260→  const handleCategoryFilter = (categoryId: string | null) => {
+   261→    setSelectedCategoryId(categoryId);
+   262→    setProductsLoading(true);
+   263→    fetchProducts(searchQuery, categoryId);
+   264→  };
+   265→
+   266→  // ==================== Cart Logic ====================
+   267→
+   268→  const addToCart = (product: Product) => {
+   269→    setCartItems((prev) => {
+   270→      const existing = prev.find((item) => item.product.id === product.id);
+   271→      if (existing) {
+   272→        // Check stock limit
+   273→        const tracksStock = product.productType?.tracksStock !== false;
+   274→        const stockQty = product.inventory?.quantity ?? 0;
+   275→        if (tracksStock && existing.quantity >= stockQty) {
+   276→          toast.error('Not enough stock', { description: `Only ${stockQty} units available` });
+   277→          return prev;
+   278→        }
+   279→        return prev.map((item) =>
+   280→          item.product.id === product.id
+   281→            ? { ...item, quantity: item.quantity + 1 }
+   282→            : item
+   283→        );
+   284→      }
+   285→      // Check if product has stock
+   286→      const tracksStock = product.productType?.tracksStock !== false;
+   287→      const stockQty = product.inventory?.quantity ?? 0;
+   288→      if (tracksStock && stockQty <= 0) {
+   289→        toast.error('Out of stock', { description: `${product.name} is currently unavailable` });
+   290→        return prev;
+   291→      }
+   292→      return [...prev, { product, quantity: 1 }];
+   293→    });
+   294→  };
+   295→
+   296→  const updateQuantity = (productId: string, delta: number) => {
+   297→    setCartItems((prev) => {
+   298→      return prev
+   299→        .map((item) => {
+   300→          if (item.product.id !== productId) return item;
+   301→          const newQty = item.quantity + delta;
+   302→          if (newQty <= 0) return null;
+   303→          // Check stock limit for increase
+   304→          if (delta > 0) {
+   305→            const tracksStock = item.product.productType?.tracksStock !== false;
+   306→            const stockQty = item.product.inventory?.quantity ?? 0;
+   307→            if (tracksStock && newQty > stockQty) {
+   308→              toast.error('Not enough stock', { description: `Only ${stockQty} units available` });
+   309→              return item;
+   310→            }
+   311→          }
+   312→          return { ...item, quantity: newQty };
+   313→        })
+   314→        .filter(Boolean) as CartItem[];
+   315→    });
+   316→  };
+   317→
+   318→  const removeFromCart = (productId: string) => {
+   319→    setCartItems((prev) => prev.filter((item) => item.product.id !== productId));
+   320→  };
+   321→
+   322→  const clearCart = () => {
+   323→    setCartItems([]);
+   324→    setDiscountPercent(0);
+   325→    setSelectedCustomer(null);
+   326→  };
+   327→
+   328→  // ==================== Cart Calculations ====================
+   329→
+   330→  const subtotal = cartItems.reduce(
+   331→    (sum, item) => sum + item.product.sellingPrice * item.quantity,
+   332→    0
+   333→  );
+   334→
+   335→  const discountAmount = (subtotal * discountPercent) / 100;
+   336→
+   337→  // Simple tax: apply 0% by default (could be fetched from settings)
+   338→  const taxRate = 0;
+   339→  const taxAmount = ((subtotal - discountAmount) * taxRate) / 100;
+   340→
+   341→  const total = subtotal - discountAmount + taxAmount;
+   342→  const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+   343→
+   344→  const changeAmount =
+   345→    paymentMethod === 'cash' && amountReceived
+   346→      ? Math.max(0, parseFloat(amountReceived) - total)
+   347→      : 0;
+   348→
+   349→  // ==================== Checkout ====================
+   350→
+   351→  const openCheckout = () => {
+   352→    if (cartItems.length === 0) return;
+   353→    setPaymentMethod('cash');
+   354→    setAmountReceived('');
+   355→    setCheckoutOpen(true);
+   356→  };
+   357→
+   358→  const handleCheckout = async () => {
+   359→    if (!user) {
+   360→      toast.error('Not authenticated');
+   361→      return;
+   362→    }
+   363→
+   364→    if (paymentMethod === 'cash') {
+   365→      const received = parseFloat(amountReceived);
+   366→      if (isNaN(received) || received < total) {
+   367→        toast.error('Invalid amount', { description: 'Amount received must be at least ' + formatCurrency(total) });
+   368→        return;
+   369→      }
+   370→    }
+   371→
+   372→    setIsProcessing(true);
+   373→    try {
+   374→      const body = {
+   375→        soldById: user.id,
+   376→        customerId: selectedCustomer?.id || null,
+   377→        items: cartItems.map((item) => ({
+   378→          productId: item.product.id,
+   379→          quantity: item.quantity,
+   380→        })),
+   381→        discountAmount: Math.round(discountAmount * 100) / 100,
+   382→        taxAmount: Math.round(taxAmount * 100) / 100,
+   383→        paymentMethod,
+   384→        amountReceived: paymentMethod === 'cash' ? parseFloat(amountReceived) : total,
+   385→      };
+   386→
+   387→      const res = await fetch('/api/sales', {
+   388→        method: 'POST',
+   389→        headers: {
+   390→          'Content-Type': 'application/json',
+   391→          'x-user-id': user.id,
+   392→        },
+   393→        body: JSON.stringify(body),
+   394→      });
+   395→
+   396→      if (!res.ok) {
+   397→        const data = await res.json();
+   398→        throw new Error(data.error || 'Sale failed');
+   399→      }
+   400→
+   401→      const sale = await res.json();
+   402→      setLastSale(sale);
+   403→      setCheckoutOpen(false);
+   404→      setReceiptOpen(true);
+   405→      toast.success('Sale completed!', { description: sale.transactionNumber });
+   406→    } catch (err) {
+   407→      toast.error('Sale failed', {
+   408→        description: err instanceof Error ? err.message : 'An unexpected error occurred',
+   409→      });
+   410→    } finally {
+   411→      setIsProcessing(false);
+   412→    }
+   413→  };
+   414→
+   415→  const handleNewSale = () => {
+   416→    setReceiptOpen(false);
+   417→    setLastSale(null);
+   418→    setCartItems([]);
+   419→    setDiscountPercent(0);
+   420→    setSelectedCustomer(null);
+   421→    setAmountReceived('');
+   422→  };
+   423→
+   424→  // ==================== Add Customer ====================
+   425→
+   426→  const handleAddCustomer = async () => {
+   427→    if (!newCustomerName.trim()) {
+   428→      toast.error('Customer name is required');
+   429→      return;
+   430→    }
+   431→    if (!user) return;
+   432→
+   433→    setIsAddingCustomer(true);
+   434→    try {
+   435→      const res = await fetch('/api/customers', {
+   436→        method: 'POST',
+   437→        headers: {
+   438→          'Content-Type': 'application/json',
+   439→          'x-user-id': user.id,
+   440→        },
+   441→        body: JSON.stringify({
+   442→          name: newCustomerName.trim(),
+   443→          phone: newCustomerPhone.trim() || undefined,
+   444→        }),
+   445→      });
+   446→      if (!res.ok) {
+   447→        const data = await res.json();
+   448→        throw new Error(data.error || 'Failed to add customer');
+   449→      }
+   450→      const customer = await res.json();
+   451→      setCustomers((prev) => [...prev, customer]);
+   452→      setSelectedCustomer(customer);
+   453→      setAddCustomerOpen(false);
+   454→      setNewCustomerName('');
+   455→      setNewCustomerPhone('');
+   456→      toast.success('Customer added');
+   457→    } catch (err) {
+   458→      toast.error('Failed to add customer', {
+   459→        description: err instanceof Error ? err.message : 'Unknown error',
+   460→      });
+   461→    } finally {
+   462→      setIsAddingCustomer(false);
+   463→    }
+   464→  };
+   465→
+   466→  // ==================== Receipt Actions ====================
+   467→
+   468→  const handlePrintReceipt = () => {
+   469→    const printWindow = window.open('', '_blank', 'width=400,height=600');
+   470→    if (!printWindow || !lastSale) return;
+   471→
+   472→    const itemsHtml = lastSale.items
+   473→      .map(
+   474→        (item) => `
+   475→      <tr>
+   476→        <td style="text-align:left;padding:4px 0;font-size:13px;">${item.productName}</td>
+   477→        <td style="text-align:center;padding:4px 0;font-size:13px;">${item.quantity}</td>
+   478→        <td style="text-align:right;padding:4px 0;font-size:13px;">${formatCurrency(item.subtotal)}</td>
+   479→      </tr>`
+   480→      )
+   481→      .join('');
+   482→
+   483→    printWindow.document.write(`
+   484→      <!DOCTYPE html>
+   485→      <html><head><title>Receipt - ${lastSale.transactionNumber}</title>
+   486→      <style>
+   487→        body { font-family: 'Courier New', monospace; margin: 0; padding: 20px; max-width: 300px; margin: 0 auto; }
+   488→        h2 { text-align: center; margin: 0 0 5px; font-size: 16px; }
+   489→        p { margin: 2px 0; font-size: 12px; text-align: center; }
+   490→        .divider { border-top: 1px dashed #000; margin: 10px 0; }
+   491→        table { width: 100%; border-collapse: collapse; }
+   492→        .total-row { font-weight: bold; font-size: 15px; }
+   493→        .footer { text-align: center; margin-top: 15px; font-size: 11px; }
+   494→        @media print { body { margin: 0; } }
+   495→      </style></head><body>
+   496→      <h2>STORE POS</h2>
+   497→      <p>Receipt</p>
+   498→      <div class="divider"></div>
+   499→      <p><strong>Txn:</strong> ${lastSale.transactionNumber}</p>
+   500→      <p><strong>Date:</strong> ${new Date(lastSale.createdAt).toLocaleString()}</p>
+   501→      <p><strong>Customer:</strong> ${lastSale.customer?.name || 'Walk-in'}</p>
+   502→      <p><strong>Cashier:</strong> ${lastSale.soldBy?.name || ''}</p>
+   503→      <div class="divider"></div>
+   504→      <table>
+   505→        <thead><tr style="border-bottom:1px solid #000;">
+   506→          <th style="text-align:left;padding:4px 0;font-size:12px;">Item</th>
+   507→          <th style="text-align:center;padding:4px 0;font-size:12px;">Qty</th>
+   508→          <th style="text-align:right;padding:4px 0;font-size:12px;">Amount</th>
+   509→        </tr></thead>
+   510→        <tbody>${itemsHtml}</tbody>
+   511→      </table>
+   512→      <div class="divider"></div>
+   513→      <table>
+   514→        <tr><td style="text-align:left;">Subtotal</td><td style="text-align:right;">${formatCurrency(lastSale.subtotal)}</td></tr>
+   515→        ${lastSale.discountAmount > 0 ? `<tr><td style="text-align:left;">Discount</td><td style="text-align:right;">-${formatCurrency(lastSale.discountAmount)}</td></tr>` : ''}
+   516→        ${lastSale.taxAmount > 0 ? `<tr><td style="text-align:left;">Tax</td><td style="text-align:right;">${formatCurrency(lastSale.taxAmount)}</td></tr>` : ''}
+   517→        <tr class="total-row"><td style="text-align:left;border-top:2px solid #000;padding-top:5px;">TOTAL</td><td style="text-align:right;border-top:2px solid #000;padding-top:5px;">${formatCurrency(lastSale.totalAmount)}</td></tr>
+   518→        ${lastSale.paymentMethod === 'cash' && lastSale.amountReceived ? `
+   519→        <tr><td style="text-align:left;">Received</td><td style="text-align:right;">${formatCurrency(lastSale.amountReceived)}</td></tr>
+   520→        <tr><td style="text-align:left;">Change</td><td style="text-align:right;">${formatCurrency(lastSale.changeAmount)}</td></tr>
+   521→        ` : ''}
+   522→      </table>
+   523→      <div class="divider"></div>
+   524→      <p><strong>Payment:</strong> ${lastSale.paymentMethod.replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase())}</p>
+   525→      <div class="footer"><p>Thank you for your purchase!</p></div>
+   526→      <script>window.onload = () => window.print();</script>
+   527→      </body></html>
+   528→    `);
+   529→    printWindow.document.close();
+   530→  };
+   531→
+   532→  const handleDownloadReceipt = () => {
+   533→    if (!lastSale) return;
+   534→
+   535→    const itemsText = lastSale.items
+   536→      .map(
+   537→        (item) =>
+   538→          `  ${item.productName.padEnd(20)} x${item.quantity}    ${formatCurrency(item.subtotal)}`
+   539→      )
+   540→      .join('\n');
+   541→
+   542→    const receiptText = `
+   543→================================
+   544→         STORE POS
+   545→            Receipt
+   546→================================
+   547→
+   548→Transaction: ${lastSale.transactionNumber}
+   549→Date: ${new Date(lastSale.createdAt).toLocaleString()}
+   550→Customer: ${lastSale.customer?.name || 'Walk-in'}
+   551→Cashier: ${lastSale.soldBy?.name || ''}
+   552→
+   553→--------------------------------
+   554→${'Item'.padEnd(22)}Qty   Amount
+   555→--------------------------------
+   556→${itemsText}
+   557→--------------------------------
+   558→Subtotal:                  ${formatCurrency(lastSale.subtotal)}
+   559→${lastSale.discountAmount > 0 ? `Discount:                 -${formatCurrency(lastSale.discountAmount)}\n` : ''}${lastSale.taxAmount > 0 ? `Tax:                      ${formatCurrency(lastSale.taxAmount)}\n` : ''}================================
+   560→TOTAL:                     ${formatCurrency(lastSale.totalAmount)}
+   561→================================
+   562→${lastSale.paymentMethod === 'cash' && lastSale.amountReceived ? `Amount Received:          ${formatCurrency(lastSale.amountReceived)}\nChange:                    ${formatCurrency(lastSale.changeAmount)}\n` : ''}Payment: ${lastSale.paymentMethod.replace('_', ' ')}
+   563→
+   564→    Thank you for your purchase!
+   565→================================
+   566→    `;
+   567→
+   568→    const blob = new Blob([receiptText], { type: 'text/plain' });
+   569→    const url = URL.createObjectURL(blob);
+   570→    const a = document.createElement('a');
+   571→    a.href = url;
+   572→    a.download = `receipt-${lastSale.transactionNumber}.txt`;
+   573→    a.click();
+   574→    URL.revokeObjectURL(url);
+   575→    toast.success('Receipt downloaded');
+   576→  };
+   577→
+   578→  const handleSendReceipt = () => {
+   579→    if (!sendTo.trim()) {
+   580→      toast.error('Please enter a recipient', {
+   581→        description:
+   582→          sendMethod === 'email' ? 'Enter a valid email address' : 'Enter a valid phone number',
+   583→      });
+   584→      return;
+   585→    }
+   586→    // In a real app, this would call an API. For V1, show success toast.
+   587→    toast.success(`Receipt sent via ${sendMethod}`, {
+   588→      description: `Sent to ${sendTo}`,
+   589→    });
+   590→    setSendReceiptOpen(false);
+   591→    setSendTo('');
+   592→  };
+   593→
+   594→  // ==================== Stock Helpers ====================
+   595→
+   596→  const getStockStatus = (product: Product) => {
+   597→    const tracksStock = product.productType?.tracksStock !== false;
+   598→    if (!tracksStock) return { label: 'In Stock', variant: 'secondary' as const };
+   599→    const qty = product.inventory?.quantity ?? 0;
+   600→    if (qty <= 0) return { label: 'Out of Stock', variant: 'destructive' as const };
+   601→    if (qty <= (product.minStockLevel ?? 5))
+   602→      return { label: `${qty} left`, variant: 'destructive' as const };
+   603→    return { label: 'In Stock', variant: 'secondary' as const };
+   604→  };
+   605→
+   606→  const isOutOfStock = (product: Product) => {
+   607→    const tracksStock = product.productType?.tracksStock !== false;
+   608→    if (!tracksStock) return false;
+   609→    return (product.inventory?.quantity ?? 0) <= 0;
+   610→  };
+   611→
+   612→  // ==================== Render ====================
+   613→
+   614→  return (
+   615→    <div className="flex h-[calc(100vh-4rem)] overflow-hidden">
+   616→      {/* ==================== LEFT SIDE: Product Area ==================== */}
+   617→      <div className="flex-1 flex flex-col min-w-0">
+   618→        {/* Search Bar */}
+   619→        <div className="p-4 pb-2">
+   620→          <div className="relative">
+   621→            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-muted-foreground" />
+   622→            <Input
+   623→              placeholder="Search products by name or SKU..."
+   624→              value={searchQuery}
+   625→              onChange={(e) => handleSearch(e.target.value)}
+   626→              className="h-12 pl-10 text-base rounded-xl bg-muted/40 border-muted-foreground/10 focus-visible:bg-background"
+   627→            />
+   628→            {searchQuery && (
+   629→              <button
+   630→                onClick={() => handleSearch('')}
+   631→                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+   632→              >
+   633→                <X className="size-4" />
+   634→              </button>
+   635→            )}
+   636→          </div>
+   637→        </div>
+   638→
+   639→        {/* Category Filters */}
+   640→        <div className="px-4 pb-3">
+   641→          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+   642→            <button
+   643→              onClick={() => handleCategoryFilter(null)}
+   644→              className={`shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+   645→                !selectedCategoryId
+   646→                  ? 'bg-primary text-primary-foreground shadow-sm'
+   647→                  : 'bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground'
+   648→              }`}
+   649→            >
+   650→              All
+   651→            </button>
+   652→            {categories.map((cat) => (
+   653→              <button
+   654→                key={cat.id}
+   655→                onClick={() => handleCategoryFilter(cat.id)}
+   656→                className={`shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+   657→                  selectedCategoryId === cat.id
+   658→                    ? 'bg-primary text-primary-foreground shadow-sm'
+   659→                    : 'bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground'
+   660→                }`}
+   661→              >
+   662→                {cat.name}
+   663→              </button>
+   664→            ))}
+   665→          </div>
+   666→        </div>
+   667→
+   668→        {/* Product Grid */}
+   669→        <div className="flex-1 overflow-y-auto px-4 pb-4">
+   670→          {productsLoading ? (
+   671→            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+   672→              {Array.from({ length: 8 }).map((_, i) => (
+   673→                <div key={i} className="rounded-xl border bg-card p-3 space-y-2">
+   674→                  <Skeleton className="aspect-square w-full rounded-lg" />
+   675→                  <Skeleton className="h-4 w-3/4" />
+   676→                  <Skeleton className="h-4 w-1/2" />
+   677→                </div>
+   678→              ))}
+   679→            </div>
+   680→          ) : productsError ? (
+   681→            <div className="flex flex-col items-center justify-center h-full gap-3 text-center">
+   682→              <AlertCircle className="size-10 text-destructive" />
+   683→              <p className="text-sm text-muted-foreground">{productsError}</p>
+   684→              <Button
+   685→                variant="outline"
+   686→                size="sm"
+   687→                onClick={() => {
+   688→                  setProductsLoading(true);
+   689→                  fetchProducts(searchQuery, selectedCategoryId);
+   690→                }}
+   691→              >
+   692→                <RotateCcw className="size-3.5" />
+   693→                Retry
+   694→              </Button>
+   695→            </div>
+   696→          ) : products.length === 0 ? (
+   697→            <div className="flex flex-col items-center justify-center h-full gap-3 text-center">
+   698→              <Package className="size-10 text-muted-foreground/40" />
+   699→              <p className="text-sm text-muted-foreground">No products found</p>
+   700→              {(searchQuery || selectedCategoryId) && (
+   701→                <Button
+   702→                  variant="outline"
+   703→                  size="sm"
+   704→                  onClick={() => {
+   705→                    setSearchQuery('');
+   706→                    handleCategoryFilter(null);
+   707→                  }}
+   708→                >
+   709→                  Clear filters
+   710→                </Button>
+   711→              )}
+   712→            </div>
+   713→          ) : (
+   714→            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+   715→              {products.map((product) => {
+   716→                const oos = isOutOfStock(product);
+   717→                const stock = getStockStatus(product);
+   718→                return (
+   719→                  <motion.button
+   720→                    key={product.id}
+   721→                    whileTap={oos ? undefined : { scale: 0.97 }}
+   722→                    onClick={() => !oos && addToCart(product)}
+   723→                    disabled={oos}
+   724→                    className={`group relative text-left rounded-xl border bg-card p-3 transition-all duration-150 ${
+   725→                      oos
+   726→                        ? 'opacity-50 cursor-not-allowed'
+   727→                        : 'hover:border-primary/50 hover:shadow-sm cursor-pointer active:bg-accent/50'
+   728→                    }`}
+   729→                  >
+   730→                    {/* Product Image / Placeholder */}
+   731→                    <div
+   732→                      className={`aspect-square w-full rounded-lg flex items-center justify-center overflow-hidden ${
+   733→                        oos ? 'bg-muted' : getProductColor(product.name) + '/10'
+   734→                      }`}
+   735→                    >
+   736→                      {product.image ? (
+   737→                        <img
+   738→                          src={product.image}
+   739→                          alt={product.name}
+   740→                          className="w-full h-full object-cover rounded-lg"
+   741→                        />
+   742→                      ) : (
+   743→                        <span
+   744→                          className={`text-lg font-semibold ${
+   745→                            oos
+   746→                              ? 'text-muted-foreground/30'
+   747→                              : getProductColor(product.name).replace('bg-', 'text-').replace('-500', '-600')
+   748→                          }`}
+   749→                        >
+   750→                          {getInitials(product.name)}
+   751→                        </span>
+   752→                      )}
+   753→                    </div>
+   754→
+   755→                    {/* Product Info */}
+   756→                    <div className="mt-2.5 space-y-1">
+   757→                      <p className="text-sm font-medium leading-tight truncate">
+   758→                        {product.name}
+   759→                      </p>
+   760→                      <p className="text-base font-bold text-foreground">
+   761→                        {formatCurrency(product.sellingPrice)}
+   762→                      </p>
+   763→                      <Badge
+   764→                        variant={stock.variant}
+   765→                        className="text-[10px] px-1.5 py-0"
+   766→                      >
+   767→                        <CircleDot className="size-2.5 mr-0.5" />
+   768→                        {stock.label}
+   769→                      </Badge>
+   770→                    </div>
+   771→
+   772→                    {/* Quick add indicator on hover */}
+   773→                    {!oos && (
+   774→                      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+   775→                        <div className="size-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-md">
+   776→                          <Plus className="size-3.5" />
+   777→                        </div>
+   778→                      </div>
+   779→                    )}
+   780→                  </motion.button>
+   781→                );
+   782→              })}
+   783→            </div>
+   784→          )}
+   785→        </div>
+   786→      </div>
+   787→
+   788→      {/* ==================== RIGHT SIDE: Cart Area ==================== */}
+   789→      <div className="w-[420px] max-md:w-[380px] border-l bg-card flex flex-col shrink-0">
+   790→        {/* Cart Header */}
+   791→        <div className="flex items-center justify-between px-4 py-3 border-b">
+   792→          <div className="flex items-center gap-2">
+   793→            <h2 className="font-semibold text-lg">Cart</h2>
+   794→            {totalItems > 0 && (
+   795→              <Badge variant="default" className="ml-1">
+   796→                {totalItems}
+   797→              </Badge>
+   798→            )}
+   799→          </div>
+   800→          {cartItems.length > 0 && (
+   801→            <Button
+   802→              variant="ghost"
+   803→              size="sm"
+   804→              onClick={clearCart}
+   805→              className="text-muted-foreground hover:text-destructive"
+   806→            >
+   807→              <Trash2 className="size-3.5" />
+   808→              Clear
+   809→            </Button>
+   810→          )}
+   811→        </div>
+   812→
+   813→        {/* Cart Items */}
+   814→        <div className="flex-1 min-h-0">
+   815→          {cartItems.length === 0 ? (
+   816→            <div className="flex flex-col items-center justify-center h-full gap-2 text-center px-4">
+   817→              <div className="size-16 rounded-full bg-muted flex items-center justify-center">
+   818→                <ShoppingBag className="size-7 text-muted-foreground/40" />
+   819→              </div>
+   820→              <p className="text-sm text-muted-foreground font-medium">No items in cart</p>
+   821→              <p className="text-xs text-muted-foreground/60">Click products to add them</p>
+   822→            </div>
+   823→          ) : (
+   824→            <ScrollArea className="h-full">
+   825→              <div className="px-3 py-2 space-y-1">
+   826→                <AnimatePresence initial={false}>
+   827→                  {cartItems.map((item) => (
+   828→                    <motion.div
+   829→                      key={item.product.id}
+   830→                      initial={{ opacity: 0, height: 0, y: -10 }}
+   831→                      animate={{ opacity: 1, height: 'auto', y: 0 }}
+   832→                      exit={{ opacity: 0, height: 0, x: 20 }}
+   833→                      transition={{ duration: 0.15 }}
+   834→                      className="flex items-center gap-3 rounded-lg p-2 hover:bg-muted/50 transition-colors"
+   835→                    >
+   836→                      {/* Product Image Placeholder */}
+   837→                      <div
+   838→                        className={`size-10 rounded-lg shrink-0 flex items-center justify-center text-xs font-semibold ${
+   839→                          getProductColor(item.product.name)
+   840→                            .replace('bg-', 'bg-')
+   841→                            .replace('-500', '-500') + '/15'
+   842→                        } ${
+   843→                          getProductColor(item.product.name)
+   844→                            .replace('bg-', 'text-')
+   845→                            .replace('-500', '-600')
+   846→                        }`}
+   847→                      >
+   848→                        {getInitials(item.product.name)}
+   849→                      </div>
+   850→
+   851→                      {/* Item Details */}
+   852→                      <div className="flex-1 min-w-0">
+   853→                        <p className="text-sm font-medium truncate">{item.product.name}</p>
+   854→                        <p className="text-xs text-muted-foreground">
+   855→                          {formatCurrency(item.product.sellingPrice)} each
+   856→                        </p>
+   857→                      </div>
+   858→
+   859→                      {/* Quantity Controls */}
+   860→                      <div className="flex items-center gap-1">
+   861→                        <button
+   862→                          onClick={() => updateQuantity(item.product.id, -1)}
+   863→                          className="size-7 rounded-md border flex items-center justify-center hover:bg-muted transition-colors"
+   864→                        >
+   865→                          <Minus className="size-3" />
+   866→                        </button>
+   867→                        <span className="w-7 text-center text-sm font-medium tabular-nums">
+   868→                          {item.quantity}
+   869→                        </span>
+   870→                        <button
+   871→                          onClick={() => updateQuantity(item.product.id, 1)}
+   872→                          className="size-7 rounded-md border flex items-center justify-center hover:bg-muted transition-colors"
+   873→                        >
+   874→                          <Plus className="size-3" />
+   875→                        </button>
+   876→                      </div>
+   877→
+   878→                      {/* Subtotal & Remove */}
+   879→                      <div className="text-right shrink-0">
+   880→                        <p className="text-sm font-semibold tabular-nums">
+   881→                          {formatCurrency(item.product.sellingPrice * item.quantity)}
+   882→                        </p>
+   883→                        <button
+   884→                          onClick={() => removeFromCart(item.product.id)}
+   885→                          className="text-muted-foreground/60 hover:text-destructive transition-colors ml-auto flex"
+   886→                        >
+   887→                          <X className="size-3" />
+   888→                        </button>
+   889→                      </div>
+   890→                    </motion.div>
+   891→                  ))}
+   892→                </AnimatePresence>
+   893→              </div>
+   894→            </ScrollArea>
+   895→          )}
+   896→        </div>
+   897→
+   898→        {/* Cart Summary & Actions (Fixed Bottom) */}
+   899→        {cartItems.length > 0 && (
+   900→          <div className="border-t bg-card space-y-3 p-4">
+   901→            {/* Customer Selection */}
+   902→            <div className="space-y-1.5">
+   903→              <Label className="text-xs text-muted-foreground">Customer</Label>
+   904→              <div className="flex gap-1.5">
+   905→                <Select
+   906→                  value={selectedCustomer?.id || 'walk-in'}
+   907→                  onValueChange={(val) => {
+   908→                    if (val === 'walk-in') {
+   909→                      setSelectedCustomer(null);
+   910→                    } else {
+   911→                      const c = customers.find((c) => c.id === val);
+   912→                      if (c) setSelectedCustomer(c);
+   913→                    }
+   914→                  }}
+   915→                >
+   916→                  <SelectTrigger className="h-9 flex-1">
+   917→                    <SelectValue placeholder="Walk-in Customer" />
+   918→                  </SelectTrigger>
+   919→                  <SelectContent>
+   920→                    <SelectItem value="walk-in">Walk-in Customer</SelectItem>
+   921→                    {customers.map((c) => (
+   922→                      <SelectItem key={c.id} value={c.id}>
+   923→                        <div className="flex items-center gap-1.5">
+   924→                          <span>{c.name}</span>
+   925→                          {c.phone && (
+   926→                            <span className="text-muted-foreground text-xs">• {c.phone}</span>
+   927→                          )}
+   928→                        </div>
+   929→                      </SelectItem>
+   930→                    ))}
+   931→                  </SelectContent>
+   932→                </Select>
+   933→                <Button
+   934→                  variant="outline"
+   935→                  size="icon"
+   936→                  className="size-9 shrink-0"
+   937→                  onClick={() => setAddCustomerOpen(true)}
+   938→                  title="Add Customer"
+   939→                >
+   940→                  <UserPlus className="size-3.5" />
+   941→                </Button>
+   942→              </div>
+   943→            </div>
+   944→
+   945→            {/* Discount Input */}
+   946→            <div className="flex items-center gap-2">
+   947→              <Label className="text-xs text-muted-foreground shrink-0">Discount</Label>
+   948→              <div className="flex items-center gap-1 flex-1">
+   949→                <Input
+   950→                  type="number"
+   951→                  min="0"
+   952→                  max="100"
+   953→                  value={discountPercent || ''}
+   954→                  onChange={(e) => {
+   955→                    const val = parseFloat(e.target.value);
+   956→                    if (isNaN(val) || val < 0) setDiscountPercent(0);
+   957→                    else if (val > 100) setDiscountPercent(100);
+   958→                    else setDiscountPercent(val);
+   959→                  }}
+   960→                  placeholder="0"
+   961→                  className="h-8 w-16 text-sm text-center"
+   962→                />
+   963→                <span className="text-xs text-muted-foreground">%</span>
+   964→              </div>
+   965→              {discountPercent > 0 && (
+   966→                <Button
+   967→                  variant="ghost"
+   968→                  size="sm"
+   969→                  className="h-7 text-xs text-muted-foreground"
+   970→                  onClick={() => setDiscountPercent(0)}
+   971→                >
+   972→                  <X className="size-3" />
+   973→                </Button>
+   974→              )}
+   975→            </div>
+   976→
+   977→            {/* Summary Lines */}
+   978→            <div className="space-y-1.5 text-sm">
+   979→              <div className="flex justify-between text-muted-foreground">
+   980→                <span>Subtotal</span>
+   981→                <span className="tabular-nums">{formatCurrency(subtotal)}</span>
+   982→              </div>
+   983→              {discountAmount > 0 && (
+   984→                <div className="flex justify-between text-emerald-600">
+   985→                  <span>Discount ({discountPercent}%)</span>
+   986→                  <span className="tabular-nums">-{formatCurrency(discountAmount)}</span>
+   987→                </div>
+   988→              )}
+   989→              {taxAmount > 0 && (
+   990→                <div className="flex justify-between text-muted-foreground">
+   991→                  <span>Tax</span>
+   992→                  <span className="tabular-nums">{formatCurrency(taxAmount)}</span>
+   993→                </div>
+   994→              )}
+   995→              <Separator />
+   996→              <div className="flex justify-between text-lg font-bold">
+   997→                <span>Total</span>
+   998→                <span className="tabular-nums">{formatCurrency(total)}</span>
+   999→              </div>
+  1000→            </div>
+  1001→
+  1002→            {/* Checkout Button */}
+  1003→            <Button
+  1004→              className="w-full rounded-xl py-5 text-base font-semibold"
+  1005→              size="lg"
+  1006→              onClick={openCheckout}
+  1007→            >
+  1008→              Checkout • {formatCurrency(total)}
+  1009→              <ChevronRight className="size-5 ml-1" />
+  1010→            </Button>
+  1011→          </div>
+  1012→        )}
+  1013→      </div>
+  1014→
+  1015→      {/* ==================== ADD CUSTOMER DIALOG ==================== */}
+  1016→      <Dialog open={addCustomerOpen} onOpenChange={setAddCustomerOpen}>
+  1017→        <DialogContent className="sm:max-w-md">
+  1018→          <DialogHeader>
+  1019→            <DialogTitle>Add Customer</DialogTitle>
+  1020→            <DialogDescription>Quickly add a new customer for this sale</DialogDescription>
+  1021→          </DialogHeader>
+  1022→          <div className="space-y-4 py-2">
+  1023→            <div className="space-y-2">
+  1024→              <Label htmlFor="cust-name">Name *</Label>
+  1025→              <Input
+  1026→                id="cust-name"
+  1027→                placeholder="Customer name"
+  1028→                value={newCustomerName}
+  1029→                onChange={(e) => setNewCustomerName(e.target.value)}
+  1030→                onKeyDown={(e) => e.key === 'Enter' && handleAddCustomer()}
+  1031→              />
+  1032→            </div>
+  1033→            <div className="space-y-2">
+  1034→              <Label htmlFor="cust-phone">Phone</Label>
+  1035→              <Input
+  1036→                id="cust-phone"
+  1037→                placeholder="Phone number"
+  1038→                value={newCustomerPhone}
+  1039→                onChange={(e) => setNewCustomerPhone(e.target.value)}
+  1040→                onKeyDown={(e) => e.key === 'Enter' && handleAddCustomer()}
+  1041→              />
+  1042→            </div>
+  1043→          </div>
+  1044→          <DialogFooter>
+  1045→            <Button variant="outline" onClick={() => setAddCustomerOpen(false)}>
+  1046→              Cancel
+  1047→            </Button>
+  1048→            <Button onClick={handleAddCustomer} disabled={isAddingCustomer || !newCustomerName.trim()}>
+  1049→              {isAddingCustomer ? 'Adding...' : 'Add Customer'}
+  1050→            </Button>
+  1051→          </DialogFooter>
+  1052→        </DialogContent>
+  1053→      </Dialog>
+  1054→
+  1055→      {/* ==================== CHECKOUT DIALOG ==================== */}
+  1056→      <Dialog open={checkoutOpen} onOpenChange={(open) => !isProcessing && setCheckoutOpen(open)}>
+  1057→        <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+  1058→          <DialogHeader>
+  1059→            <DialogTitle>Complete Sale</DialogTitle>
+  1060→            <DialogDescription>Review and confirm the transaction</DialogDescription>
+  1061→          </DialogHeader>
+  1062→
+  1063→          <div className="space-y-5 py-2">
+  1064→            {/* Order Summary */}
+  1065→            <div className="space-y-2">
+  1066→              <h4 className="text-sm font-semibold text-muted-foreground">Order Summary</h4>
+  1067→              <div className="rounded-lg border">
+  1068→                <div className="p-3 space-y-2">
+  1069→                  {cartItems.map((item) => (
+  1070→                    <div key={item.product.id} className="flex justify-between text-sm">
+  1071→                      <span className="text-muted-foreground">
+  1072→                        {item.product.name} × {item.quantity}
+  1073→                      </span>
+  1074→                      <span className="tabular-nums font-medium">
+  1075→                        {formatCurrency(item.product.sellingPrice * item.quantity)}
+  1076→                      </span>
+  1077→                    </div>
+  1078→                  ))}
+  1079→                </div>
+  1080→                <Separator />
+  1081→                <div className="p-3 space-y-1.5 text-sm">
+  1082→                  <div className="flex justify-between">
+  1083→                    <span className="text-muted-foreground">Subtotal</span>
+  1084→                    <span className="tabular-nums">{formatCurrency(subtotal)}</span>
+  1085→                  </div>
+  1086→                  {discountAmount > 0 && (
+  1087→                    <div className="flex justify-between text-emerald-600">
+  1088→                      <span>Discount ({discountPercent}%)</span>
+  1089→                      <span className="tabular-nums">-{formatCurrency(discountAmount)}</span>
+  1090→                    </div>
+  1091→                  )}
+  1092→                  {taxAmount > 0 && (
+  1093→                    <div className="flex justify-between">
+  1094→                      <span className="text-muted-foreground">Tax</span>
+  1095→                      <span className="tabular-nums">{formatCurrency(taxAmount)}</span>
+  1096→                    </div>
+  1097→                  )}
+  1098→                  <Separator />
+  1099→                  <div className="flex justify-between text-base font-bold pt-1">
+  1100→                    <span>Total</span>
+  1101→                    <span className="tabular-nums">{formatCurrency(total)}</span>
+  1102→                  </div>
+  1103→                </div>
+  1104→              </div>
+  1105→            </div>
+  1106→
+  1107→            {/* Customer Info */}
+  1108→            <div className="space-y-2">
+  1109→              <h4 className="text-sm font-semibold text-muted-foreground">Customer</h4>
+  1110→              <p className="text-sm">
+  1111→                {selectedCustomer?.name || 'Walk-in Customer'}
+  1112→              </p>
+  1113→            </div>
+  1114→
+  1115→            {/* Payment Method */}
+  1116→            <div className="space-y-3">
+  1117→              <h4 className="text-sm font-semibold text-muted-foreground">Payment Method</h4>
+  1118→              <RadioGroup
+  1119→                value={paymentMethod}
+  1120→                onValueChange={(val) => setPaymentMethod(val as PaymentMethod)}
+  1121→                className="grid grid-cols-2 sm:grid-cols-3 gap-2"
+  1122→              >
+  1123→                {PAYMENT_METHODS.map((pm) => (
+  1124→                  <label
+  1125→                    key={pm.value}
+  1126→                    className={`flex items-center gap-2 rounded-lg border p-3 cursor-pointer transition-all ${
+  1127→                      paymentMethod === pm.value
+  1128→                        ? 'border-primary bg-primary/5 ring-1 ring-primary/20'
+  1129→                        : 'hover:bg-muted/50'
+  1130→                    }`}
+  1131→                  >
+  1132→                    <RadioGroupItem value={pm.value} className="sr-only" />
+  1133→                    <div
+  1134→                      className={`size-8 rounded-md flex items-center justify-center ${
+  1135→                        paymentMethod === pm.value
+  1136→                          ? 'bg-primary text-primary-foreground'
+  1137→                          : 'bg-muted text-muted-foreground'
+  1138→                      }`}
+  1139→                    >
+  1140→                      {pm.icon}
+  1141→                    </div>
+  1142→                    <span className="text-sm font-medium">{pm.label}</span>
+  1143→                  </label>
+  1144→                ))}
+  1145→              </RadioGroup>
+  1146→            </div>
+  1147→
+  1148→            {/* Cash Amount Received */}
+  1149→            {paymentMethod === 'cash' && (
+  1150→              <motion.div
+  1151→                initial={{ opacity: 0, height: 0 }}
+  1152→                animate={{ opacity: 1, height: 'auto' }}
+  1153→                exit={{ opacity: 0, height: 0 }}
+  1154→                className="space-y-3"
+  1155→              >
+  1156→                <div className="space-y-2">
+  1157→                  <Label htmlFor="amount-received" className="text-sm font-semibold text-muted-foreground">
+  1158→                    Amount Received
+  1159→                  </Label>
+  1160→                  <div className="relative">
+  1161→                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">
+  1162→                      ₵
+  1163→                    </span>
+  1164→                    <Input
+  1165→                      id="amount-received"
+  1166→                      type="number"
+  1167→                      step="0.01"
+  1168→                      min="0"
+  1169→                      placeholder="0.00"
+  1170→                      value={amountReceived}
+  1171→                      onChange={(e) => setAmountReceived(e.target.value)}
+  1172→                      className="h-11 pl-7 text-lg font-semibold tabular-nums"
+  1173→                      autoFocus
+  1174→                    />
+  1175→                  </div>
+  1176→                  {/* Quick amount buttons */}
+  1177→                  <div className="flex gap-1.5 flex-wrap">
+  1178→                    {[total, Math.ceil(total / 5) * 5, Math.ceil(total / 10) * 10, Math.ceil(total / 20) * 20, 50, 100]
+  1179→                      .filter((v, i, a) => a.indexOf(v) === i && v >= total)
+  1180→                      .slice(0, 4)
+  1181→                      .map((val) => (
+  1182→                        <button
+  1183→                          key={val}
+  1184→                          onClick={() => setAmountReceived(val.toFixed(2))}
+  1185→                          className="px-3 py-1 rounded-md bg-muted hover:bg-muted/80 text-xs font-medium transition-colors"
+  1186→                        >
+  1187→                          {formatCurrency(val)}
+  1188→                        </button>
+  1189→                      ))}
+  1190→                  </div>
+  1191→                </div>
+  1192→                {amountReceived && parseFloat(amountReceived) >= total && (
+  1193→                  <div className="rounded-lg bg-emerald-500/10 border border-emerald-500/20 p-3">
+  1194→                    <div className="flex justify-between items-center">
+  1195→                      <span className="text-sm text-emerald-700 font-medium">Change</span>
+  1196→                      <span className="text-lg font-bold text-emerald-700 tabular-nums">
+  1197→                        {formatCurrency(changeAmount)}
+  1198→                      </span>
+  1199→                    </div>
+  1200→                  </div>
+  1201→                )}
+  1202→              </motion.div>
+  1203→            )}
+  1204→          </div>
+  1205→
+  1206→          <DialogFooter className="gap-2 sm:gap-0">
+  1207→            <Button
+  1208→              variant="outline"
+  1209→              onClick={() => setCheckoutOpen(false)}
+  1210→              disabled={isProcessing}
+  1211→            >
+  1212→              Cancel
+  1213→            </Button>
+  1214→            <Button
+  1215→              onClick={handleCheckout}
+  1216→              disabled={
+  1217→                isProcessing ||
+  1218→                (paymentMethod === 'cash' &&
+  1219→                  (!amountReceived || parseFloat(amountReceived) < total))
+  1220→              }
+  1221→              className="min-w-[140px]"
+  1222→            >
+  1223→              {isProcessing ? (
+  1224→                <>
+  1225→                  <div className="size-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+  1226→                  Processing...
+  1227→                </>
+  1228→              ) : (
+  1229→                <>
+  1230→                  Confirm • {formatCurrency(total)}
+  1231→                  <ChevronRight className="size-4" />
+  1232→                </>
+  1233→              )}
+  1234→            </Button>
+  1235→          </DialogFooter>
+  1236→        </DialogContent>
+  1237→      </Dialog>
+  1238→
+  1239→      {/* ==================== RECEIPT SUCCESS DIALOG ==================== */}
+  1240→      <Dialog open={receiptOpen} onOpenChange={setReceiptOpen}>
+  1241→        <DialogContent className="sm:max-w-md" showCloseButton={false}>
+  1242→          <div className="text-center space-y-3 py-2">
+  1243→            {/* Success Icon */}
+  1244→            <div className="mx-auto size-16 rounded-full bg-emerald-500/15 flex items-center justify-center">
+  1245→              <CheckCircle2 className="size-9 text-emerald-500" />
+  1246→            </div>
+  1247→            <div>
+  1248→              <h3 className="text-xl font-bold">Sale Complete!</h3>
+  1249→              <p className="text-sm text-muted-foreground mt-1">
+  1250→                {lastSale?.transactionNumber}
+  1251→              </p>
+  1252→            </div>
+  1253→          </div>
+  1254→
+  1255→          {/* Receipt Preview */}
+  1256→          {lastSale && (
+  1257→            <div ref={receiptRef}>
+  1258→              <div className="rounded-lg border bg-muted/30 p-4 space-y-3 text-sm">
+  1259→                <div className="space-y-1">
+  1260→                  {lastSale.items.map((item, i) => (
+  1261→                    <div key={i} className="flex justify-between">
+  1262→                      <span className="text-muted-foreground truncate mr-2">
+  1263→                        {item.productName} × {item.quantity}
+  1264→                      </span>
+  1265→                      <span className="tabular-nums shrink-0">{formatCurrency(item.subtotal)}</span>
+  1266→                    </div>
+  1267→                  ))}
+  1268→                </div>
+  1269→                <Separator />
+  1270→                <div className="space-y-1">
+  1271→                  <div className="flex justify-between">
+  1272→                    <span className="text-muted-foreground">Subtotal</span>
+  1273→                    <span className="tabular-nums">{formatCurrency(lastSale.subtotal)}</span>
+  1274→                  </div>
+  1275→                  {lastSale.discountAmount > 0 && (
+  1276→                    <div className="flex justify-between text-emerald-600">
+  1277→                      <span>Discount</span>
+  1278→                      <span className="tabular-nums">-{formatCurrency(lastSale.discountAmount)}</span>
+  1279→                    </div>
+  1280→                  )}
+  1281→                  {lastSale.taxAmount > 0 && (
+  1282→                    <div className="flex justify-between">
+  1283→                      <span className="text-muted-foreground">Tax</span>
+  1284→                      <span className="tabular-nums">{formatCurrency(lastSale.taxAmount)}</span>
+  1285→                    </div>
+  1286→                  )}
+  1287→                  <Separator />
+  1288→                  <div className="flex justify-between font-bold text-base">
+  1289→                    <span>Total</span>
+  1290→                    <span className="tabular-nums">{formatCurrency(lastSale.totalAmount)}</span>
+  1291→                  </div>
+  1292→                  {lastSale.paymentMethod === 'cash' && lastSale.amountReceived != null && (
+  1293→                    <>
+  1294→                      <div className="flex justify-between text-muted-foreground">
+  1295→                        <span>Received</span>
+  1296→                        <span className="tabular-nums">{formatCurrency(lastSale.amountReceived)}</span>
+  1297→                      </div>
+  1298→                      <div className="flex justify-between font-medium">
+  1299→                        <span>Change</span>
+  1300→                        <span className="tabular-nums">{formatCurrency(lastSale.changeAmount)}</span>
+  1301→                      </div>
+  1302→                    </>
+  1303→                  )}
+  1304→                </div>
+  1305→                <div className="text-center text-xs text-muted-foreground">
+  1306→                  <p>{lastSale.customer?.name || 'Walk-in'}</p>
+  1307→                  <p className="capitalize">
+  1308→                    {lastSale.paymentMethod.replace('_', ' ')}
+  1309→                  </p>
+  1310→                </div>
+  1311→              </div>
+  1312→            </div>
+  1313→          )}
+  1314→
+  1315→          {/* Action Buttons */}
+  1316→          <div className="space-y-2 pt-1">
+  1317→            <div className="grid grid-cols-2 gap-2">
+  1318→              <Button variant="outline" onClick={handlePrintReceipt}>
+  1319→                <Printer className="size-4" />
+  1320→                Print
+  1321→              </Button>
+  1322→              <Button variant="outline" onClick={handleDownloadReceipt}>
+  1323→                <Download className="size-4" />
+  1324→                Download
+  1325→              </Button>
+  1326→              <Button
+  1327→                variant="outline"
+  1328→                className="col-span-2"
+  1329→                onClick={() => {
+  1330→                  setSendMethod('whatsapp');
+  1331→                  setSendTo(selectedCustomer?.phone || lastSale?.customer?.phone || '');
+  1332→                  setSendReceiptOpen(true);
+  1333→                }}
+  1334→              >
+  1335→                <Send className="size-4" />
+  1336→                Send Receipt
+  1337→              </Button>
+  1338→            </div>
+  1339→            <Button
+  1340→              className="w-full rounded-xl py-5 text-base font-semibold"
+  1341→              size="lg"
+  1342→              onClick={handleNewSale}
+  1343→            >
+  1344→              New Sale
+  1345→              <ChevronRight className="size-5 ml-1" />
+  1346→            </Button>
+  1347→          </div>
+  1348→        </DialogContent>
+  1349→      </Dialog>
+  1350→
+  1351→      {/* ==================== SEND RECEIPT DIALOG ==================== */}
+  1352→      <Dialog open={sendReceiptOpen} onOpenChange={setSendReceiptOpen}>
+  1353→        <DialogContent className="sm:max-w-md">
+  1354→          <DialogHeader>
+  1355→            <DialogTitle>Send Receipt</DialogTitle>
+  1356→            <DialogDescription>Choose how to send the receipt to the customer</DialogDescription>
+  1357→          </DialogHeader>
+  1358→          <div className="space-y-4 py-2">
+  1359→            <div className="space-y-2">
+  1360→              <Label>Send via</Label>
+  1361→              <RadioGroup
+  1362→                value={sendMethod}
+  1363→                onValueChange={(val) => {
+  1364→                  setSendMethod(val as 'whatsapp' | 'sms' | 'email');
+  1365→                  setSendTo('');
+  1366→                }}
+  1367→                className="flex gap-2"
+  1368→              >
+  1369→                {[
+  1370→                  { value: 'whatsapp', label: 'WhatsApp' },
+  1371→                  { value: 'sms', label: 'SMS' },
+  1372→                  { value: 'email', label: 'Email' },
+  1373→                ].map((opt) => (
+  1374→                  <label
+  1375→                    key={opt.value}
+  1376→                    className={`flex-1 flex items-center justify-center gap-2 rounded-lg border p-3 cursor-pointer transition-all text-sm font-medium ${
+  1377→                      sendMethod === opt.value
+  1378→                        ? 'border-primary bg-primary/5 ring-1 ring-primary/20'
+  1379→                        : 'hover:bg-muted/50'
+  1380→                    }`}
+  1381→                  >
+  1382→                    <RadioGroupItem value={opt.value} className="sr-only" />
+  1383→                    {opt.label}
+  1384→                  </label>
+  1385→                ))}
+  1386→              </RadioGroup>
+  1387→            </div>
+  1388→            <div className="space-y-2">
+  1389→              <Label htmlFor="send-to">
+  1390→                {sendMethod === 'email' ? 'Email Address' : 'Phone Number'}
+  1391→              </Label>
+  1392→              <Input
+  1393→                id="send-to"
+  1394→                type={sendMethod === 'email' ? 'email' : 'tel'}
+  1395→                placeholder={
+  1396→                  sendMethod === 'email' ? 'customer@example.com' : '+233 XX XXX XXXX'
+  1397→                }
+  1398→                value={sendTo}
+  1399→                onChange={(e) => setSendTo(e.target.value)}
+  1400→                onKeyDown={(e) => e.key === 'Enter' && handleSendReceipt()}
+  1401→              />
+  1402→            </div>
+  1403→          </div>
+  1404→          <DialogFooter>
+  1405→            <Button variant="outline" onClick={() => setSendReceiptOpen(false)}>
+  1406→              Cancel
+  1407→            </Button>
+  1408→            <Button onClick={handleSendReceipt}>
+  1409→              <Send className="size-4" />
+  1410→              Send
+  1411→            </Button>
+  1412→          </DialogFooter>
+  1413→        </DialogContent>
+  1414→      </Dialog>
+  1415→    </div>
+  1416→  );
+  1417→}
+  1418→

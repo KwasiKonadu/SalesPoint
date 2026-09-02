@@ -1,0 +1,2002 @@
+     1→▲ Next.js 16.1.3 (Turbopack)
+     2→- Local:         http://localhost:3000
+     3→- Network:       http://21.0.22.50:3000
+     4→- Environments: .env
+     5→
+     6→✓ Starting...
+     7→Attention: Next.js now collects completely anonymous telemetry regarding usage.
+     8→This information is used to shape Next.js' roadmap and prioritize features.
+     9→You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+    10→https://nextjs.org/telemetry
+    11→
+    12→
+    13→  We detected TypeScript in your project and reconfigured your tsconfig.json file for you.
+    14→  The following suggested values were added to your tsconfig.json. These values can be changed to fit your project's needs:
+    15→
+    16→        - include was updated to add '.next/dev/types/**/*.ts'
+    17→
+    18→  The following mandatory changes were made to your tsconfig.json:
+    19→
+    20→        - jsx was set to react-jsx (next.js uses the React automatic runtime)
+    21→
+    22→✓ Ready in 667ms
+    23→○ Compiling / ...
+    24→ GET / 200 in 4.3s (compile: 4.2s, render: 149ms)
+    25→ GET / 200 in 3.0s (compile: 2.8s, render: 219ms)
+    26→ GET / 200 in 25ms (compile: 2ms, render: 22ms)
+    27→  Reload env: .env
+    28→ GET / 200 in 50ms (compile: 27ms, render: 23ms)
+    29→ GET / 200 in 44ms (compile: 25ms, render: 19ms)
+    30→ GET / 200 in 26ms (compile: 3ms, render: 23ms)
+    31→ GET / 200 in 17ms (compile: 3ms, render: 14ms)
+    32→ GET / 200 in 20ms (compile: 3ms, render: 17ms)
+    33→ GET / 200 in 19ms (compile: 3ms, render: 16ms)
+    34→ GET / 200 in 16ms (compile: 3ms, render: 13ms)
+    35→ GET / 200 in 16ms (compile: 3ms, render: 13ms)
+    36→ GET / 200 in 21ms (compile: 3ms, render: 18ms)
+    37→ GET /api/auth/csrf 200 in 1722ms (compile: 1698ms, render: 24ms)
+    38→✓ Compiled in 200ms
+    39→✓ Compiled in 182ms
+    40→✓ Compiled in 245ms
+    41→ GET / 200 in 45ms (compile: 26ms, render: 19ms)
+    42→ GET / 200 in 20ms (compile: 3ms, render: 17ms)
+    43→ GET / 200 in 39ms (compile: 3ms, render: 37ms)
+    44→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+    45→ GET / 200 in 31ms (compile: 4ms, render: 28ms)
+    46→ GET / 200 in 28ms (compile: 4ms, render: 24ms)
+    47→ GET / 200 in 16ms (compile: 3ms, render: 12ms)
+    48→ GET / 200 in 21ms (compile: 2ms, render: 19ms)
+    49→ GET / 200 in 22ms (compile: 3ms, render: 19ms)
+    50→ GET / 200 in 14ms (compile: 2ms, render: 11ms)
+    51→ GET / 200 in 45ms (compile: 23ms, render: 23ms)
+    52→ GET / 200 in 15ms (compile: 2ms, render: 12ms)
+    53→ GET / 200 in 14ms (compile: 2ms, render: 11ms)
+    54→ GET / 200 in 15ms (compile: 2ms, render: 13ms)
+    55→ GET / 200 in 16ms (compile: 4ms, render: 13ms)
+    56→ GET / 200 in 13ms (compile: 2ms, render: 11ms)
+    57→ GET / 200 in 19ms (compile: 2ms, render: 16ms)
+    58→ GET / 200 in 14ms (compile: 3ms, render: 12ms)
+    59→ GET / 200 in 21ms (compile: 3ms, render: 18ms)
+    60→ GET / 200 in 22ms (compile: 3ms, render: 19ms)
+    61→ GET / 200 in 15ms (compile: 2ms, render: 13ms)
+    62→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+    63→ GET / 200 in 43ms (compile: 24ms, render: 20ms)
+    64→ GET / 200 in 15ms (compile: 2ms, render: 13ms)
+    65→ GET / 200 in 15ms (compile: 3ms, render: 13ms)
+    66→ GET / 200 in 16ms (compile: 2ms, render: 14ms)
+    67→ GET / 200 in 22ms (compile: 3ms, render: 20ms)
+    68→ GET / 200 in 15ms (compile: 2ms, render: 12ms)
+    69→ GET / 200 in 18ms (compile: 3ms, render: 15ms)
+    70→ GET / 200 in 18ms (compile: 3ms, render: 15ms)
+    71→ GET / 200 in 17ms (compile: 2ms, render: 14ms)
+    72→ GET / 200 in 18ms (compile: 3ms, render: 15ms)
+    73→ GET / 200 in 17ms (compile: 3ms, render: 14ms)
+    74→ GET / 200 in 19ms (compile: 3ms, render: 16ms)
+    75→ GET / 200 in 17ms (compile: 3ms, render: 15ms)
+    76→ GET / 200 in 17ms (compile: 3ms, render: 14ms)
+    77→ GET / 200 in 43ms (compile: 25ms, render: 19ms)
+    78→ GET / 200 in 27ms (compile: 3ms, render: 25ms)
+    79→ GET / 200 in 15ms (compile: 2ms, render: 13ms)
+    80→ GET / 200 in 15ms (compile: 2ms, render: 13ms)
+    81→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+    82→ GET / 200 in 18ms (compile: 3ms, render: 15ms)
+    83→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+    84→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+    85→ GET / 200 in 21ms (compile: 3ms, render: 18ms)
+    86→ GET / 200 in 14ms (compile: 3ms, render: 11ms)
+    87→ GET / 200 in 18ms (compile: 3ms, render: 16ms)
+    88→ GET / 200 in 24ms (compile: 3ms, render: 21ms)
+    89→ GET / 200 in 21ms (compile: 3ms, render: 17ms)
+    90→ GET / 200 in 14ms (compile: 3ms, render: 11ms)
+    91→ GET / 200 in 18ms (compile: 2ms, render: 16ms)
+    92→ GET / 200 in 14ms (compile: 2ms, render: 11ms)
+    93→ GET / 200 in 39ms (compile: 23ms, render: 16ms)
+    94→ GET / 200 in 16ms (compile: 3ms, render: 13ms)
+    95→ GET / 200 in 25ms (compile: 4ms, render: 21ms)
+    96→ GET / 200 in 16ms (compile: 3ms, render: 13ms)
+    97→ GET / 200 in 16ms (compile: 3ms, render: 13ms)
+    98→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+    99→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   100→ GET / 200 in 15ms (compile: 2ms, render: 12ms)
+   101→ GET / 200 in 16ms (compile: 3ms, render: 12ms)
+   102→ GET / 200 in 20ms (compile: 2ms, render: 18ms)
+   103→ GET / 200 in 20ms (compile: 2ms, render: 17ms)
+   104→ GET / 200 in 23ms (compile: 3ms, render: 20ms)
+   105→ GET / 200 in 16ms (compile: 3ms, render: 14ms)
+   106→ GET / 200 in 15ms (compile: 2ms, render: 12ms)
+   107→ GET / 200 in 16ms (compile: 2ms, render: 14ms)
+   108→ GET / 200 in 23ms (compile: 2ms, render: 21ms)
+   109→ GET / 200 in 18ms (compile: 3ms, render: 15ms)
+   110→ GET / 200 in 17ms (compile: 3ms, render: 13ms)
+   111→ GET / 200 in 78ms (compile: 26ms, render: 52ms)
+   112→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   113→ GET / 200 in 23ms (compile: 4ms, render: 20ms)
+   114→ GET / 200 in 18ms (compile: 3ms, render: 15ms)
+   115→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   116→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   117→ GET / 200 in 14ms (compile: 3ms, render: 11ms)
+   118→ GET / 200 in 15ms (compile: 2ms, render: 13ms)
+   119→ GET / 200 in 13ms (compile: 2ms, render: 11ms)
+   120→ GET / 200 in 26ms (compile: 2ms, render: 24ms)
+   121→ GET / 200 in 14ms (compile: 3ms, render: 11ms)
+   122→ GET / 200 in 16ms (compile: 3ms, render: 13ms)
+   123→ GET / 200 in 15ms (compile: 3ms, render: 12ms)
+   124→ GET / 200 in 16ms (compile: 3ms, render: 13ms)
+   125→ GET / 200 in 21ms (compile: 2ms, render: 19ms)
+   126→ GET / 200 in 14ms (compile: 2ms, render: 11ms)
+   127→ GET / 200 in 15ms (compile: 3ms, render: 13ms)
+   128→ GET / 200 in 13ms (compile: 2ms, render: 11ms)
+   129→ GET / 200 in 16ms (compile: 3ms, render: 13ms)
+   130→ GET / 200 in 15ms (compile: 3ms, render: 13ms)
+   131→ GET / 200 in 40ms (compile: 23ms, render: 16ms)
+   132→ GET / 200 in 20ms (compile: 3ms, render: 18ms)
+   133→ GET / 200 in 15ms (compile: 3ms, render: 12ms)
+   134→ GET / 200 in 32ms (compile: 3ms, render: 29ms)
+   135→ GET / 200 in 14ms (compile: 3ms, render: 12ms)
+   136→ GET / 200 in 13ms (compile: 2ms, render: 10ms)
+   137→ GET / 200 in 15ms (compile: 3ms, render: 12ms)
+   138→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   139→ GET / 200 in 14ms (compile: 2ms, render: 11ms)
+   140→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   141→ GET / 200 in 18ms (compile: 3ms, render: 15ms)
+   142→ GET / 200 in 16ms (compile: 3ms, render: 13ms)
+   143→ GET / 200 in 13ms (compile: 2ms, render: 11ms)
+   144→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   145→ GET / 200 in 28ms (compile: 3ms, render: 25ms)
+   146→ GET / 200 in 15ms (compile: 2ms, render: 12ms)
+   147→ GET / 200 in 18ms (compile: 2ms, render: 16ms)
+   148→ GET / 200 in 15ms (compile: 3ms, render: 12ms)
+   149→ GET / 200 in 14ms (compile: 3ms, render: 12ms)
+   150→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   151→ GET / 200 in 14ms (compile: 2ms, render: 11ms)
+   152→ GET / 200 in 14ms (compile: 3ms, render: 12ms)
+   153→✓ Compiled in 226ms
+   154→ GET / 200 in 45ms (compile: 27ms, render: 18ms)
+   155→ GET / 200 in 25ms (compile: 3ms, render: 22ms)
+   156→ GET / 200 in 17ms (compile: 3ms, render: 14ms)
+   157→ GET / 200 in 15ms (compile: 3ms, render: 13ms)
+   158→ GET / 200 in 21ms (compile: 4ms, render: 18ms)
+   159→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   160→ GET / 200 in 15ms (compile: 2ms, render: 13ms)
+   161→ GET / 200 in 18ms (compile: 3ms, render: 16ms)
+   162→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   163→ GET / 200 in 13ms (compile: 2ms, render: 11ms)
+   164→ GET / 200 in 18ms (compile: 3ms, render: 16ms)
+   165→ GET / 200 in 15ms (compile: 2ms, render: 13ms)
+   166→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   167→ GET / 200 in 19ms (compile: 3ms, render: 16ms)
+   168→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   169→ GET / 200 in 15ms (compile: 3ms, render: 12ms)
+   170→ GET / 200 in 27ms (compile: 2ms, render: 25ms)
+   171→ GET / 200 in 17ms (compile: 2ms, render: 14ms)
+   172→ GET / 200 in 16ms (compile: 2ms, render: 14ms)
+   173→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   174→ GET / 200 in 15ms (compile: 3ms, render: 12ms)
+   175→ GET / 200 in 15ms (compile: 3ms, render: 12ms)
+   176→ GET / 200 in 16ms (compile: 2ms, render: 13ms)
+   177→ GET / 200 in 19ms (compile: 3ms, render: 16ms)
+   178→ GET / 200 in 38ms (compile: 23ms, render: 16ms)
+   179→ GET / 200 in 26ms (compile: 4ms, render: 22ms)
+   180→ GET / 200 in 25ms (compile: 3ms, render: 22ms)
+   181→ GET / 200 in 15ms (compile: 3ms, render: 12ms)
+   182→ GET / 200 in 15ms (compile: 3ms, render: 12ms)
+   183→ GET / 200 in 22ms (compile: 3ms, render: 19ms)
+   184→ GET / 200 in 13ms (compile: 2ms, render: 11ms)
+   185→ GET / 200 in 20ms (compile: 2ms, render: 18ms)
+   186→ GET / 200 in 42ms (compile: 3ms, render: 39ms)
+   187→ GET / 200 in 15ms (compile: 3ms, render: 13ms)
+   188→ GET / 200 in 13ms (compile: 2ms, render: 11ms)
+   189→ GET / 200 in 16ms (compile: 2ms, render: 13ms)
+   190→ GET / 200 in 15ms (compile: 2ms, render: 13ms)
+   191→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   192→ GET / 200 in 13ms (compile: 2ms, render: 11ms)
+   193→ GET / 200 in 14ms (compile: 3ms, render: 11ms)
+   194→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   195→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   196→ GET / 200 in 42ms (compile: 2ms, render: 40ms)
+   197→ GET / 200 in 16ms (compile: 2ms, render: 13ms)
+   198→ GET / 200 in 13ms (compile: 2ms, render: 11ms)
+   199→ GET / 200 in 14ms (compile: 2ms, render: 11ms)
+   200→ GET / 200 in 21ms (compile: 3ms, render: 18ms)
+   201→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   202→ GET / 200 in 13ms (compile: 2ms, render: 11ms)
+   203→ GET / 200 in 14ms (compile: 2ms, render: 11ms)
+   204→ GET / 200 in 51ms (compile: 32ms, render: 18ms)
+   205→ GET / 200 in 19ms (compile: 3ms, render: 16ms)
+   206→ GET / 200 in 17ms (compile: 3ms, render: 14ms)
+   207→ GET / 200 in 18ms (compile: 3ms, render: 15ms)
+   208→ GET / 200 in 15ms (compile: 2ms, render: 13ms)
+   209→ GET / 200 in 17ms (compile: 3ms, render: 14ms)
+   210→ GET / 200 in 18ms (compile: 3ms, render: 15ms)
+   211→ GET / 200 in 47ms (compile: 4ms, render: 44ms)
+   212→ GET / 200 in 15ms (compile: 2ms, render: 13ms)
+   213→ GET / 200 in 29ms (compile: 3ms, render: 26ms)
+   214→ GET / 200 in 31ms (compile: 3ms, render: 28ms)
+   215→ GET / 200 in 17ms (compile: 3ms, render: 14ms)
+   216→ GET / 200 in 32ms (compile: 3ms, render: 29ms)
+   217→ GET / 200 in 36ms (compile: 3ms, render: 32ms)
+   218→ GET / 200 in 162ms (compile: 146ms, render: 15ms)
+   219→ GET / 200 in 16ms (compile: 3ms, render: 14ms)
+   220→ GET / 200 in 31ms (compile: 3ms, render: 28ms)
+   221→ GET / 200 in 18ms (compile: 2ms, render: 15ms)
+   222→ GET / 200 in 16ms (compile: 3ms, render: 13ms)
+   223→ GET / 200 in 16ms (compile: 2ms, render: 13ms)
+   224→ GET / 200 in 14ms (compile: 2ms, render: 11ms)
+   225→ GET / 200 in 20ms (compile: 3ms, render: 17ms)
+   226→ GET / 200 in 16ms (compile: 2ms, render: 13ms)
+   227→ GET / 200 in 13ms (compile: 2ms, render: 11ms)
+   228→ GET / 200 in 15ms (compile: 2ms, render: 12ms)
+   229→ GET / 200 in 21ms (compile: 3ms, render: 18ms)
+   230→ GET / 200 in 15ms (compile: 2ms, render: 13ms)
+   231→ GET / 200 in 22ms (compile: 2ms, render: 19ms)
+   232→ GET / 200 in 13ms (compile: 2ms, render: 11ms)
+   233→ GET / 200 in 20ms (compile: 8ms, render: 12ms)
+   234→ GET / 200 in 12ms (compile: 3ms, render: 10ms)
+   235→ GET / 200 in 21ms (compile: 3ms, render: 18ms)
+   236→ GET / 200 in 15ms (compile: 3ms, render: 12ms)
+   237→ GET / 200 in 19ms (compile: 2ms, render: 16ms)
+   238→ GET / 200 in 16ms (compile: 3ms, render: 12ms)
+   239→ GET / 200 in 15ms (compile: 2ms, render: 12ms)
+   240→ GET / 200 in 22ms (compile: 3ms, render: 19ms)
+   241→ GET / 200 in 12ms (compile: 2ms, render: 10ms)
+   242→ GET / 200 in 21ms (compile: 3ms, render: 18ms)
+   243→ GET / 200 in 29ms (compile: 2ms, render: 26ms)
+   244→ GET / 200 in 16ms (compile: 2ms, render: 14ms)
+   245→ GET / 200 in 16ms (compile: 2ms, render: 14ms)
+   246→ GET / 200 in 33ms (compile: 3ms, render: 30ms)
+   247→ GET / 200 in 15ms (compile: 3ms, render: 12ms)
+   248→ GET / 200 in 23ms (compile: 3ms, render: 20ms)
+   249→ GET / 200 in 13ms (compile: 2ms, render: 11ms)
+   250→ GET / 200 in 13ms (compile: 1964µs, render: 11ms)
+   251→ GET / 200 in 20ms (compile: 2ms, render: 18ms)
+   252→ GET / 200 in 15ms (compile: 2ms, render: 13ms)
+   253→ GET / 200 in 38ms (compile: 23ms, render: 15ms)
+   254→ GET / 200 in 34ms (compile: 3ms, render: 30ms)
+   255→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   256→ GET / 200 in 22ms (compile: 3ms, render: 19ms)
+   257→ GET / 200 in 13ms (compile: 2ms, render: 11ms)
+   258→ GET / 200 in 18ms (compile: 2ms, render: 15ms)
+   259→ GET / 200 in 15ms (compile: 2ms, render: 12ms)
+   260→ GET / 200 in 14ms (compile: 2ms, render: 11ms)
+   261→ GET / 200 in 15ms (compile: 3ms, render: 12ms)
+   262→ GET / 200 in 14ms (compile: 3ms, render: 11ms)
+   263→ GET / 200 in 29ms (compile: 3ms, render: 26ms)
+   264→ GET / 200 in 33ms (compile: 3ms, render: 30ms)
+   265→ GET / 200 in 27ms (compile: 2ms, render: 25ms)
+   266→ GET / 200 in 16ms (compile: 2ms, render: 13ms)
+   267→ GET / 200 in 16ms (compile: 4ms, render: 13ms)
+   268→ GET / 200 in 14ms (compile: 2ms, render: 11ms)
+   269→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   270→ GET / 200 in 13ms (compile: 2ms, render: 11ms)
+   271→ GET / 200 in 22ms (compile: 3ms, render: 19ms)
+   272→ GET / 200 in 23ms (compile: 3ms, render: 20ms)
+   273→ GET / 200 in 13ms (compile: 2ms, render: 11ms)
+   274→ GET / 200 in 13ms (compile: 2ms, render: 11ms)
+   275→ GET / 200 in 22ms (compile: 3ms, render: 19ms)
+   276→ GET / 200 in 15ms (compile: 2ms, render: 13ms)
+   277→ GET / 200 in 23ms (compile: 2ms, render: 21ms)
+   278→ GET / 200 in 13ms (compile: 2ms, render: 11ms)
+   279→ GET / 200 in 14ms (compile: 2ms, render: 11ms)
+   280→ GET / 200 in 13ms (compile: 1973µs, render: 12ms)
+   281→ GET / 200 in 13ms (compile: 2ms, render: 11ms)
+   282→ GET / 200 in 15ms (compile: 2ms, render: 13ms)
+   283→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   284→ GET / 200 in 13ms (compile: 3ms, render: 10ms)
+   285→ GET / 200 in 15ms (compile: 2ms, render: 13ms)
+   286→ GET / 200 in 13ms (compile: 1995µs, render: 11ms)
+   287→ GET / 200 in 14ms (compile: 3ms, render: 11ms)
+   288→ GET / 200 in 19ms (compile: 1951µs, render: 17ms)
+   289→ GET / 200 in 26ms (compile: 2ms, render: 24ms)
+   290→ GET / 200 in 14ms (compile: 2ms, render: 11ms)
+   291→ GET / 200 in 14ms (compile: 3ms, render: 11ms)
+   292→ GET / 200 in 13ms (compile: 2ms, render: 11ms)
+   293→ GET / 200 in 20ms (compile: 3ms, render: 18ms)
+   294→ GET / 200 in 38ms (compile: 24ms, render: 14ms)
+   295→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   296→ GET / 200 in 17ms (compile: 3ms, render: 14ms)
+   297→ GET / 200 in 18ms (compile: 2ms, render: 16ms)
+   298→ GET / 200 in 26ms (compile: 4ms, render: 23ms)
+   299→ GET / 200 in 20ms (compile: 4ms, render: 16ms)
+   300→ GET / 200 in 18ms (compile: 3ms, render: 16ms)
+   301→ GET / 200 in 13ms (compile: 2ms, render: 11ms)
+   302→ GET / 200 in 18ms (compile: 3ms, render: 15ms)
+   303→ GET / 200 in 16ms (compile: 2ms, render: 13ms)
+   304→ GET / 200 in 18ms (compile: 3ms, render: 16ms)
+   305→ GET / 200 in 17ms (compile: 2ms, render: 15ms)
+   306→ GET / 200 in 15ms (compile: 2ms, render: 12ms)
+   307→ GET / 200 in 17ms (compile: 2ms, render: 14ms)
+   308→ GET / 200 in 15ms (compile: 2ms, render: 13ms)
+   309→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   310→ GET / 200 in 21ms (compile: 2ms, render: 19ms)
+   311→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   312→ GET / 200 in 36ms (compile: 2ms, render: 33ms)
+   313→ GET / 200 in 17ms (compile: 2ms, render: 14ms)
+   314→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   315→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   316→ GET / 200 in 20ms (compile: 2ms, render: 18ms)
+   317→ GET / 200 in 20ms (compile: 9ms, render: 11ms)
+   318→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   319→ GET / 200 in 19ms (compile: 2ms, render: 17ms)
+   320→ GET / 200 in 15ms (compile: 2ms, render: 12ms)
+   321→ GET / 200 in 13ms (compile: 2ms, render: 11ms)
+   322→ GET / 200 in 40ms (compile: 3ms, render: 37ms)
+   323→ GET / 200 in 21ms (compile: 2ms, render: 19ms)
+   324→ GET / 200 in 17ms (compile: 3ms, render: 15ms)
+   325→ GET / 200 in 13ms (compile: 2ms, render: 11ms)
+   326→ GET / 200 in 15ms (compile: 2ms, render: 13ms)
+   327→ GET / 200 in 23ms (compile: 3ms, render: 20ms)
+   328→ GET / 200 in 51ms (compile: 29ms, render: 23ms)
+   329→ GET / 200 in 17ms (compile: 3ms, render: 14ms)
+   330→ GET / 200 in 15ms (compile: 2ms, render: 13ms)
+   331→ GET / 200 in 15ms (compile: 2ms, render: 12ms)
+   332→ GET / 200 in 22ms (compile: 3ms, render: 19ms)
+   333→ GET / 200 in 25ms (compile: 3ms, render: 22ms)
+   334→ GET / 200 in 17ms (compile: 3ms, render: 14ms)
+   335→ GET / 200 in 20ms (compile: 2ms, render: 18ms)
+   336→ GET / 200 in 21ms (compile: 3ms, render: 18ms)
+   337→ GET / 200 in 125ms (compile: 18ms, render: 107ms)
+   338→ GET / 200 in 15ms (compile: 3ms, render: 13ms)
+   339→ GET / 200 in 23ms (compile: 3ms, render: 19ms)
+   340→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   341→ GET / 200 in 15ms (compile: 3ms, render: 13ms)
+   342→ GET / 200 in 19ms (compile: 3ms, render: 16ms)
+   343→ GET / 200 in 20ms (compile: 3ms, render: 18ms)
+   344→ GET / 200 in 15ms (compile: 2ms, render: 13ms)
+   345→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   346→ GET / 200 in 18ms (compile: 2ms, render: 15ms)
+   347→ GET / 200 in 14ms (compile: 2ms, render: 11ms)
+   348→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   349→ GET / 200 in 15ms (compile: 2ms, render: 13ms)
+   350→ GET / 200 in 15ms (compile: 2ms, render: 13ms)
+   351→ GET / 200 in 17ms (compile: 2ms, render: 15ms)
+   352→ GET / 200 in 18ms (compile: 2ms, render: 16ms)
+   353→ GET / 200 in 15ms (compile: 2ms, render: 13ms)
+   354→ GET / 200 in 15ms (compile: 2ms, render: 13ms)
+   355→ GET / 200 in 34ms (compile: 21ms, render: 13ms)
+   356→ GET / 200 in 16ms (compile: 2ms, render: 14ms)
+   357→ GET / 200 in 19ms (compile: 3ms, render: 16ms)
+   358→ GET / 200 in 16ms (compile: 2ms, render: 14ms)
+   359→ GET / 200 in 13ms (compile: 2ms, render: 11ms)
+   360→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   361→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   362→ GET / 200 in 16ms (compile: 2ms, render: 13ms)
+   363→ GET / 200 in 22ms (compile: 4ms, render: 18ms)
+   364→ GET / 200 in 44ms (compile: 24ms, render: 20ms)
+   365→ GET / 200 in 27ms (compile: 2ms, render: 25ms)
+   366→ GET / 200 in 15ms (compile: 2ms, render: 13ms)
+   367→ GET / 200 in 13ms (compile: 2ms, render: 11ms)
+   368→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   369→ GET / 200 in 17ms (compile: 2ms, render: 14ms)
+   370→ GET / 200 in 13ms (compile: 2ms, render: 11ms)
+   371→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   372→ GET / 200 in 25ms (compile: 2ms, render: 23ms)
+   373→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   374→ GET / 200 in 15ms (compile: 2ms, render: 12ms)
+   375→ GET / 200 in 19ms (compile: 2ms, render: 17ms)
+   376→ GET / 200 in 15ms (compile: 2ms, render: 12ms)
+   377→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   378→ GET / 200 in 19ms (compile: 2ms, render: 17ms)
+   379→ GET / 200 in 15ms (compile: 2ms, render: 12ms)
+   380→ GET / 200 in 20ms (compile: 8ms, render: 12ms)
+   381→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   382→ GET / 200 in 15ms (compile: 3ms, render: 13ms)
+   383→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   384→ GET / 200 in 20ms (compile: 2ms, render: 18ms)
+   385→ GET / 200 in 21ms (compile: 2ms, render: 18ms)
+   386→ GET / 200 in 35ms (compile: 22ms, render: 14ms)
+   387→ GET / 200 in 16ms (compile: 3ms, render: 13ms)
+   388→ GET / 200 in 31ms (compile: 3ms, render: 28ms)
+   389→ GET / 200 in 17ms (compile: 2ms, render: 15ms)
+   390→ GET / 200 in 14ms (compile: 2ms, render: 11ms)
+   391→ GET / 200 in 16ms (compile: 2ms, render: 13ms)
+   392→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   393→ GET / 200 in 14ms (compile: 2ms, render: 11ms)
+   394→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   395→ GET / 200 in 18ms (compile: 2ms, render: 16ms)
+   396→ GET / 200 in 14ms (compile: 3ms, render: 11ms)
+   397→ GET / 200 in 15ms (compile: 2ms, render: 12ms)
+   398→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   399→ GET / 200 in 15ms (compile: 2ms, render: 13ms)
+   400→ GET / 200 in 25ms (compile: 3ms, render: 22ms)
+   401→ GET / 200 in 33ms (compile: 3ms, render: 30ms)
+   402→ GET / 200 in 15ms (compile: 3ms, render: 13ms)
+   403→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   404→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   405→ GET / 200 in 13ms (compile: 2ms, render: 11ms)
+   406→ GET / 200 in 21ms (compile: 3ms, render: 18ms)
+   407→ GET / 200 in 16ms (compile: 3ms, render: 13ms)
+   408→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   409→ GET / 200 in 15ms (compile: 2ms, render: 12ms)
+   410→ GET / 200 in 24ms (compile: 3ms, render: 21ms)
+   411→ GET / 200 in 15ms (compile: 3ms, render: 12ms)
+   412→ GET / 200 in 15ms (compile: 2ms, render: 12ms)
+   413→ GET / 200 in 18ms (compile: 2ms, render: 16ms)
+   414→ GET / 200 in 31ms (compile: 2ms, render: 28ms)
+   415→ GET / 200 in 21ms (compile: 3ms, render: 18ms)
+   416→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   417→ GET / 200 in 15ms (compile: 4ms, render: 12ms)
+   418→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   419→ GET / 200 in 21ms (compile: 3ms, render: 18ms)
+   420→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   421→ GET / 200 in 23ms (compile: 3ms, render: 19ms)
+   422→ GET / 200 in 35ms (compile: 8ms, render: 26ms)
+   423→ GET / 200 in 15ms (compile: 2ms, render: 13ms)
+   424→ GET / 200 in 16ms (compile: 4ms, render: 11ms)
+   425→ GET / 200 in 16ms (compile: 2ms, render: 14ms)
+   426→ GET / 200 in 53ms (compile: 3ms, render: 50ms)
+   427→ GET / 200 in 46ms (compile: 4ms, render: 42ms)
+   428→ GET / 200 in 47ms (compile: 2ms, render: 44ms)
+   429→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   430→ GET / 200 in 15ms (compile: 2ms, render: 13ms)
+   431→ GET / 200 in 18ms (compile: 2ms, render: 16ms)
+   432→ GET / 200 in 17ms (compile: 2ms, render: 15ms)
+   433→ GET / 200 in 31ms (compile: 2ms, render: 28ms)
+   434→ GET / 200 in 38ms (compile: 8ms, render: 30ms)
+   435→ GET / 200 in 49ms (compile: 2ms, render: 47ms)
+   436→ GET / 200 in 20ms (compile: 3ms, render: 18ms)
+   437→ GET / 200 in 54ms (compile: 6ms, render: 48ms)
+   438→ GET / 200 in 15ms (compile: 3ms, render: 13ms)
+   439→ GET / 200 in 44ms (compile: 4ms, render: 40ms)
+   440→ GET / 200 in 30ms (compile: 2ms, render: 27ms)
+   441→ GET / 200 in 15ms (compile: 2ms, render: 13ms)
+   442→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   443→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   444→ GET / 200 in 13ms (compile: 2ms, render: 11ms)
+   445→ GET / 200 in 15ms (compile: 3ms, render: 13ms)
+   446→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   447→ GET / 200 in 16ms (compile: 2ms, render: 14ms)
+   448→ GET / 200 in 16ms (compile: 2ms, render: 13ms)
+   449→ GET / 200 in 13ms (compile: 2ms, render: 11ms)
+   450→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   451→ GET / 200 in 21ms (compile: 3ms, render: 18ms)
+   452→ GET / 200 in 37ms (compile: 3ms, render: 34ms)
+   453→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   454→ GET / 200 in 16ms (compile: 2ms, render: 14ms)
+   455→ GET / 200 in 13ms (compile: 2ms, render: 11ms)
+   456→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   457→ GET / 200 in 18ms (compile: 2ms, render: 16ms)
+   458→ GET / 200 in 22ms (compile: 3ms, render: 19ms)
+   459→ GET / 200 in 16ms (compile: 2ms, render: 14ms)
+   460→ GET / 200 in 15ms (compile: 2ms, render: 13ms)
+   461→ GET / 200 in 18ms (compile: 2ms, render: 16ms)
+   462→ GET / 200 in 58ms (compile: 2ms, render: 56ms)
+   463→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   464→ GET / 200 in 84ms (compile: 4ms, render: 79ms)
+   465→ GET / 200 in 17ms (compile: 2ms, render: 15ms)
+   466→ GET / 200 in 15ms (compile: 2ms, render: 13ms)
+   467→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   468→ GET / 200 in 17ms (compile: 2ms, render: 15ms)
+   469→ GET / 200 in 14ms (compile: 3ms, render: 12ms)
+   470→ GET / 200 in 14ms (compile: 2ms, render: 11ms)
+   471→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   472→ GET / 200 in 26ms (compile: 3ms, render: 22ms)
+   473→ GET / 200 in 13ms (compile: 2ms, render: 11ms)
+   474→ GET / 200 in 15ms (compile: 2ms, render: 12ms)
+   475→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   476→ GET / 200 in 15ms (compile: 4ms, render: 11ms)
+   477→ GET / 200 in 15ms (compile: 2ms, render: 12ms)
+   478→ GET / 200 in 13ms (compile: 2ms, render: 11ms)
+   479→ GET / 200 in 16ms (compile: 2ms, render: 13ms)
+   480→ GET / 200 in 16ms (compile: 2ms, render: 13ms)
+   481→ GET / 200 in 14ms (compile: 2ms, render: 12ms)
+   482→ GET / 200 in 15ms (compile: 2ms, render: 13ms)
+   483→ GET / 200 in 22ms (compile: 2ms, render: 20ms)
+   484→prisma:query SELECT `main`.`Product`.`id`, `main`.`Product`.`name`, `main`.`Product`.`sku`, `main`.`Product`.`description`, `main`.`Product`.`image`, `main`.`Product`.`categoryId`, `main`.`Product`.`productTypeId`, `main`.`Product`.`unitId`, `main`.`Product`.`costPrice`, `main`.`Product`.`sellingPrice`, `main`.`Product`.`wholesalePrice`, `main`.`Product`.`taxEnabled`, `main`.`Product`.`taxRate`, `main`.`Product`.`isActive`, `main`.`Product`.`minStockLevel`, `main`.`Product`.`createdAt`, `main`.`Product`.`updatedAt` FROM `main`.`Product` WHERE 1=1 ORDER BY `main`.`Product`.`createdAt` DESC LIMIT ? OFFSET ?
+   485→prisma:query SELECT COUNT(*) AS `_count$_all` FROM (SELECT `main`.`Product`.`id` FROM `main`.`Product` WHERE 1=1 LIMIT ? OFFSET ?) AS `sub`
+   486→prisma:query SELECT `main`.`ProductCategory`.`id`, `main`.`ProductCategory`.`name`, `main`.`ProductCategory`.`description`, `main`.`ProductCategory`.`icon`, `main`.`ProductCategory`.`isActive`, `main`.`ProductCategory`.`createdAt`, `main`.`ProductCategory`.`updatedAt` FROM `main`.`ProductCategory` WHERE `main`.`ProductCategory`.`id` IN (?,?,?,?,?) LIMIT ? OFFSET ?
+   487→prisma:query SELECT `main`.`ProductType`.`id`, `main`.`ProductType`.`name`, `main`.`ProductType`.`description`, `main`.`ProductType`.`tracksStock`, `main`.`ProductType`.`isActive`, `main`.`ProductType`.`createdAt`, `main`.`ProductType`.`updatedAt` FROM `main`.`ProductType` WHERE `main`.`ProductType`.`id` IN (?,?) LIMIT ? OFFSET ?
+   488→prisma:query SELECT `main`.`Unit`.`id`, `main`.`Unit`.`name`, `main`.`Unit`.`shortName`, `main`.`Unit`.`isActive`, `main`.`Unit`.`createdAt`, `main`.`Unit`.`updatedAt` FROM `main`.`Unit` WHERE `main`.`Unit`.`id` IN (?,?,?) LIMIT ? OFFSET ?
+   489→prisma:query SELECT `main`.`Inventory`.`id`, `main`.`Inventory`.`productId`, `main`.`Inventory`.`quantity`, `main`.`Inventory`.`createdAt`, `main`.`Inventory`.`updatedAt` FROM `main`.`Inventory` WHERE `main`.`Inventory`.`productId` IN (?,?,?,?,?,?,?,?,?,?,?,?) LIMIT ? OFFSET ?
+   490→ GET /api/products 200 in 235ms (compile: 209ms, render: 26ms)
+   491→ GET / 200 in 15ms (compile: 2ms, render: 13ms)
+   492→ GET / 200 in 15ms (compile: 2ms, render: 13ms)
+   493→prisma:query SELECT `main`.`Sale`.`id`, `main`.`Sale`.`transactionNumber`, `main`.`Sale`.`customerId`, `main`.`Sale`.`soldById`, `main`.`Sale`.`subtotal`, `main`.`Sale`.`discountAmount`, `main`.`Sale`.`taxAmount`, `main`.`Sale`.`totalAmount`, `main`.`Sale`.`paymentMethod`, `main`.`Sale`.`paymentStatus`, `main`.`Sale`.`amountReceived`, `main`.`Sale`.`changeAmount`, `main`.`Sale`.`notes`, `main`.`Sale`.`status`, `main`.`Sale`.`createdAt`, `main`.`Sale`.`updatedAt` FROM `main`.`Sale` WHERE (`main`.`Sale`.`status` = ? AND `main`.`Sale`.`createdAt` >= ?) LIMIT ? OFFSET ?
+   494→prisma:query SELECT `main`.`Sale`.`id`, `main`.`Sale`.`transactionNumber`, `main`.`Sale`.`customerId`, `main`.`Sale`.`soldById`, `main`.`Sale`.`subtotal`, `main`.`Sale`.`discountAmount`, `main`.`Sale`.`taxAmount`, `main`.`Sale`.`totalAmount`, `main`.`Sale`.`paymentMethod`, `main`.`Sale`.`paymentStatus`, `main`.`Sale`.`amountReceived`, `main`.`Sale`.`changeAmount`, `main`.`Sale`.`notes`, `main`.`Sale`.`status`, `main`.`Sale`.`createdAt`, `main`.`Sale`.`updatedAt` FROM `main`.`Sale` WHERE (`main`.`Sale`.`status` = ? AND `main`.`Sale`.`createdAt` >= ? AND `main`.`Sale`.`createdAt` <= ?) LIMIT ? OFFSET ?
+   495→prisma:query SELECT COUNT(*) AS `_count$_all` FROM (SELECT `main`.`Customer`.`id` FROM `main`.`Customer` WHERE `main`.`Customer`.`isActive` = ? LIMIT ? OFFSET ?) AS `sub`
+   496→prisma:query SELECT COUNT(*) AS `_count$_all` FROM (SELECT `main`.`Customer`.`id` FROM `main`.`Customer` WHERE (`main`.`Customer`.`isActive` = ? AND `main`.`Customer`.`createdAt` < ?) LIMIT ? OFFSET ?) AS `sub`
+   497→prisma:query SELECT `main`.`Product`.`id`, `main`.`Product`.`name`, `main`.`Product`.`sku`, `main`.`Product`.`description`, `main`.`Product`.`image`, `main`.`Product`.`categoryId`, `main`.`Product`.`productTypeId`, `main`.`Product`.`unitId`, `main`.`Product`.`costPrice`, `main`.`Product`.`sellingPrice`, `main`.`Product`.`wholesalePrice`, `main`.`Product`.`taxEnabled`, `main`.`Product`.`taxRate`, `main`.`Product`.`isActive`, `main`.`Product`.`minStockLevel`, `main`.`Product`.`createdAt`, `main`.`Product`.`updatedAt` FROM `main`.`Product` WHERE 1=0 LIMIT ? OFFSET ?
+   498→prisma:query SELECT `main`.`Inventory`.`id`, `main`.`Inventory`.`productId`, `main`.`Inventory`.`quantity`, `main`.`Inventory`.`createdAt`, `main`.`Inventory`.`updatedAt` FROM `main`.`Inventory` WHERE 1=1 LIMIT ? OFFSET ?
+   499→prisma:query SELECT `main`.`Product`.`id`, `main`.`Product`.`name`, `main`.`Product`.`sku`, `main`.`Product`.`description`, `main`.`Product`.`image`, `main`.`Product`.`categoryId`, `main`.`Product`.`productTypeId`, `main`.`Product`.`unitId`, `main`.`Product`.`costPrice`, `main`.`Product`.`sellingPrice`, `main`.`Product`.`wholesalePrice`, `main`.`Product`.`taxEnabled`, `main`.`Product`.`taxRate`, `main`.`Product`.`isActive`, `main`.`Product`.`minStockLevel`, `main`.`Product`.`createdAt`, `main`.`Product`.`updatedAt` FROM `main`.`Product` WHERE `main`.`Product`.`id` IN (?,?,?,?,?,?,?,?,?,?,?) LIMIT ? OFFSET ?
+   500→prisma:query SELECT `main`.`ProductCategory`.`id`, `main`.`ProductCategory`.`name`, `main`.`ProductCategory`.`description`, `main`.`ProductCategory`.`icon`, `main`.`ProductCategory`.`isActive`, `main`.`ProductCategory`.`createdAt`, `main`.`ProductCategory`.`updatedAt` FROM `main`.`ProductCategory` WHERE `main`.`ProductCategory`.`id` IN (?,?,?,?,?) LIMIT ? OFFSET ?
+   501→prisma:query SELECT `main`.`Unit`.`id`, `main`.`Unit`.`name`, `main`.`Unit`.`shortName`, `main`.`Unit`.`isActive`, `main`.`Unit`.`createdAt`, `main`.`Unit`.`updatedAt` FROM `main`.`Unit` WHERE `main`.`Unit`.`id` IN (?,?,?) LIMIT ? OFFSET ?
+   502→prisma:query SELECT `main`.`ProductType`.`id`, `main`.`ProductType`.`name`, `main`.`ProductType`.`description`, `main`.`ProductType`.`tracksStock`, `main`.`ProductType`.`isActive`, `main`.`ProductType`.`createdAt`, `main`.`ProductType`.`updatedAt` FROM `main`.`ProductType` WHERE `main`.`ProductType`.`id` IN (?) LIMIT ? OFFSET ?
+   503→prisma:query SELECT `main`.`Sale`.`id`, `main`.`Sale`.`transactionNumber`, `main`.`Sale`.`customerId`, `main`.`Sale`.`soldById`, `main`.`Sale`.`subtotal`, `main`.`Sale`.`discountAmount`, `main`.`Sale`.`taxAmount`, `main`.`Sale`.`totalAmount`, `main`.`Sale`.`paymentMethod`, `main`.`Sale`.`paymentStatus`, `main`.`Sale`.`amountReceived`, `main`.`Sale`.`changeAmount`, `main`.`Sale`.`notes`, `main`.`Sale`.`status`, `main`.`Sale`.`createdAt`, `main`.`Sale`.`updatedAt` FROM `main`.`Sale` WHERE `main`.`Sale`.`status` = ? ORDER BY `main`.`Sale`.`createdAt` DESC LIMIT ? OFFSET ?
+   504→prisma:query SELECT `main`.`Sale`.`id`, `main`.`Sale`.`totalAmount`, `main`.`Sale`.`createdAt` FROM `main`.`Sale` WHERE (`main`.`Sale`.`status` = ? AND `main`.`Sale`.`createdAt` >= ?) LIMIT ? OFFSET ?
+   505→ GET /api/dashboard 200 in 166ms (compile: 147ms, render: 18ms)
+   506→prisma:query SELECT `main`.`User`.`id`, `main`.`User`.`email`, `main`.`User`.`name`, `main`.`User`.`role`, `main`.`User`.`avatar`, `main`.`User`.`phone`, `main`.`User`.`isActive`, `main`.`User`.`createdAt`, `main`.`User`.`updatedAt` FROM `main`.`User` WHERE 1=1 ORDER BY `main`.`User`.`createdAt` DESC LIMIT ? OFFSET ?
+   507→ GET /api/staff 200 in 133ms (compile: 126ms, render: 7ms)
+   508→prisma:query SELECT 1
+   509→prisma:query SELECT `main`.`Sale`.`id`, `main`.`Sale`.`paymentMethod`, `main`.`Sale`.`totalAmount` FROM `main`.`Sale` WHERE (`main`.`Sale`.`status` = ? AND `main`.`Sale`.`createdAt` >= ? AND `main`.`Sale`.`createdAt` <= ?) LIMIT ? OFFSET ?
+   510→ GET /api/reports?type=sales_by_payment 200 in 125ms (compile: 116ms, render: 10ms)
+   511→prisma:query SELECT `main`.`Inventory`.`id`, `main`.`Inventory`.`productId`, `main`.`Inventory`.`quantity`, `main`.`Inventory`.`createdAt`, `main`.`Inventory`.`updatedAt` FROM `main`.`Inventory` WHERE 1=1 LIMIT ? OFFSET ?
+   512→prisma:query SELECT `main`.`Product`.`id`, `main`.`Product`.`name`, `main`.`Product`.`sku`, `main`.`Product`.`description`, `main`.`Product`.`image`, `main`.`Product`.`categoryId`, `main`.`Product`.`productTypeId`, `main`.`Product`.`unitId`, `main`.`Product`.`costPrice`, `main`.`Product`.`sellingPrice`, `main`.`Product`.`wholesalePrice`, `main`.`Product`.`taxEnabled`, `main`.`Product`.`taxRate`, `main`.`Product`.`isActive`, `main`.`Product`.`minStockLevel`, `main`.`Product`.`createdAt`, `main`.`Product`.`updatedAt` FROM `main`.`Product` WHERE `main`.`Product`.`id` IN (?,?,?,?,?,?,?,?,?,?,?) LIMIT ? OFFSET ?
+   513→prisma:query SELECT `main`.`ProductCategory`.`id`, `main`.`ProductCategory`.`name`, `main`.`ProductCategory`.`description`, `main`.`ProductCategory`.`icon`, `main`.`ProductCategory`.`isActive`, `main`.`ProductCategory`.`createdAt`, `main`.`ProductCategory`.`updatedAt` FROM `main`.`ProductCategory` WHERE `main`.`ProductCategory`.`id` IN (?,?,?,?,?) LIMIT ? OFFSET ?
+   514→prisma:query SELECT `main`.`Unit`.`id`, `main`.`Unit`.`name`, `main`.`Unit`.`shortName`, `main`.`Unit`.`isActive`, `main`.`Unit`.`createdAt`, `main`.`Unit`.`updatedAt` FROM `main`.`Unit` WHERE `main`.`Unit`.`id` IN (?,?,?) LIMIT ? OFFSET ?
+   515→prisma:query SELECT `main`.`ProductType`.`id`, `main`.`ProductType`.`name`, `main`.`ProductType`.`description`, `main`.`ProductType`.`tracksStock`, `main`.`ProductType`.`isActive`, `main`.`ProductType`.`createdAt`, `main`.`ProductType`.`updatedAt` FROM `main`.`ProductType` WHERE `main`.`ProductType`.`id` IN (?) LIMIT ? OFFSET ?
+   516→ GET /api/reports?type=inventory_status 200 in 11ms (compile: 3ms, render: 8ms)
+   517→⨯ ./src/app/page.tsx:16:34
+   518→Module not found: Can't resolve '@/components/pages/customers-page'
+   519→[0m [90m 14 |[39m [36mconst[39m [33mProductsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/products-page'[39m))[33m;[39m
+   520→ [90m 15 |[39m [36mconst[39m [33mInventoryPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/inventory-page'[39m))[33m;[39m
+   521→[31m[1m>[22m[39m[90m 16 |[39m [36mconst[39m [33mCustomersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/customers-page'[39m))[33m;[39m
+   522→ [90m    |[39m                                  [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   523→ [90m 17 |[39m [36mconst[39m [33mSuppliersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/suppliers-page'[39m))[33m;[39m
+   524→ [90m 18 |[39m [36mconst[39m [33mExpensesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/expenses-page'[39m))[33m;[39m
+   525→ [90m 19 |[39m [36mconst[39m [33mReportsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/reports-page'[39m))[33m;[39m[0m
+   526→
+   527→Import map: aliased to relative './src/components/pages/customers-page' inside of [project]/
+   528→
+   529→
+   530→Import traces:
+   531→  Client Component Browser:
+   532→    ./src/app/page.tsx [Client Component Browser]
+   533→    ./src/app/page.tsx [Server Component]
+   534→
+   535→  Client Component SSR:
+   536→    ./src/app/page.tsx [Client Component SSR]
+   537→    ./src/app/page.tsx [Server Component]
+   538→
+   539→https://nextjs.org/docs/messages/module-not-found
+   540→
+   541→
+   542→⨯ ./src/app/page.tsx:16:34
+   543→Module not found: Can't resolve '@/components/pages/customers-page'
+   544→[0m [90m 14 |[39m [36mconst[39m [33mProductsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/products-page'[39m))[33m;[39m
+   545→ [90m 15 |[39m [36mconst[39m [33mInventoryPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/inventory-page'[39m))[33m;[39m
+   546→[31m[1m>[22m[39m[90m 16 |[39m [36mconst[39m [33mCustomersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/customers-page'[39m))[33m;[39m
+   547→ [90m    |[39m                                  [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   548→ [90m 17 |[39m [36mconst[39m [33mSuppliersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/suppliers-page'[39m))[33m;[39m
+   549→ [90m 18 |[39m [36mconst[39m [33mExpensesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/expenses-page'[39m))[33m;[39m
+   550→ [90m 19 |[39m [36mconst[39m [33mReportsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/reports-page'[39m))[33m;[39m[0m
+   551→
+   552→Import map: aliased to relative './src/components/pages/customers-page' inside of [project]/
+   553→
+   554→
+   555→Import traces:
+   556→  Client Component Browser:
+   557→    ./src/app/page.tsx [Client Component Browser]
+   558→    ./src/app/page.tsx [Server Component]
+   559→
+   560→  Client Component SSR:
+   561→    ./src/app/page.tsx [Client Component SSR]
+   562→    ./src/app/page.tsx [Server Component]
+   563→
+   564→https://nextjs.org/docs/messages/module-not-found
+   565→
+   566→
+   567→⨯ ./src/app/page.tsx:11:34
+   568→Module not found: Can't resolve '@/components/pages/dashboard-page'
+   569→[0m [90m  9 |[39m [36mimport[39m { [33mLoader2[39m } [36mfrom[39m [32m'lucide-react'[39m[33m;[39m
+   570→ [90m 10 |[39m
+   571→[31m[1m>[22m[39m[90m 11 |[39m [36mconst[39m [33mDashboardPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/dashboard-page'[39m))[33m;[39m
+   572→ [90m    |[39m                                  [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   573→ [90m 12 |[39m [36mconst[39m [33mPOSPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/pos-page'[39m))[33m;[39m
+   574→ [90m 13 |[39m [36mconst[39m [33mSalesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/sales-page'[39m))[33m;[39m
+   575→ [90m 14 |[39m [36mconst[39m [33mProductsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/products-page'[39m))[33m;[39m[0m
+   576→
+   577→Import map: aliased to relative './src/components/pages/dashboard-page' inside of [project]/
+   578→
+   579→
+   580→Import traces:
+   581→  Client Component Browser:
+   582→    ./src/app/page.tsx [Client Component Browser]
+   583→    ./src/app/page.tsx [Server Component]
+   584→
+   585→  Client Component SSR:
+   586→    ./src/app/page.tsx [Client Component SSR]
+   587→    ./src/app/page.tsx [Server Component]
+   588→
+   589→https://nextjs.org/docs/messages/module-not-found
+   590→
+   591→
+   592→⨯ ./src/app/page.tsx:11:34
+   593→Module not found: Can't resolve '@/components/pages/dashboard-page'
+   594→[0m [90m  9 |[39m [36mimport[39m { [33mLoader2[39m } [36mfrom[39m [32m'lucide-react'[39m[33m;[39m
+   595→ [90m 10 |[39m
+   596→[31m[1m>[22m[39m[90m 11 |[39m [36mconst[39m [33mDashboardPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/dashboard-page'[39m))[33m;[39m
+   597→ [90m    |[39m                                  [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   598→ [90m 12 |[39m [36mconst[39m [33mPOSPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/pos-page'[39m))[33m;[39m
+   599→ [90m 13 |[39m [36mconst[39m [33mSalesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/sales-page'[39m))[33m;[39m
+   600→ [90m 14 |[39m [36mconst[39m [33mProductsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/products-page'[39m))[33m;[39m[0m
+   601→
+   602→Import map: aliased to relative './src/components/pages/dashboard-page' inside of [project]/
+   603→
+   604→
+   605→Import traces:
+   606→  Client Component Browser:
+   607→    ./src/app/page.tsx [Client Component Browser]
+   608→    ./src/app/page.tsx [Server Component]
+   609→
+   610→  Client Component SSR:
+   611→    ./src/app/page.tsx [Client Component SSR]
+   612→    ./src/app/page.tsx [Server Component]
+   613→
+   614→https://nextjs.org/docs/messages/module-not-found
+   615→
+   616→
+   617→⨯ ./src/app/page.tsx:18:33
+   618→Module not found: Can't resolve '@/components/pages/expenses-page'
+   619→[0m [90m 16 |[39m [36mconst[39m [33mCustomersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/customers-page'[39m))[33m;[39m
+   620→ [90m 17 |[39m [36mconst[39m [33mSuppliersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/suppliers-page'[39m))[33m;[39m
+   621→[31m[1m>[22m[39m[90m 18 |[39m [36mconst[39m [33mExpensesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/expenses-page'[39m))[33m;[39m
+   622→ [90m    |[39m                                 [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   623→ [90m 19 |[39m [36mconst[39m [33mReportsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/reports-page'[39m))[33m;[39m
+   624→ [90m 20 |[39m [36mconst[39m [33mStaffPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/staff-page'[39m))[33m;[39m
+   625→ [90m 21 |[39m [36mconst[39m [33mSettingsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/settings-page'[39m))[33m;[39m[0m
+   626→
+   627→Import map: aliased to relative './src/components/pages/expenses-page' inside of [project]/
+   628→
+   629→
+   630→Import traces:
+   631→  Client Component Browser:
+   632→    ./src/app/page.tsx [Client Component Browser]
+   633→    ./src/app/page.tsx [Server Component]
+   634→
+   635→  Client Component SSR:
+   636→    ./src/app/page.tsx [Client Component SSR]
+   637→    ./src/app/page.tsx [Server Component]
+   638→
+   639→https://nextjs.org/docs/messages/module-not-found
+   640→
+   641→
+   642→⨯ ./src/app/page.tsx:18:33
+   643→Module not found: Can't resolve '@/components/pages/expenses-page'
+   644→[0m [90m 16 |[39m [36mconst[39m [33mCustomersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/customers-page'[39m))[33m;[39m
+   645→ [90m 17 |[39m [36mconst[39m [33mSuppliersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/suppliers-page'[39m))[33m;[39m
+   646→[31m[1m>[22m[39m[90m 18 |[39m [36mconst[39m [33mExpensesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/expenses-page'[39m))[33m;[39m
+   647→ [90m    |[39m                                 [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   648→ [90m 19 |[39m [36mconst[39m [33mReportsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/reports-page'[39m))[33m;[39m
+   649→ [90m 20 |[39m [36mconst[39m [33mStaffPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/staff-page'[39m))[33m;[39m
+   650→ [90m 21 |[39m [36mconst[39m [33mSettingsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/settings-page'[39m))[33m;[39m[0m
+   651→
+   652→Import map: aliased to relative './src/components/pages/expenses-page' inside of [project]/
+   653→
+   654→
+   655→Import traces:
+   656→  Client Component Browser:
+   657→    ./src/app/page.tsx [Client Component Browser]
+   658→    ./src/app/page.tsx [Server Component]
+   659→
+   660→  Client Component SSR:
+   661→    ./src/app/page.tsx [Client Component SSR]
+   662→    ./src/app/page.tsx [Server Component]
+   663→
+   664→https://nextjs.org/docs/messages/module-not-found
+   665→
+   666→
+   667→⨯ ./src/app/page.tsx:15:34
+   668→Module not found: Can't resolve '@/components/pages/inventory-page'
+   669→[0m [90m 13 |[39m [36mconst[39m [33mSalesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/sales-page'[39m))[33m;[39m
+   670→ [90m 14 |[39m [36mconst[39m [33mProductsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/products-page'[39m))[33m;[39m
+   671→[31m[1m>[22m[39m[90m 15 |[39m [36mconst[39m [33mInventoryPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/inventory-page'[39m))[33m;[39m
+   672→ [90m    |[39m                                  [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   673→ [90m 16 |[39m [36mconst[39m [33mCustomersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/customers-page'[39m))[33m;[39m
+   674→ [90m 17 |[39m [36mconst[39m [33mSuppliersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/suppliers-page'[39m))[33m;[39m
+   675→ [90m 18 |[39m [36mconst[39m [33mExpensesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/expenses-page'[39m))[33m;[39m[0m
+   676→
+   677→Import map: aliased to relative './src/components/pages/inventory-page' inside of [project]/
+   678→
+   679→
+   680→Import traces:
+   681→  Client Component Browser:
+   682→    ./src/app/page.tsx [Client Component Browser]
+   683→    ./src/app/page.tsx [Server Component]
+   684→
+   685→  Client Component SSR:
+   686→    ./src/app/page.tsx [Client Component SSR]
+   687→    ./src/app/page.tsx [Server Component]
+   688→
+   689→https://nextjs.org/docs/messages/module-not-found
+   690→
+   691→
+   692→⨯ ./src/app/page.tsx:15:34
+   693→Module not found: Can't resolve '@/components/pages/inventory-page'
+   694→[0m [90m 13 |[39m [36mconst[39m [33mSalesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/sales-page'[39m))[33m;[39m
+   695→ [90m 14 |[39m [36mconst[39m [33mProductsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/products-page'[39m))[33m;[39m
+   696→[31m[1m>[22m[39m[90m 15 |[39m [36mconst[39m [33mInventoryPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/inventory-page'[39m))[33m;[39m
+   697→ [90m    |[39m                                  [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   698→ [90m 16 |[39m [36mconst[39m [33mCustomersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/customers-page'[39m))[33m;[39m
+   699→ [90m 17 |[39m [36mconst[39m [33mSuppliersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/suppliers-page'[39m))[33m;[39m
+   700→ [90m 18 |[39m [36mconst[39m [33mExpensesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/expenses-page'[39m))[33m;[39m[0m
+   701→
+   702→Import map: aliased to relative './src/components/pages/inventory-page' inside of [project]/
+   703→
+   704→
+   705→Import traces:
+   706→  Client Component Browser:
+   707→    ./src/app/page.tsx [Client Component Browser]
+   708→    ./src/app/page.tsx [Server Component]
+   709→
+   710→  Client Component SSR:
+   711→    ./src/app/page.tsx [Client Component SSR]
+   712→    ./src/app/page.tsx [Server Component]
+   713→
+   714→https://nextjs.org/docs/messages/module-not-found
+   715→
+   716→
+   717→⨯ ./src/app/page.tsx:12:28
+   718→Module not found: Can't resolve '@/components/pages/pos-page'
+   719→[0m [90m 10 |[39m
+   720→ [90m 11 |[39m [36mconst[39m [33mDashboardPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/dashboard-page'[39m))[33m;[39m
+   721→[31m[1m>[22m[39m[90m 12 |[39m [36mconst[39m [33mPOSPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/pos-page'[39m))[33m;[39m
+   722→ [90m    |[39m                            [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   723→ [90m 13 |[39m [36mconst[39m [33mSalesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/sales-page'[39m))[33m;[39m
+   724→ [90m 14 |[39m [36mconst[39m [33mProductsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/products-page'[39m))[33m;[39m
+   725→ [90m 15 |[39m [36mconst[39m [33mInventoryPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/inventory-page'[39m))[33m;[39m[0m
+   726→
+   727→Import map: aliased to relative './src/components/pages/pos-page' inside of [project]/
+   728→
+   729→
+   730→Import traces:
+   731→  Client Component Browser:
+   732→    ./src/app/page.tsx [Client Component Browser]
+   733→    ./src/app/page.tsx [Server Component]
+   734→
+   735→  Client Component SSR:
+   736→    ./src/app/page.tsx [Client Component SSR]
+   737→    ./src/app/page.tsx [Server Component]
+   738→
+   739→https://nextjs.org/docs/messages/module-not-found
+   740→
+   741→
+   742→⨯ ./src/app/page.tsx:12:28
+   743→Module not found: Can't resolve '@/components/pages/pos-page'
+   744→[0m [90m 10 |[39m
+   745→ [90m 11 |[39m [36mconst[39m [33mDashboardPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/dashboard-page'[39m))[33m;[39m
+   746→[31m[1m>[22m[39m[90m 12 |[39m [36mconst[39m [33mPOSPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/pos-page'[39m))[33m;[39m
+   747→ [90m    |[39m                            [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   748→ [90m 13 |[39m [36mconst[39m [33mSalesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/sales-page'[39m))[33m;[39m
+   749→ [90m 14 |[39m [36mconst[39m [33mProductsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/products-page'[39m))[33m;[39m
+   750→ [90m 15 |[39m [36mconst[39m [33mInventoryPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/inventory-page'[39m))[33m;[39m[0m
+   751→
+   752→Import map: aliased to relative './src/components/pages/pos-page' inside of [project]/
+   753→
+   754→
+   755→Import traces:
+   756→  Client Component Browser:
+   757→    ./src/app/page.tsx [Client Component Browser]
+   758→    ./src/app/page.tsx [Server Component]
+   759→
+   760→  Client Component SSR:
+   761→    ./src/app/page.tsx [Client Component SSR]
+   762→    ./src/app/page.tsx [Server Component]
+   763→
+   764→https://nextjs.org/docs/messages/module-not-found
+   765→
+   766→
+   767→⨯ ./src/app/page.tsx:14:33
+   768→Module not found: Can't resolve '@/components/pages/products-page'
+   769→[0m [90m 12 |[39m [36mconst[39m [33mPOSPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/pos-page'[39m))[33m;[39m
+   770→ [90m 13 |[39m [36mconst[39m [33mSalesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/sales-page'[39m))[33m;[39m
+   771→[31m[1m>[22m[39m[90m 14 |[39m [36mconst[39m [33mProductsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/products-page'[39m))[33m;[39m
+   772→ [90m    |[39m                                 [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   773→ [90m 15 |[39m [36mconst[39m [33mInventoryPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/inventory-page'[39m))[33m;[39m
+   774→ [90m 16 |[39m [36mconst[39m [33mCustomersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/customers-page'[39m))[33m;[39m
+   775→ [90m 17 |[39m [36mconst[39m [33mSuppliersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/suppliers-page'[39m))[33m;[39m[0m
+   776→
+   777→Import map: aliased to relative './src/components/pages/products-page' inside of [project]/
+   778→
+   779→
+   780→Import traces:
+   781→  Client Component Browser:
+   782→    ./src/app/page.tsx [Client Component Browser]
+   783→    ./src/app/page.tsx [Server Component]
+   784→
+   785→  Client Component SSR:
+   786→    ./src/app/page.tsx [Client Component SSR]
+   787→    ./src/app/page.tsx [Server Component]
+   788→
+   789→https://nextjs.org/docs/messages/module-not-found
+   790→
+   791→
+   792→⨯ ./src/app/page.tsx:14:33
+   793→Module not found: Can't resolve '@/components/pages/products-page'
+   794→[0m [90m 12 |[39m [36mconst[39m [33mPOSPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/pos-page'[39m))[33m;[39m
+   795→ [90m 13 |[39m [36mconst[39m [33mSalesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/sales-page'[39m))[33m;[39m
+   796→[31m[1m>[22m[39m[90m 14 |[39m [36mconst[39m [33mProductsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/products-page'[39m))[33m;[39m
+   797→ [90m    |[39m                                 [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   798→ [90m 15 |[39m [36mconst[39m [33mInventoryPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/inventory-page'[39m))[33m;[39m
+   799→ [90m 16 |[39m [36mconst[39m [33mCustomersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/customers-page'[39m))[33m;[39m
+   800→ [90m 17 |[39m [36mconst[39m [33mSuppliersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/suppliers-page'[39m))[33m;[39m[0m
+   801→
+   802→Import map: aliased to relative './src/components/pages/products-page' inside of [project]/
+   803→
+   804→
+   805→Import traces:
+   806→  Client Component Browser:
+   807→    ./src/app/page.tsx [Client Component Browser]
+   808→    ./src/app/page.tsx [Server Component]
+   809→
+   810→  Client Component SSR:
+   811→    ./src/app/page.tsx [Client Component SSR]
+   812→    ./src/app/page.tsx [Server Component]
+   813→
+   814→https://nextjs.org/docs/messages/module-not-found
+   815→
+   816→
+   817→⨯ ./src/app/page.tsx:19:32
+   818→Module not found: Can't resolve '@/components/pages/reports-page'
+   819→[0m [90m 17 |[39m [36mconst[39m [33mSuppliersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/suppliers-page'[39m))[33m;[39m
+   820→ [90m 18 |[39m [36mconst[39m [33mExpensesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/expenses-page'[39m))[33m;[39m
+   821→[31m[1m>[22m[39m[90m 19 |[39m [36mconst[39m [33mReportsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/reports-page'[39m))[33m;[39m
+   822→ [90m    |[39m                                [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   823→ [90m 20 |[39m [36mconst[39m [33mStaffPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/staff-page'[39m))[33m;[39m
+   824→ [90m 21 |[39m [36mconst[39m [33mSettingsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/settings-page'[39m))[33m;[39m
+   825→ [90m 22 |[39m[0m
+   826→
+   827→Import map: aliased to relative './src/components/pages/reports-page' inside of [project]/
+   828→
+   829→
+   830→Import traces:
+   831→  Client Component Browser:
+   832→    ./src/app/page.tsx [Client Component Browser]
+   833→    ./src/app/page.tsx [Server Component]
+   834→
+   835→  Client Component SSR:
+   836→    ./src/app/page.tsx [Client Component SSR]
+   837→    ./src/app/page.tsx [Server Component]
+   838→
+   839→https://nextjs.org/docs/messages/module-not-found
+   840→
+   841→
+   842→⨯ ./src/app/page.tsx:19:32
+   843→Module not found: Can't resolve '@/components/pages/reports-page'
+   844→[0m [90m 17 |[39m [36mconst[39m [33mSuppliersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/suppliers-page'[39m))[33m;[39m
+   845→ [90m 18 |[39m [36mconst[39m [33mExpensesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/expenses-page'[39m))[33m;[39m
+   846→[31m[1m>[22m[39m[90m 19 |[39m [36mconst[39m [33mReportsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/reports-page'[39m))[33m;[39m
+   847→ [90m    |[39m                                [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   848→ [90m 20 |[39m [36mconst[39m [33mStaffPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/staff-page'[39m))[33m;[39m
+   849→ [90m 21 |[39m [36mconst[39m [33mSettingsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/settings-page'[39m))[33m;[39m
+   850→ [90m 22 |[39m[0m
+   851→
+   852→Import map: aliased to relative './src/components/pages/reports-page' inside of [project]/
+   853→
+   854→
+   855→Import traces:
+   856→  Client Component Browser:
+   857→    ./src/app/page.tsx [Client Component Browser]
+   858→    ./src/app/page.tsx [Server Component]
+   859→
+   860→  Client Component SSR:
+   861→    ./src/app/page.tsx [Client Component SSR]
+   862→    ./src/app/page.tsx [Server Component]
+   863→
+   864→https://nextjs.org/docs/messages/module-not-found
+   865→
+   866→
+   867→⨯ ./src/app/page.tsx:13:30
+   868→Module not found: Can't resolve '@/components/pages/sales-page'
+   869→[0m [90m 11 |[39m [36mconst[39m [33mDashboardPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/dashboard-page'[39m))[33m;[39m
+   870→ [90m 12 |[39m [36mconst[39m [33mPOSPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/pos-page'[39m))[33m;[39m
+   871→[31m[1m>[22m[39m[90m 13 |[39m [36mconst[39m [33mSalesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/sales-page'[39m))[33m;[39m
+   872→ [90m    |[39m                              [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   873→ [90m 14 |[39m [36mconst[39m [33mProductsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/products-page'[39m))[33m;[39m
+   874→ [90m 15 |[39m [36mconst[39m [33mInventoryPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/inventory-page'[39m))[33m;[39m
+   875→ [90m 16 |[39m [36mconst[39m [33mCustomersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/customers-page'[39m))[33m;[39m[0m
+   876→
+   877→Import map: aliased to relative './src/components/pages/sales-page' inside of [project]/
+   878→
+   879→
+   880→Import traces:
+   881→  Client Component Browser:
+   882→    ./src/app/page.tsx [Client Component Browser]
+   883→    ./src/app/page.tsx [Server Component]
+   884→
+   885→  Client Component SSR:
+   886→    ./src/app/page.tsx [Client Component SSR]
+   887→    ./src/app/page.tsx [Server Component]
+   888→
+   889→https://nextjs.org/docs/messages/module-not-found
+   890→
+   891→
+   892→⨯ ./src/app/page.tsx:13:30
+   893→Module not found: Can't resolve '@/components/pages/sales-page'
+   894→[0m [90m 11 |[39m [36mconst[39m [33mDashboardPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/dashboard-page'[39m))[33m;[39m
+   895→ [90m 12 |[39m [36mconst[39m [33mPOSPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/pos-page'[39m))[33m;[39m
+   896→[31m[1m>[22m[39m[90m 13 |[39m [36mconst[39m [33mSalesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/sales-page'[39m))[33m;[39m
+   897→ [90m    |[39m                              [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   898→ [90m 14 |[39m [36mconst[39m [33mProductsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/products-page'[39m))[33m;[39m
+   899→ [90m 15 |[39m [36mconst[39m [33mInventoryPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/inventory-page'[39m))[33m;[39m
+   900→ [90m 16 |[39m [36mconst[39m [33mCustomersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/customers-page'[39m))[33m;[39m[0m
+   901→
+   902→Import map: aliased to relative './src/components/pages/sales-page' inside of [project]/
+   903→
+   904→
+   905→Import traces:
+   906→  Client Component Browser:
+   907→    ./src/app/page.tsx [Client Component Browser]
+   908→    ./src/app/page.tsx [Server Component]
+   909→
+   910→  Client Component SSR:
+   911→    ./src/app/page.tsx [Client Component SSR]
+   912→    ./src/app/page.tsx [Server Component]
+   913→
+   914→https://nextjs.org/docs/messages/module-not-found
+   915→
+   916→
+   917→⨯ ./src/app/page.tsx:21:33
+   918→Module not found: Can't resolve '@/components/pages/settings-page'
+   919→[0m [90m 19 |[39m [36mconst[39m [33mReportsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/reports-page'[39m))[33m;[39m
+   920→ [90m 20 |[39m [36mconst[39m [33mStaffPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/staff-page'[39m))[33m;[39m
+   921→[31m[1m>[22m[39m[90m 21 |[39m [36mconst[39m [33mSettingsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/settings-page'[39m))[33m;[39m
+   922→ [90m    |[39m                                 [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   923→ [90m 22 |[39m
+   924→ [90m 23 |[39m [36mconst[39m pageComponents[33m:[39m [33mRecord[39m[33m<[39m[33mstring[39m[33m,[39m [33mReact[39m[33m.[39m[33mLazyExoticComponent[39m[33m<[39m[33mReact[39m[33m.[39m[33mComponentType[39m[33m>>[39m [33m=[39m {
+   925→ [90m 24 |[39m   dashboard[33m:[39m [33mDashboardPage[39m[33m,[39m[0m
+   926→
+   927→Import map: aliased to relative './src/components/pages/settings-page' inside of [project]/
+   928→
+   929→
+   930→Import traces:
+   931→  Client Component Browser:
+   932→    ./src/app/page.tsx [Client Component Browser]
+   933→    ./src/app/page.tsx [Server Component]
+   934→
+   935→  Client Component SSR:
+   936→    ./src/app/page.tsx [Client Component SSR]
+   937→    ./src/app/page.tsx [Server Component]
+   938→
+   939→https://nextjs.org/docs/messages/module-not-found
+   940→
+   941→
+   942→⨯ ./src/app/page.tsx:21:33
+   943→Module not found: Can't resolve '@/components/pages/settings-page'
+   944→[0m [90m 19 |[39m [36mconst[39m [33mReportsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/reports-page'[39m))[33m;[39m
+   945→ [90m 20 |[39m [36mconst[39m [33mStaffPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/staff-page'[39m))[33m;[39m
+   946→[31m[1m>[22m[39m[90m 21 |[39m [36mconst[39m [33mSettingsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/settings-page'[39m))[33m;[39m
+   947→ [90m    |[39m                                 [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   948→ [90m 22 |[39m
+   949→ [90m 23 |[39m [36mconst[39m pageComponents[33m:[39m [33mRecord[39m[33m<[39m[33mstring[39m[33m,[39m [33mReact[39m[33m.[39m[33mLazyExoticComponent[39m[33m<[39m[33mReact[39m[33m.[39m[33mComponentType[39m[33m>>[39m [33m=[39m {
+   950→ [90m 24 |[39m   dashboard[33m:[39m [33mDashboardPage[39m[33m,[39m[0m
+   951→
+   952→Import map: aliased to relative './src/components/pages/settings-page' inside of [project]/
+   953→
+   954→
+   955→Import traces:
+   956→  Client Component Browser:
+   957→    ./src/app/page.tsx [Client Component Browser]
+   958→    ./src/app/page.tsx [Server Component]
+   959→
+   960→  Client Component SSR:
+   961→    ./src/app/page.tsx [Client Component SSR]
+   962→    ./src/app/page.tsx [Server Component]
+   963→
+   964→https://nextjs.org/docs/messages/module-not-found
+   965→
+   966→
+   967→⨯ ./src/app/page.tsx:20:30
+   968→Module not found: Can't resolve '@/components/pages/staff-page'
+   969→[0m [90m 18 |[39m [36mconst[39m [33mExpensesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/expenses-page'[39m))[33m;[39m
+   970→ [90m 19 |[39m [36mconst[39m [33mReportsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/reports-page'[39m))[33m;[39m
+   971→[31m[1m>[22m[39m[90m 20 |[39m [36mconst[39m [33mStaffPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/staff-page'[39m))[33m;[39m
+   972→ [90m    |[39m                              [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   973→ [90m 21 |[39m [36mconst[39m [33mSettingsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/settings-page'[39m))[33m;[39m
+   974→ [90m 22 |[39m
+   975→ [90m 23 |[39m [36mconst[39m pageComponents[33m:[39m [33mRecord[39m[33m<[39m[33mstring[39m[33m,[39m [33mReact[39m[33m.[39m[33mLazyExoticComponent[39m[33m<[39m[33mReact[39m[33m.[39m[33mComponentType[39m[33m>>[39m [33m=[39m {[0m
+   976→
+   977→Import map: aliased to relative './src/components/pages/staff-page' inside of [project]/
+   978→
+   979→
+   980→Import traces:
+   981→  Client Component Browser:
+   982→    ./src/app/page.tsx [Client Component Browser]
+   983→    ./src/app/page.tsx [Server Component]
+   984→
+   985→  Client Component SSR:
+   986→    ./src/app/page.tsx [Client Component SSR]
+   987→    ./src/app/page.tsx [Server Component]
+   988→
+   989→https://nextjs.org/docs/messages/module-not-found
+   990→
+   991→
+   992→⨯ ./src/app/page.tsx:20:30
+   993→Module not found: Can't resolve '@/components/pages/staff-page'
+   994→[0m [90m 18 |[39m [36mconst[39m [33mExpensesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/expenses-page'[39m))[33m;[39m
+   995→ [90m 19 |[39m [36mconst[39m [33mReportsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/reports-page'[39m))[33m;[39m
+   996→[31m[1m>[22m[39m[90m 20 |[39m [36mconst[39m [33mStaffPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/staff-page'[39m))[33m;[39m
+   997→ [90m    |[39m                              [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   998→ [90m 21 |[39m [36mconst[39m [33mSettingsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/settings-page'[39m))[33m;[39m
+   999→ [90m 22 |[39m
+  1000→ [90m 23 |[39m [36mconst[39m pageComponents[33m:[39m [33mRecord[39m[33m<[39m[33mstring[39m[33m,[39m [33mReact[39m[33m.[39m[33mLazyExoticComponent[39m[33m<[39m[33mReact[39m[33m.[39m[33mComponentType[39m[33m>>[39m [33m=[39m {[0m
+  1001→
+  1002→Import map: aliased to relative './src/components/pages/staff-page' inside of [project]/
+  1003→
+  1004→
+  1005→Import traces:
+  1006→  Client Component Browser:
+  1007→    ./src/app/page.tsx [Client Component Browser]
+  1008→    ./src/app/page.tsx [Server Component]
+  1009→
+  1010→  Client Component SSR:
+  1011→    ./src/app/page.tsx [Client Component SSR]
+  1012→    ./src/app/page.tsx [Server Component]
+  1013→
+  1014→https://nextjs.org/docs/messages/module-not-found
+  1015→
+  1016→
+  1017→⨯ ./src/app/page.tsx:17:34
+  1018→Module not found: Can't resolve '@/components/pages/suppliers-page'
+  1019→[0m [90m 15 |[39m [36mconst[39m [33mInventoryPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/inventory-page'[39m))[33m;[39m
+  1020→ [90m 16 |[39m [36mconst[39m [33mCustomersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/customers-page'[39m))[33m;[39m
+  1021→[31m[1m>[22m[39m[90m 17 |[39m [36mconst[39m [33mSuppliersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/suppliers-page'[39m))[33m;[39m
+  1022→ [90m    |[39m                                  [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+  1023→ [90m 18 |[39m [36mconst[39m [33mExpensesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/expenses-page'[39m))[33m;[39m
+  1024→ [90m 19 |[39m [36mconst[39m [33mReportsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/reports-page'[39m))[33m;[39m
+  1025→ [90m 20 |[39m [36mconst[39m [33mStaffPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/staff-page'[39m))[33m;[39m[0m
+  1026→
+  1027→Import map: aliased to relative './src/components/pages/suppliers-page' inside of [project]/
+  1028→
+  1029→
+  1030→Import traces:
+  1031→  Client Component Browser:
+  1032→    ./src/app/page.tsx [Client Component Browser]
+  1033→    ./src/app/page.tsx [Server Component]
+  1034→
+  1035→  Client Component SSR:
+  1036→    ./src/app/page.tsx [Client Component SSR]
+  1037→    ./src/app/page.tsx [Server Component]
+  1038→
+  1039→https://nextjs.org/docs/messages/module-not-found
+  1040→
+  1041→
+  1042→⨯ ./src/app/page.tsx:17:34
+  1043→Module not found: Can't resolve '@/components/pages/suppliers-page'
+  1044→[0m [90m 15 |[39m [36mconst[39m [33mInventoryPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/inventory-page'[39m))[33m;[39m
+  1045→ [90m 16 |[39m [36mconst[39m [33mCustomersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/customers-page'[39m))[33m;[39m
+  1046→[31m[1m>[22m[39m[90m 17 |[39m [36mconst[39m [33mSuppliersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/suppliers-page'[39m))[33m;[39m
+  1047→ [90m    |[39m                                  [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+  1048→ [90m 18 |[39m [36mconst[39m [33mExpensesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/expenses-page'[39m))[33m;[39m
+  1049→ [90m 19 |[39m [36mconst[39m [33mReportsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/reports-page'[39m))[33m;[39m
+  1050→ [90m 20 |[39m [36mconst[39m [33mStaffPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/staff-page'[39m))[33m;[39m[0m
+  1051→
+  1052→Import map: aliased to relative './src/components/pages/suppliers-page' inside of [project]/
+  1053→
+  1054→
+  1055→Import traces:
+  1056→  Client Component Browser:
+  1057→    ./src/app/page.tsx [Client Component Browser]
+  1058→    ./src/app/page.tsx [Server Component]
+  1059→
+  1060→  Client Component SSR:
+  1061→    ./src/app/page.tsx [Client Component SSR]
+  1062→    ./src/app/page.tsx [Server Component]
+  1063→
+  1064→https://nextjs.org/docs/messages/module-not-found
+  1065→
+  1066→
+  1067→⨯ ./src/app/page.tsx:16:34
+  1068→Module not found: Can't resolve '@/components/pages/customers-page'
+  1069→[0m [90m 14 |[39m [36mconst[39m [33mProductsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/products-page'[39m))[33m;[39m
+  1070→ [90m 15 |[39m [36mconst[39m [33mInventoryPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/inventory-page'[39m))[33m;[39m
+  1071→[31m[1m>[22m[39m[90m 16 |[39m [36mconst[39m [33mCustomersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/customers-page'[39m))[33m;[39m
+  1072→ [90m    |[39m                                  [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+  1073→ [90m 17 |[39m [36mconst[39m [33mSuppliersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/suppliers-page'[39m))[33m;[39m
+  1074→ [90m 18 |[39m [36mconst[39m [33mExpensesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/expenses-page'[39m))[33m;[39m
+  1075→ [90m 19 |[39m [36mconst[39m [33mReportsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/reports-page'[39m))[33m;[39m[0m
+  1076→
+  1077→Import map: aliased to relative './src/components/pages/customers-page' inside of [project]/
+  1078→
+  1079→
+  1080→Import traces:
+  1081→  Client Component Browser:
+  1082→    ./src/app/page.tsx [Client Component Browser]
+  1083→    ./src/app/page.tsx [Server Component]
+  1084→
+  1085→  Client Component SSR:
+  1086→    ./src/app/page.tsx [Client Component SSR]
+  1087→    ./src/app/page.tsx [Server Component]
+  1088→
+  1089→https://nextjs.org/docs/messages/module-not-found
+  1090→
+  1091→
+  1092→⨯ ./src/app/page.tsx:16:34
+  1093→Module not found: Can't resolve '@/components/pages/customers-page'
+  1094→[0m [90m 14 |[39m [36mconst[39m [33mProductsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/products-page'[39m))[33m;[39m
+  1095→ [90m 15 |[39m [36mconst[39m [33mInventoryPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/inventory-page'[39m))[33m;[39m
+  1096→[31m[1m>[22m[39m[90m 16 |[39m [36mconst[39m [33mCustomersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/customers-page'[39m))[33m;[39m
+  1097→ [90m    |[39m                                  [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+  1098→ [90m 17 |[39m [36mconst[39m [33mSuppliersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/suppliers-page'[39m))[33m;[39m
+  1099→ [90m 18 |[39m [36mconst[39m [33mExpensesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/expenses-page'[39m))[33m;[39m
+  1100→ [90m 19 |[39m [36mconst[39m [33mReportsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/reports-page'[39m))[33m;[39m[0m
+  1101→
+  1102→Import map: aliased to relative './src/components/pages/customers-page' inside of [project]/
+  1103→
+  1104→
+  1105→Import traces:
+  1106→  Client Component Browser:
+  1107→    ./src/app/page.tsx [Client Component Browser]
+  1108→    ./src/app/page.tsx [Server Component]
+  1109→
+  1110→  Client Component SSR:
+  1111→    ./src/app/page.tsx [Client Component SSR]
+  1112→    ./src/app/page.tsx [Server Component]
+  1113→
+  1114→https://nextjs.org/docs/messages/module-not-found
+  1115→
+  1116→
+  1117→⨯ ./src/app/page.tsx:11:34
+  1118→Module not found: Can't resolve '@/components/pages/dashboard-page'
+  1119→[0m [90m  9 |[39m [36mimport[39m { [33mLoader2[39m } [36mfrom[39m [32m'lucide-react'[39m[33m;[39m
+  1120→ [90m 10 |[39m
+  1121→[31m[1m>[22m[39m[90m 11 |[39m [36mconst[39m [33mDashboardPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/dashboard-page'[39m))[33m;[39m
+  1122→ [90m    |[39m                                  [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+  1123→ [90m 12 |[39m [36mconst[39m [33mPOSPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/pos-page'[39m))[33m;[39m
+  1124→ [90m 13 |[39m [36mconst[39m [33mSalesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/sales-page'[39m))[33m;[39m
+  1125→ [90m 14 |[39m [36mconst[39m [33mProductsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/products-page'[39m))[33m;[39m[0m
+  1126→
+  1127→Import map: aliased to relative './src/components/pages/dashboard-page' inside of [project]/
+  1128→
+  1129→
+  1130→Import traces:
+  1131→  Client Component Browser:
+  1132→    ./src/app/page.tsx [Client Component Browser]
+  1133→    ./src/app/page.tsx [Server Component]
+  1134→
+  1135→  Client Component SSR:
+  1136→    ./src/app/page.tsx [Client Component SSR]
+  1137→    ./src/app/page.tsx [Server Component]
+  1138→
+  1139→https://nextjs.org/docs/messages/module-not-found
+  1140→
+  1141→
+  1142→⨯ ./src/app/page.tsx:11:34
+  1143→Module not found: Can't resolve '@/components/pages/dashboard-page'
+  1144→[0m [90m  9 |[39m [36mimport[39m { [33mLoader2[39m } [36mfrom[39m [32m'lucide-react'[39m[33m;[39m
+  1145→ [90m 10 |[39m
+  1146→[31m[1m>[22m[39m[90m 11 |[39m [36mconst[39m [33mDashboardPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/dashboard-page'[39m))[33m;[39m
+  1147→ [90m    |[39m                                  [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+  1148→ [90m 12 |[39m [36mconst[39m [33mPOSPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/pos-page'[39m))[33m;[39m
+  1149→ [90m 13 |[39m [36mconst[39m [33mSalesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/sales-page'[39m))[33m;[39m
+  1150→ [90m 14 |[39m [36mconst[39m [33mProductsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/products-page'[39m))[33m;[39m[0m
+  1151→
+  1152→Import map: aliased to relative './src/components/pages/dashboard-page' inside of [project]/
+  1153→
+  1154→
+  1155→Import traces:
+  1156→  Client Component Browser:
+  1157→    ./src/app/page.tsx [Client Component Browser]
+  1158→    ./src/app/page.tsx [Server Component]
+  1159→
+  1160→  Client Component SSR:
+  1161→    ./src/app/page.tsx [Client Component SSR]
+  1162→    ./src/app/page.tsx [Server Component]
+  1163→
+  1164→https://nextjs.org/docs/messages/module-not-found
+  1165→
+  1166→
+  1167→⨯ ./src/app/page.tsx:18:33
+  1168→Module not found: Can't resolve '@/components/pages/expenses-page'
+  1169→[0m [90m 16 |[39m [36mconst[39m [33mCustomersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/customers-page'[39m))[33m;[39m
+  1170→ [90m 17 |[39m [36mconst[39m [33mSuppliersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/suppliers-page'[39m))[33m;[39m
+  1171→[31m[1m>[22m[39m[90m 18 |[39m [36mconst[39m [33mExpensesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/expenses-page'[39m))[33m;[39m
+  1172→ [90m    |[39m                                 [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+  1173→ [90m 19 |[39m [36mconst[39m [33mReportsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/reports-page'[39m))[33m;[39m
+  1174→ [90m 20 |[39m [36mconst[39m [33mStaffPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/staff-page'[39m))[33m;[39m
+  1175→ [90m 21 |[39m [36mconst[39m [33mSettingsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/settings-page'[39m))[33m;[39m[0m
+  1176→
+  1177→Import map: aliased to relative './src/components/pages/expenses-page' inside of [project]/
+  1178→
+  1179→
+  1180→Import traces:
+  1181→  Client Component Browser:
+  1182→    ./src/app/page.tsx [Client Component Browser]
+  1183→    ./src/app/page.tsx [Server Component]
+  1184→
+  1185→  Client Component SSR:
+  1186→    ./src/app/page.tsx [Client Component SSR]
+  1187→    ./src/app/page.tsx [Server Component]
+  1188→
+  1189→https://nextjs.org/docs/messages/module-not-found
+  1190→
+  1191→
+  1192→⨯ ./src/app/page.tsx:18:33
+  1193→Module not found: Can't resolve '@/components/pages/expenses-page'
+  1194→[0m [90m 16 |[39m [36mconst[39m [33mCustomersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/customers-page'[39m))[33m;[39m
+  1195→ [90m 17 |[39m [36mconst[39m [33mSuppliersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/suppliers-page'[39m))[33m;[39m
+  1196→[31m[1m>[22m[39m[90m 18 |[39m [36mconst[39m [33mExpensesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/expenses-page'[39m))[33m;[39m
+  1197→ [90m    |[39m                                 [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+  1198→ [90m 19 |[39m [36mconst[39m [33mReportsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/reports-page'[39m))[33m;[39m
+  1199→ [90m 20 |[39m [36mconst[39m [33mStaffPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/staff-page'[39m))[33m;[39m
+  1200→ [90m 21 |[39m [36mconst[39m [33mSettingsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/settings-page'[39m))[33m;[39m[0m
+  1201→
+  1202→Import map: aliased to relative './src/components/pages/expenses-page' inside of [project]/
+  1203→
+  1204→
+  1205→Import traces:
+  1206→  Client Component Browser:
+  1207→    ./src/app/page.tsx [Client Component Browser]
+  1208→    ./src/app/page.tsx [Server Component]
+  1209→
+  1210→  Client Component SSR:
+  1211→    ./src/app/page.tsx [Client Component SSR]
+  1212→    ./src/app/page.tsx [Server Component]
+  1213→
+  1214→https://nextjs.org/docs/messages/module-not-found
+  1215→
+  1216→
+  1217→⨯ ./src/app/page.tsx:15:34
+  1218→Module not found: Can't resolve '@/components/pages/inventory-page'
+  1219→[0m [90m 13 |[39m [36mconst[39m [33mSalesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/sales-page'[39m))[33m;[39m
+  1220→ [90m 14 |[39m [36mconst[39m [33mProductsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/products-page'[39m))[33m;[39m
+  1221→[31m[1m>[22m[39m[90m 15 |[39m [36mconst[39m [33mInventoryPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/inventory-page'[39m))[33m;[39m
+  1222→ [90m    |[39m                                  [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+  1223→ [90m 16 |[39m [36mconst[39m [33mCustomersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/customers-page'[39m))[33m;[39m
+  1224→ [90m 17 |[39m [36mconst[39m [33mSuppliersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/suppliers-page'[39m))[33m;[39m
+  1225→ [90m 18 |[39m [36mconst[39m [33mExpensesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/expenses-page'[39m))[33m;[39m[0m
+  1226→
+  1227→Import map: aliased to relative './src/components/pages/inventory-page' inside of [project]/
+  1228→
+  1229→
+  1230→Import traces:
+  1231→  Client Component Browser:
+  1232→    ./src/app/page.tsx [Client Component Browser]
+  1233→    ./src/app/page.tsx [Server Component]
+  1234→
+  1235→  Client Component SSR:
+  1236→    ./src/app/page.tsx [Client Component SSR]
+  1237→    ./src/app/page.tsx [Server Component]
+  1238→
+  1239→https://nextjs.org/docs/messages/module-not-found
+  1240→
+  1241→
+  1242→⨯ ./src/app/page.tsx:15:34
+  1243→Module not found: Can't resolve '@/components/pages/inventory-page'
+  1244→[0m [90m 13 |[39m [36mconst[39m [33mSalesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/sales-page'[39m))[33m;[39m
+  1245→ [90m 14 |[39m [36mconst[39m [33mProductsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/products-page'[39m))[33m;[39m
+  1246→[31m[1m>[22m[39m[90m 15 |[39m [36mconst[39m [33mInventoryPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/inventory-page'[39m))[33m;[39m
+  1247→ [90m    |[39m                                  [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+  1248→ [90m 16 |[39m [36mconst[39m [33mCustomersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/customers-page'[39m))[33m;[39m
+  1249→ [90m 17 |[39m [36mconst[39m [33mSuppliersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/suppliers-page'[39m))[33m;[39m
+  1250→ [90m 18 |[39m [36mconst[39m [33mExpensesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/expenses-page'[39m))[33m;[39m[0m
+  1251→
+  1252→Import map: aliased to relative './src/components/pages/inventory-page' inside of [project]/
+  1253→
+  1254→
+  1255→Import traces:
+  1256→  Client Component Browser:
+  1257→    ./src/app/page.tsx [Client Component Browser]
+  1258→    ./src/app/page.tsx [Server Component]
+  1259→
+  1260→  Client Component SSR:
+  1261→    ./src/app/page.tsx [Client Component SSR]
+  1262→    ./src/app/page.tsx [Server Component]
+  1263→
+  1264→https://nextjs.org/docs/messages/module-not-found
+  1265→
+  1266→
+  1267→⨯ ./src/app/page.tsx:12:28
+  1268→Module not found: Can't resolve '@/components/pages/pos-page'
+  1269→[0m [90m 10 |[39m
+  1270→ [90m 11 |[39m [36mconst[39m [33mDashboardPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/dashboard-page'[39m))[33m;[39m
+  1271→[31m[1m>[22m[39m[90m 12 |[39m [36mconst[39m [33mPOSPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/pos-page'[39m))[33m;[39m
+  1272→ [90m    |[39m                            [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+  1273→ [90m 13 |[39m [36mconst[39m [33mSalesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/sales-page'[39m))[33m;[39m
+  1274→ [90m 14 |[39m [36mconst[39m [33mProductsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/products-page'[39m))[33m;[39m
+  1275→ [90m 15 |[39m [36mconst[39m [33mInventoryPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/inventory-page'[39m))[33m;[39m[0m
+  1276→
+  1277→Import map: aliased to relative './src/components/pages/pos-page' inside of [project]/
+  1278→
+  1279→
+  1280→Import traces:
+  1281→  Client Component Browser:
+  1282→    ./src/app/page.tsx [Client Component Browser]
+  1283→    ./src/app/page.tsx [Server Component]
+  1284→
+  1285→  Client Component SSR:
+  1286→    ./src/app/page.tsx [Client Component SSR]
+  1287→    ./src/app/page.tsx [Server Component]
+  1288→
+  1289→https://nextjs.org/docs/messages/module-not-found
+  1290→
+  1291→
+  1292→⨯ ./src/app/page.tsx:12:28
+  1293→Module not found: Can't resolve '@/components/pages/pos-page'
+  1294→[0m [90m 10 |[39m
+  1295→ [90m 11 |[39m [36mconst[39m [33mDashboardPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/dashboard-page'[39m))[33m;[39m
+  1296→[31m[1m>[22m[39m[90m 12 |[39m [36mconst[39m [33mPOSPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/pos-page'[39m))[33m;[39m
+  1297→ [90m    |[39m                            [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+  1298→ [90m 13 |[39m [36mconst[39m [33mSalesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/sales-page'[39m))[33m;[39m
+  1299→ [90m 14 |[39m [36mconst[39m [33mProductsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/products-page'[39m))[33m;[39m
+  1300→ [90m 15 |[39m [36mconst[39m [33mInventoryPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/inventory-page'[39m))[33m;[39m[0m
+  1301→
+  1302→Import map: aliased to relative './src/components/pages/pos-page' inside of [project]/
+  1303→
+  1304→
+  1305→Import traces:
+  1306→  Client Component Browser:
+  1307→    ./src/app/page.tsx [Client Component Browser]
+  1308→    ./src/app/page.tsx [Server Component]
+  1309→
+  1310→  Client Component SSR:
+  1311→    ./src/app/page.tsx [Client Component SSR]
+  1312→    ./src/app/page.tsx [Server Component]
+  1313→
+  1314→https://nextjs.org/docs/messages/module-not-found
+  1315→
+  1316→
+  1317→⨯ ./src/app/page.tsx:14:33
+  1318→Module not found: Can't resolve '@/components/pages/products-page'
+  1319→[0m [90m 12 |[39m [36mconst[39m [33mPOSPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/pos-page'[39m))[33m;[39m
+  1320→ [90m 13 |[39m [36mconst[39m [33mSalesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/sales-page'[39m))[33m;[39m
+  1321→[31m[1m>[22m[39m[90m 14 |[39m [36mconst[39m [33mProductsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/products-page'[39m))[33m;[39m
+  1322→ [90m    |[39m                                 [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+  1323→ [90m 15 |[39m [36mconst[39m [33mInventoryPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/inventory-page'[39m))[33m;[39m
+  1324→ [90m 16 |[39m [36mconst[39m [33mCustomersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/customers-page'[39m))[33m;[39m
+  1325→ [90m 17 |[39m [36mconst[39m [33mSuppliersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/suppliers-page'[39m))[33m;[39m[0m
+  1326→
+  1327→Import map: aliased to relative './src/components/pages/products-page' inside of [project]/
+  1328→
+  1329→
+  1330→Import traces:
+  1331→  Client Component Browser:
+  1332→    ./src/app/page.tsx [Client Component Browser]
+  1333→    ./src/app/page.tsx [Server Component]
+  1334→
+  1335→  Client Component SSR:
+  1336→    ./src/app/page.tsx [Client Component SSR]
+  1337→    ./src/app/page.tsx [Server Component]
+  1338→
+  1339→https://nextjs.org/docs/messages/module-not-found
+  1340→
+  1341→
+  1342→⨯ ./src/app/page.tsx:14:33
+  1343→Module not found: Can't resolve '@/components/pages/products-page'
+  1344→[0m [90m 12 |[39m [36mconst[39m [33mPOSPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/pos-page'[39m))[33m;[39m
+  1345→ [90m 13 |[39m [36mconst[39m [33mSalesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/sales-page'[39m))[33m;[39m
+  1346→[31m[1m>[22m[39m[90m 14 |[39m [36mconst[39m [33mProductsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/products-page'[39m))[33m;[39m
+  1347→ [90m    |[39m                                 [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+  1348→ [90m 15 |[39m [36mconst[39m [33mInventoryPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/inventory-page'[39m))[33m;[39m
+  1349→ [90m 16 |[39m [36mconst[39m [33mCustomersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/customers-page'[39m))[33m;[39m
+  1350→ [90m 17 |[39m [36mconst[39m [33mSuppliersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/suppliers-page'[39m))[33m;[39m[0m
+  1351→
+  1352→Import map: aliased to relative './src/components/pages/products-page' inside of [project]/
+  1353→
+  1354→
+  1355→Import traces:
+  1356→  Client Component Browser:
+  1357→    ./src/app/page.tsx [Client Component Browser]
+  1358→    ./src/app/page.tsx [Server Component]
+  1359→
+  1360→  Client Component SSR:
+  1361→    ./src/app/page.tsx [Client Component SSR]
+  1362→    ./src/app/page.tsx [Server Component]
+  1363→
+  1364→https://nextjs.org/docs/messages/module-not-found
+  1365→
+  1366→
+  1367→⨯ ./src/app/page.tsx:19:32
+  1368→Module not found: Can't resolve '@/components/pages/reports-page'
+  1369→[0m [90m 17 |[39m [36mconst[39m [33mSuppliersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/suppliers-page'[39m))[33m;[39m
+  1370→ [90m 18 |[39m [36mconst[39m [33mExpensesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/expenses-page'[39m))[33m;[39m
+  1371→[31m[1m>[22m[39m[90m 19 |[39m [36mconst[39m [33mReportsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/reports-page'[39m))[33m;[39m
+  1372→ [90m    |[39m                                [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+  1373→ [90m 20 |[39m [36mconst[39m [33mStaffPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/staff-page'[39m))[33m;[39m
+  1374→ [90m 21 |[39m [36mconst[39m [33mSettingsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/settings-page'[39m))[33m;[39m
+  1375→ [90m 22 |[39m[0m
+  1376→
+  1377→Import map: aliased to relative './src/components/pages/reports-page' inside of [project]/
+  1378→
+  1379→
+  1380→Import traces:
+  1381→  Client Component Browser:
+  1382→    ./src/app/page.tsx [Client Component Browser]
+  1383→    ./src/app/page.tsx [Server Component]
+  1384→
+  1385→  Client Component SSR:
+  1386→    ./src/app/page.tsx [Client Component SSR]
+  1387→    ./src/app/page.tsx [Server Component]
+  1388→
+  1389→https://nextjs.org/docs/messages/module-not-found
+  1390→
+  1391→
+  1392→⨯ ./src/app/page.tsx:19:32
+  1393→Module not found: Can't resolve '@/components/pages/reports-page'
+  1394→[0m [90m 17 |[39m [36mconst[39m [33mSuppliersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/suppliers-page'[39m))[33m;[39m
+  1395→ [90m 18 |[39m [36mconst[39m [33mExpensesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/expenses-page'[39m))[33m;[39m
+  1396→[31m[1m>[22m[39m[90m 19 |[39m [36mconst[39m [33mReportsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/reports-page'[39m))[33m;[39m
+  1397→ [90m    |[39m                                [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+  1398→ [90m 20 |[39m [36mconst[39m [33mStaffPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/staff-page'[39m))[33m;[39m
+  1399→ [90m 21 |[39m [36mconst[39m [33mSettingsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/settings-page'[39m))[33m;[39m
+  1400→ [90m 22 |[39m[0m
+  1401→
+  1402→Import map: aliased to relative './src/components/pages/reports-page' inside of [project]/
+  1403→
+  1404→
+  1405→Import traces:
+  1406→  Client Component Browser:
+  1407→    ./src/app/page.tsx [Client Component Browser]
+  1408→    ./src/app/page.tsx [Server Component]
+  1409→
+  1410→  Client Component SSR:
+  1411→    ./src/app/page.tsx [Client Component SSR]
+  1412→    ./src/app/page.tsx [Server Component]
+  1413→
+  1414→https://nextjs.org/docs/messages/module-not-found
+  1415→
+  1416→
+  1417→⨯ ./src/app/page.tsx:13:30
+  1418→Module not found: Can't resolve '@/components/pages/sales-page'
+  1419→[0m [90m 11 |[39m [36mconst[39m [33mDashboardPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/dashboard-page'[39m))[33m;[39m
+  1420→ [90m 12 |[39m [36mconst[39m [33mPOSPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/pos-page'[39m))[33m;[39m
+  1421→[31m[1m>[22m[39m[90m 13 |[39m [36mconst[39m [33mSalesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/sales-page'[39m))[33m;[39m
+  1422→ [90m    |[39m                              [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+  1423→ [90m 14 |[39m [36mconst[39m [33mProductsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/products-page'[39m))[33m;[39m
+  1424→ [90m 15 |[39m [36mconst[39m [33mInventoryPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/inventory-page'[39m))[33m;[39m
+  1425→ [90m 16 |[39m [36mconst[39m [33mCustomersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/customers-page'[39m))[33m;[39m[0m
+  1426→
+  1427→Import map: aliased to relative './src/components/pages/sales-page' inside of [project]/
+  1428→
+  1429→
+  1430→Import traces:
+  1431→  Client Component Browser:
+  1432→    ./src/app/page.tsx [Client Component Browser]
+  1433→    ./src/app/page.tsx [Server Component]
+  1434→
+  1435→  Client Component SSR:
+  1436→    ./src/app/page.tsx [Client Component SSR]
+  1437→    ./src/app/page.tsx [Server Component]
+  1438→
+  1439→https://nextjs.org/docs/messages/module-not-found
+  1440→
+  1441→
+  1442→⨯ ./src/app/page.tsx:13:30
+  1443→Module not found: Can't resolve '@/components/pages/sales-page'
+  1444→[0m [90m 11 |[39m [36mconst[39m [33mDashboardPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/dashboard-page'[39m))[33m;[39m
+  1445→ [90m 12 |[39m [36mconst[39m [33mPOSPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/pos-page'[39m))[33m;[39m
+  1446→[31m[1m>[22m[39m[90m 13 |[39m [36mconst[39m [33mSalesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/sales-page'[39m))[33m;[39m
+  1447→ [90m    |[39m                              [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+  1448→ [90m 14 |[39m [36mconst[39m [33mProductsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/products-page'[39m))[33m;[39m
+  1449→ [90m 15 |[39m [36mconst[39m [33mInventoryPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/inventory-page'[39m))[33m;[39m
+  1450→ [90m 16 |[39m [36mconst[39m [33mCustomersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/customers-page'[39m))[33m;[39m[0m
+  1451→
+  1452→Import map: aliased to relative './src/components/pages/sales-page' inside of [project]/
+  1453→
+  1454→
+  1455→Import traces:
+  1456→  Client Component Browser:
+  1457→    ./src/app/page.tsx [Client Component Browser]
+  1458→    ./src/app/page.tsx [Server Component]
+  1459→
+  1460→  Client Component SSR:
+  1461→    ./src/app/page.tsx [Client Component SSR]
+  1462→    ./src/app/page.tsx [Server Component]
+  1463→
+  1464→https://nextjs.org/docs/messages/module-not-found
+  1465→
+  1466→
+  1467→⨯ ./src/app/page.tsx:21:33
+  1468→Module not found: Can't resolve '@/components/pages/settings-page'
+  1469→[0m [90m 19 |[39m [36mconst[39m [33mReportsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/reports-page'[39m))[33m;[39m
+  1470→ [90m 20 |[39m [36mconst[39m [33mStaffPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/staff-page'[39m))[33m;[39m
+  1471→[31m[1m>[22m[39m[90m 21 |[39m [36mconst[39m [33mSettingsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/settings-page'[39m))[33m;[39m
+  1472→ [90m    |[39m                                 [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+  1473→ [90m 22 |[39m
+  1474→ [90m 23 |[39m [36mconst[39m pageComponents[33m:[39m [33mRecord[39m[33m<[39m[33mstring[39m[33m,[39m [33mReact[39m[33m.[39m[33mLazyExoticComponent[39m[33m<[39m[33mReact[39m[33m.[39m[33mComponentType[39m[33m>>[39m [33m=[39m {
+  1475→ [90m 24 |[39m   dashboard[33m:[39m [33mDashboardPage[39m[33m,[39m[0m
+  1476→
+  1477→Import map: aliased to relative './src/components/pages/settings-page' inside of [project]/
+  1478→
+  1479→
+  1480→Import traces:
+  1481→  Client Component Browser:
+  1482→    ./src/app/page.tsx [Client Component Browser]
+  1483→    ./src/app/page.tsx [Server Component]
+  1484→
+  1485→  Client Component SSR:
+  1486→    ./src/app/page.tsx [Client Component SSR]
+  1487→    ./src/app/page.tsx [Server Component]
+  1488→
+  1489→https://nextjs.org/docs/messages/module-not-found
+  1490→
+  1491→
+  1492→⨯ ./src/app/page.tsx:21:33
+  1493→Module not found: Can't resolve '@/components/pages/settings-page'
+  1494→[0m [90m 19 |[39m [36mconst[39m [33mReportsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/reports-page'[39m))[33m;[39m
+  1495→ [90m 20 |[39m [36mconst[39m [33mStaffPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/staff-page'[39m))[33m;[39m
+  1496→[31m[1m>[22m[39m[90m 21 |[39m [36mconst[39m [33mSettingsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/settings-page'[39m))[33m;[39m
+  1497→ [90m    |[39m                                 [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+  1498→ [90m 22 |[39m
+  1499→ [90m 23 |[39m [36mconst[39m pageComponents[33m:[39m [33mRecord[39m[33m<[39m[33mstring[39m[33m,[39m [33mReact[39m[33m.[39m[33mLazyExoticComponent[39m[33m<[39m[33mReact[39m[33m.[39m[33mComponentType[39m[33m>>[39m [33m=[39m {
+  1500→ [90m 24 |[39m   dashboard[33m:[39m [33mDashboardPage[39m[33m,[39m[0m
+  1501→
+  1502→Import map: aliased to relative './src/components/pages/settings-page' inside of [project]/
+  1503→
+  1504→
+  1505→Import traces:
+  1506→  Client Component Browser:
+  1507→    ./src/app/page.tsx [Client Component Browser]
+  1508→    ./src/app/page.tsx [Server Component]
+  1509→
+  1510→  Client Component SSR:
+  1511→    ./src/app/page.tsx [Client Component SSR]
+  1512→    ./src/app/page.tsx [Server Component]
+  1513→
+  1514→https://nextjs.org/docs/messages/module-not-found
+  1515→
+  1516→
+  1517→⨯ ./src/app/page.tsx:20:30
+  1518→Module not found: Can't resolve '@/components/pages/staff-page'
+  1519→[0m [90m 18 |[39m [36mconst[39m [33mExpensesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/expenses-page'[39m))[33m;[39m
+  1520→ [90m 19 |[39m [36mconst[39m [33mReportsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/reports-page'[39m))[33m;[39m
+  1521→[31m[1m>[22m[39m[90m 20 |[39m [36mconst[39m [33mStaffPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/staff-page'[39m))[33m;[39m
+  1522→ [90m    |[39m                              [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+  1523→ [90m 21 |[39m [36mconst[39m [33mSettingsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/settings-page'[39m))[33m;[39m
+  1524→ [90m 22 |[39m
+  1525→ [90m 23 |[39m [36mconst[39m pageComponents[33m:[39m [33mRecord[39m[33m<[39m[33mstring[39m[33m,[39m [33mReact[39m[33m.[39m[33mLazyExoticComponent[39m[33m<[39m[33mReact[39m[33m.[39m[33mComponentType[39m[33m>>[39m [33m=[39m {[0m
+  1526→
+  1527→Import map: aliased to relative './src/components/pages/staff-page' inside of [project]/
+  1528→
+  1529→
+  1530→Import traces:
+  1531→  Client Component Browser:
+  1532→    ./src/app/page.tsx [Client Component Browser]
+  1533→    ./src/app/page.tsx [Server Component]
+  1534→
+  1535→  Client Component SSR:
+  1536→    ./src/app/page.tsx [Client Component SSR]
+  1537→    ./src/app/page.tsx [Server Component]
+  1538→
+  1539→https://nextjs.org/docs/messages/module-not-found
+  1540→
+  1541→
+  1542→⨯ ./src/app/page.tsx:20:30
+  1543→Module not found: Can't resolve '@/components/pages/staff-page'
+  1544→[0m [90m 18 |[39m [36mconst[39m [33mExpensesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/expenses-page'[39m))[33m;[39m
+  1545→ [90m 19 |[39m [36mconst[39m [33mReportsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/reports-page'[39m))[33m;[39m
+  1546→[31m[1m>[22m[39m[90m 20 |[39m [36mconst[39m [33mStaffPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/staff-page'[39m))[33m;[39m
+  1547→ [90m    |[39m                              [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+  1548→ [90m 21 |[39m [36mconst[39m [33mSettingsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/settings-page'[39m))[33m;[39m
+  1549→ [90m 22 |[39m
+  1550→ [90m 23 |[39m [36mconst[39m pageComponents[33m:[39m [33mRecord[39m[33m<[39m[33mstring[39m[33m,[39m [33mReact[39m[33m.[39m[33mLazyExoticComponent[39m[33m<[39m[33mReact[39m[33m.[39m[33mComponentType[39m[33m>>[39m [33m=[39m {[0m
+  1551→
+  1552→Import map: aliased to relative './src/components/pages/staff-page' inside of [project]/
+  1553→
+  1554→
+  1555→Import traces:
+  1556→  Client Component Browser:
+  1557→    ./src/app/page.tsx [Client Component Browser]
+  1558→    ./src/app/page.tsx [Server Component]
+  1559→
+  1560→  Client Component SSR:
+  1561→    ./src/app/page.tsx [Client Component SSR]
+  1562→    ./src/app/page.tsx [Server Component]
+  1563→
+  1564→https://nextjs.org/docs/messages/module-not-found
+  1565→
+  1566→
+  1567→⨯ ./src/app/page.tsx:17:34
+  1568→Module not found: Can't resolve '@/components/pages/suppliers-page'
+  1569→[0m [90m 15 |[39m [36mconst[39m [33mInventoryPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/inventory-page'[39m))[33m;[39m
+  1570→ [90m 16 |[39m [36mconst[39m [33mCustomersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/customers-page'[39m))[33m;[39m
+  1571→[31m[1m>[22m[39m[90m 17 |[39m [36mconst[39m [33mSuppliersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/suppliers-page'[39m))[33m;[39m
+  1572→ [90m    |[39m                                  [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+  1573→ [90m 18 |[39m [36mconst[39m [33mExpensesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/expenses-page'[39m))[33m;[39m
+  1574→ [90m 19 |[39m [36mconst[39m [33mReportsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/reports-page'[39m))[33m;[39m
+  1575→ [90m 20 |[39m [36mconst[39m [33mStaffPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/staff-page'[39m))[33m;[39m[0m
+  1576→
+  1577→Import map: aliased to relative './src/components/pages/suppliers-page' inside of [project]/
+  1578→
+  1579→
+  1580→Import traces:
+  1581→  Client Component Browser:
+  1582→    ./src/app/page.tsx [Client Component Browser]
+  1583→    ./src/app/page.tsx [Server Component]
+  1584→
+  1585→  Client Component SSR:
+  1586→    ./src/app/page.tsx [Client Component SSR]
+  1587→    ./src/app/page.tsx [Server Component]
+  1588→
+  1589→https://nextjs.org/docs/messages/module-not-found
+  1590→
+  1591→
+  1592→⨯ ./src/app/page.tsx:17:34
+  1593→Module not found: Can't resolve '@/components/pages/suppliers-page'
+  1594→[0m [90m 15 |[39m [36mconst[39m [33mInventoryPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/inventory-page'[39m))[33m;[39m
+  1595→ [90m 16 |[39m [36mconst[39m [33mCustomersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/customers-page'[39m))[33m;[39m
+  1596→[31m[1m>[22m[39m[90m 17 |[39m [36mconst[39m [33mSuppliersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/suppliers-page'[39m))[33m;[39m
+  1597→ [90m    |[39m                                  [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+  1598→ [90m 18 |[39m [36mconst[39m [33mExpensesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/expenses-page'[39m))[33m;[39m
+  1599→ [90m 19 |[39m [36mconst[39m [33mReportsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/reports-page'[39m))[33m;[39m
+  1600→ [90m 20 |[39m [36mconst[39m [33mStaffPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/staff-page'[39m))[33m;[39m[0m
+  1601→
+  1602→Import map: aliased to relative './src/components/pages/suppliers-page' inside of [project]/
+  1603→
+  1604→
+  1605→Import traces:
+  1606→  Client Component Browser:
+  1607→    ./src/app/page.tsx [Client Component Browser]
+  1608→    ./src/app/page.tsx [Server Component]
+  1609→
+  1610→  Client Component SSR:
+  1611→    ./src/app/page.tsx [Client Component SSR]
+  1612→    ./src/app/page.tsx [Server Component]
+  1613→
+  1614→https://nextjs.org/docs/messages/module-not-found
+  1615→
+  1616→
+  1617→⨯ ./src/app/page.tsx:16:34
+  1618→Module not found: Can't resolve '@/components/pages/customers-page'
+  1619→[0m [90m 14 |[39m [36mconst[39m [33mProductsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/products-page'[39m))[33m;[39m
+  1620→ [90m 15 |[39m [36mconst[39m [33mInventoryPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/inventory-page'[39m))[33m;[39m
+  1621→[31m[1m>[22m[39m[90m 16 |[39m [36mconst[39m [33mCustomersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/customers-page'[39m))[33m;[39m
+  1622→ [90m    |[39m                                  [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+  1623→ [90m 17 |[39m [36mconst[39m [33mSuppliersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/suppliers-page'[39m))[33m;[39m
+  1624→ [90m 18 |[39m [36mconst[39m [33mExpensesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/expenses-page'[39m))[33m;[39m
+  1625→ [90m 19 |[39m [36mconst[39m [33mReportsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/reports-page'[39m))[33m;[39m[0m
+  1626→
+  1627→Import map: aliased to relative './src/components/pages/customers-page' inside of [project]/
+  1628→
+  1629→
+  1630→Import traces:
+  1631→  Client Component Browser:
+  1632→    ./src/app/page.tsx [Client Component Browser]
+  1633→    ./src/app/page.tsx [Server Component]
+  1634→
+  1635→  Client Component SSR:
+  1636→    ./src/app/page.tsx [Client Component SSR]
+  1637→    ./src/app/page.tsx [Server Component]
+  1638→
+  1639→https://nextjs.org/docs/messages/module-not-found
+  1640→
+  1641→
+  1642→⨯ ./src/app/page.tsx:16:34
+  1643→Module not found: Can't resolve '@/components/pages/customers-page'
+  1644→[0m [90m 14 |[39m [36mconst[39m [33mProductsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/products-page'[39m))[33m;[39m
+  1645→ [90m 15 |[39m [36mconst[39m [33mInventoryPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/inventory-page'[39m))[33m;[39m
+  1646→[31m[1m>[22m[39m[90m 16 |[39m [36mconst[39m [33mCustomersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/customers-page'[39m))[33m;[39m
+  1647→ [90m    |[39m                                  [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+  1648→ [90m 17 |[39m [36mconst[39m [33mSuppliersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/suppliers-page'[39m))[33m;[39m
+  1649→ [90m 18 |[39m [36mconst[39m [33mExpensesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/expenses-page'[39m))[33m;[39m
+  1650→ [90m 19 |[39m [36mconst[39m [33mReportsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/reports-page'[39m))[33m;[39m[0m
+  1651→
+  1652→Import map: aliased to relative './src/components/pages/customers-page' inside of [project]/
+  1653→
+  1654→
+  1655→Import traces:
+  1656→  Client Component Browser:
+  1657→    ./src/app/page.tsx [Client Component Browser]
+  1658→    ./src/app/page.tsx [Server Component]
+  1659→
+  1660→  Client Component SSR:
+  1661→    ./src/app/page.tsx [Client Component SSR]
+  1662→    ./src/app/page.tsx [Server Component]
+  1663→
+  1664→https://nextjs.org/docs/messages/module-not-found
+  1665→
+  1666→
+  1667→⨯ ./src/app/page.tsx:11:34
+  1668→Module not found: Can't resolve '@/components/pages/dashboard-page'
+  1669→[0m [90m  9 |[39m [36mimport[39m { [33mLoader2[39m } [36mfrom[39m [32m'lucide-react'[39m[33m;[39m
+  1670→ [90m 10 |[39m
+  1671→[31m[1m>[22m[39m[90m 11 |[39m [36mconst[39m [33mDashboardPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/dashboard-page'[39m))[33m;[39m
+  1672→ [90m    |[39m                                  [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+  1673→ [90m 12 |[39m [36mconst[39m [33mPOSPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/pos-page'[39m))[33m;[39m
+  1674→ [90m 13 |[39m [36mconst[39m [33mSalesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/sales-page'[39m))[33m;[39m
+  1675→ [90m 14 |[39m [36mconst[39m [33mProductsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/products-page'[39m))[33m;[39m[0m
+  1676→
+  1677→Import map: aliased to relative './src/components/pages/dashboard-page' inside of [project]/
+  1678→
+  1679→
+  1680→Import traces:
+  1681→  Client Component Browser:
+  1682→    ./src/app/page.tsx [Client Component Browser]
+  1683→    ./src/app/page.tsx [Server Component]
+  1684→
+  1685→  Client Component SSR:
+  1686→    ./src/app/page.tsx [Client Component SSR]
+  1687→    ./src/app/page.tsx [Server Component]
+  1688→
+  1689→https://nextjs.org/docs/messages/module-not-found
+  1690→
+  1691→
+  1692→⨯ ./src/app/page.tsx:11:34
+  1693→Module not found: Can't resolve '@/components/pages/dashboard-page'
+  1694→[0m [90m  9 |[39m [36mimport[39m { [33mLoader2[39m } [36mfrom[39m [32m'lucide-react'[39m[33m;[39m
+  1695→ [90m 10 |[39m
+  1696→[31m[1m>[22m[39m[90m 11 |[39m [36mconst[39m [33mDashboardPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/dashboard-page'[39m))[33m;[39m
+  1697→ [90m    |[39m                                  [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+  1698→ [90m 12 |[39m [36mconst[39m [33mPOSPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/pos-page'[39m))[33m;[39m
+  1699→ [90m 13 |[39m [36mconst[39m [33mSalesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/sales-page'[39m))[33m;[39m
+  1700→ [90m 14 |[39m [36mconst[39m [33mProductsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/products-page'[39m))[33m;[39m[0m
+  1701→
+  1702→Import map: aliased to relative './src/components/pages/dashboard-page' inside of [project]/
+  1703→
+  1704→
+  1705→Import traces:
+  1706→  Client Component Browser:
+  1707→    ./src/app/page.tsx [Client Component Browser]
+  1708→    ./src/app/page.tsx [Server Component]
+  1709→
+  1710→  Client Component SSR:
+  1711→    ./src/app/page.tsx [Client Component SSR]
+  1712→    ./src/app/page.tsx [Server Component]
+  1713→
+  1714→https://nextjs.org/docs/messages/module-not-found
+  1715→
+  1716→
+  1717→⨯ ./src/app/page.tsx:18:33
+  1718→Module not found: Can't resolve '@/components/pages/expenses-page'
+  1719→[0m [90m 16 |[39m [36mconst[39m [33mCustomersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/customers-page'[39m))[33m;[39m
+  1720→ [90m 17 |[39m [36mconst[39m [33mSuppliersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/suppliers-page'[39m))[33m;[39m
+  1721→[31m[1m>[22m[39m[90m 18 |[39m [36mconst[39m [33mExpensesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/expenses-page'[39m))[33m;[39m
+  1722→ [90m    |[39m                                 [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+  1723→ [90m 19 |[39m [36mconst[39m [33mReportsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/reports-page'[39m))[33m;[39m
+  1724→ [90m 20 |[39m [36mconst[39m [33mStaffPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/staff-page'[39m))[33m;[39m
+  1725→ [90m 21 |[39m [36mconst[39m [33mSettingsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/settings-page'[39m))[33m;[39m[0m
+  1726→
+  1727→Import map: aliased to relative './src/components/pages/expenses-page' inside of [project]/
+  1728→
+  1729→
+  1730→Import traces:
+  1731→  Client Component Browser:
+  1732→    ./src/app/page.tsx [Client Component Browser]
+  1733→    ./src/app/page.tsx [Server Component]
+  1734→
+  1735→  Client Component SSR:
+  1736→    ./src/app/page.tsx [Client Component SSR]
+  1737→    ./src/app/page.tsx [Server Component]
+  1738→
+  1739→https://nextjs.org/docs/messages/module-not-found
+  1740→
+  1741→
+  1742→⨯ ./src/app/page.tsx:18:33
+  1743→Module not found: Can't resolve '@/components/pages/expenses-page'
+  1744→[0m [90m 16 |[39m [36mconst[39m [33mCustomersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/customers-page'[39m))[33m;[39m
+  1745→ [90m 17 |[39m [36mconst[39m [33mSuppliersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/suppliers-page'[39m))[33m;[39m
+  1746→[31m[1m>[22m[39m[90m 18 |[39m [36mconst[39m [33mExpensesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/expenses-page'[39m))[33m;[39m
+  1747→ [90m    |[39m                                 [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+  1748→ [90m 19 |[39m [36mconst[39m [33mReportsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/reports-page'[39m))[33m;[39m
+  1749→ [90m 20 |[39m [36mconst[39m [33mStaffPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/staff-page'[39m))[33m;[39m
+  1750→ [90m 21 |[39m [36mconst[39m [33mSettingsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/settings-page'[39m))[33m;[39m[0m
+  1751→
+  1752→Import map: aliased to relative './src/components/pages/expenses-page' inside of [project]/
+  1753→
+  1754→
+  1755→Import traces:
+  1756→  Client Component Browser:
+  1757→    ./src/app/page.tsx [Client Component Browser]
+  1758→    ./src/app/page.tsx [Server Component]
+  1759→
+  1760→  Client Component SSR:
+  1761→    ./src/app/page.tsx [Client Component SSR]
+  1762→    ./src/app/page.tsx [Server Component]
+  1763→
+  1764→https://nextjs.org/docs/messages/module-not-found
+  1765→
+  1766→
+  1767→⨯ ./src/app/page.tsx:15:34
+  1768→Module not found: Can't resolve '@/components/pages/inventory-page'
+  1769→[0m [90m 13 |[39m [36mconst[39m [33mSalesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/sales-page'[39m))[33m;[39m
+  1770→ [90m 14 |[39m [36mconst[39m [33mProductsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/products-page'[39m))[33m;[39m
+  1771→[31m[1m>[22m[39m[90m 15 |[39m [36mconst[39m [33mInventoryPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/inventory-page'[39m))[33m;[39m
+  1772→ [90m    |[39m                                  [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+  1773→ [90m 16 |[39m [36mconst[39m [33mCustomersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/customers-page'[39m))[33m;[39m
+  1774→ [90m 17 |[39m [36mconst[39m [33mSuppliersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/suppliers-page'[39m))[33m;[39m
+  1775→ [90m 18 |[39m [36mconst[39m [33mExpensesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/expenses-page'[39m))[33m;[39m[0m
+  1776→
+  1777→Import map: aliased to relative './src/components/pages/inventory-page' inside of [project]/
+  1778→
+  1779→
+  1780→Import traces:
+  1781→  Client Component Browser:
+  1782→    ./src/app/page.tsx [Client Component Browser]
+  1783→    ./src/app/page.tsx [Server Component]
+  1784→
+  1785→  Client Component SSR:
+  1786→    ./src/app/page.tsx [Client Component SSR]
+  1787→    ./src/app/page.tsx [Server Component]
+  1788→
+  1789→https://nextjs.org/docs/messages/module-not-found
+  1790→
+  1791→
+  1792→⨯ ./src/app/page.tsx:15:34
+  1793→Module not found: Can't resolve '@/components/pages/inventory-page'
+  1794→[0m [90m 13 |[39m [36mconst[39m [33mSalesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/sales-page'[39m))[33m;[39m
+  1795→ [90m 14 |[39m [36mconst[39m [33mProductsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/products-page'[39m))[33m;[39m
+  1796→[31m[1m>[22m[39m[90m 15 |[39m [36mconst[39m [33mInventoryPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/inventory-page'[39m))[33m;[39m
+  1797→ [90m    |[39m                                  [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+  1798→ [90m 16 |[39m [36mconst[39m [33mCustomersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/customers-page'[39m))[33m;[39m
+  1799→ [90m 17 |[39m [36mconst[39m [33mSuppliersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/suppliers-page'[39m))[33m;[39m
+  1800→ [90m 18 |[39m [36mconst[39m [33mExpensesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/expenses-page'[39m))[33m;[39m[0m
+  1801→
+  1802→Import map: aliased to relative './src/components/pages/inventory-page' inside of [project]/
+  1803→
+  1804→
+  1805→Import traces:
+  1806→  Client Component Browser:
+  1807→    ./src/app/page.tsx [Client Component Browser]
+  1808→    ./src/app/page.tsx [Server Component]
+  1809→
+  1810→  Client Component SSR:
+  1811→    ./src/app/page.tsx [Client Component SSR]
+  1812→    ./src/app/page.tsx [Server Component]
+  1813→
+  1814→https://nextjs.org/docs/messages/module-not-found
+  1815→
+  1816→
+  1817→⨯ ./src/app/page.tsx:12:28
+  1818→Module not found: Can't resolve '@/components/pages/pos-page'
+  1819→[0m [90m 10 |[39m
+  1820→ [90m 11 |[39m [36mconst[39m [33mDashboardPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/dashboard-page'[39m))[33m;[39m
+  1821→[31m[1m>[22m[39m[90m 12 |[39m [36mconst[39m [33mPOSPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/pos-page'[39m))[33m;[39m
+  1822→ [90m    |[39m                            [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+  1823→ [90m 13 |[39m [36mconst[39m [33mSalesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/sales-page'[39m))[33m;[39m
+  1824→ [90m 14 |[39m [36mconst[39m [33mProductsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/products-page'[39m))[33m;[39m
+  1825→ [90m 15 |[39m [36mconst[39m [33mInventoryPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/inventory-page'[39m))[33m;[39m[0m
+  1826→
+  1827→Import map: aliased to relative './src/components/pages/pos-page' inside of [project]/
+  1828→
+  1829→
+  1830→Import traces:
+  1831→  Client Component Browser:
+  1832→    ./src/app/page.tsx [Client Component Browser]
+  1833→    ./src/app/page.tsx [Server Component]
+  1834→
+  1835→  Client Component SSR:
+  1836→    ./src/app/page.tsx [Client Component SSR]
+  1837→    ./src/app/page.tsx [Server Component]
+  1838→
+  1839→https://nextjs.org/docs/messages/module-not-found
+  1840→
+  1841→
+  1842→⨯ ./src/app/page.tsx:12:28
+  1843→Module not found: Can't resolve '@/components/pages/pos-page'
+  1844→[0m [90m 10 |[39m
+  1845→ [90m 11 |[39m [36mconst[39m [33mDashboardPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/dashboard-page'[39m))[33m;[39m
+  1846→[31m[1m>[22m[39m[90m 12 |[39m [36mconst[39m [33mPOSPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/pos-page'[39m))[33m;[39m
+  1847→ [90m    |[39m                            [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+  1848→ [90m 13 |[39m [36mconst[39m [33mSalesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/sales-page'[39m))[33m;[39m
+  1849→ [90m 14 |[39m [36mconst[39m [33mProductsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/products-page'[39m))[33m;[39m
+  1850→ [90m 15 |[39m [36mconst[39m [33mInventoryPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/inventory-page'[39m))[33m;[39m[0m
+  1851→
+  1852→Import map: aliased to relative './src/components/pages/pos-page' inside of [project]/
+  1853→
+  1854→
+  1855→Import traces:
+  1856→  Client Component Browser:
+  1857→    ./src/app/page.tsx [Client Component Browser]
+  1858→    ./src/app/page.tsx [Server Component]
+  1859→
+  1860→  Client Component SSR:
+  1861→    ./src/app/page.tsx [Client Component SSR]
+  1862→    ./src/app/page.tsx [Server Component]
+  1863→
+  1864→https://nextjs.org/docs/messages/module-not-found
+  1865→
+  1866→
+  1867→⨯ ./src/app/page.tsx:14:33
+  1868→Module not found: Can't resolve '@/components/pages/products-page'
+  1869→[0m [90m 12 |[39m [36mconst[39m [33mPOSPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/pos-page'[39m))[33m;[39m
+  1870→ [90m 13 |[39m [36mconst[39m [33mSalesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/sales-page'[39m))[33m;[39m
+  1871→[31m[1m>[22m[39m[90m 14 |[39m [36mconst[39m [33mProductsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/products-page'[39m))[33m;[39m
+  1872→ [90m    |[39m                                 [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+  1873→ [90m 15 |[39m [36mconst[39m [33mInventoryPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/inventory-page'[39m))[33m;[39m
+  1874→ [90m 16 |[39m [36mconst[39m [33mCustomersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/customers-page'[39m))[33m;[39m
+  1875→ [90m 17 |[39m [36mconst[39m [33mSuppliersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/suppliers-page'[39m))[33m;[39m[0m
+  1876→
+  1877→Import map: aliased to relative './src/components/pages/products-page' inside of [project]/
+  1878→
+  1879→
+  1880→Import traces:
+  1881→  Client Component Browser:
+  1882→    ./src/app/page.tsx [Client Component Browser]
+  1883→    ./src/app/page.tsx [Server Component]
+  1884→
+  1885→  Client Component SSR:
+  1886→    ./src/app/page.tsx [Client Component SSR]
+  1887→    ./src/app/page.tsx [Server Component]
+  1888→
+  1889→https://nextjs.org/docs/messages/module-not-found
+  1890→
+  1891→
+  1892→⨯ ./src/app/page.tsx:14:33
+  1893→Module not found: Can't resolve '@/components/pages/products-page'
+  1894→[0m [90m 12 |[39m [36mconst[39m [33mPOSPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/pos-page'[39m))[33m;[39m
+  1895→ [90m 13 |[39m [36mconst[39m [33mSalesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/sales-page'[39m))[33m;[39m
+  1896→[31m[1m>[22m[39m[90m 14 |[39m [36mconst[39m [33mProductsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/products-page'[39m))[33m;[39m
+  1897→ [90m    |[39m                                 [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+  1898→ [90m 15 |[39m [36mconst[39m [33mInventoryPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/inventory-page'[39m))[33m;[39m
+  1899→ [90m 16 |[39m [36mconst[39m [33mCustomersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/customers-page'[39m))[33m;[39m
+  1900→ [90m 17 |[39m [36mconst[39m [33mSuppliersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/suppliers-page'[39m))[33m;[39m[0m
+  1901→
+  1902→Import map: aliased to relative './src/components/pages/products-page' inside of [project]/
+  1903→
+  1904→
+  1905→Import traces:
+  1906→  Client Component Browser:
+  1907→    ./src/app/page.tsx [Client Component Browser]
+  1908→    ./src/app/page.tsx [Server Component]
+  1909→
+  1910→  Client Component SSR:
+  1911→    ./src/app/page.tsx [Client Component SSR]
+  1912→    ./src/app/page.tsx [Server Component]
+  1913→
+  1914→https://nextjs.org/docs/messages/module-not-found
+  1915→
+  1916→
+  1917→⨯ ./src/app/page.tsx:19:32
+  1918→Module not found: Can't resolve '@/components/pages/reports-page'
+  1919→[0m [90m 17 |[39m [36mconst[39m [33mSuppliersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/suppliers-page'[39m))[33m;[39m
+  1920→ [90m 18 |[39m [36mconst[39m [33mExpensesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/expenses-page'[39m))[33m;[39m
+  1921→[31m[1m>[22m[39m[90m 19 |[39m [36mconst[39m [33mReportsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/reports-page'[39m))[33m;[39m
+  1922→ [90m    |[39m                                [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+  1923→ [90m 20 |[39m [36mconst[39m [33mStaffPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/staff-page'[39m))[33m;[39m
+  1924→ [90m 21 |[39m [36mconst[39m [33mSettingsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/settings-page'[39m))[33m;[39m
+  1925→ [90m 22 |[39m[0m
+  1926→
+  1927→Import map: aliased to relative './src/components/pages/reports-page' inside of [project]/
+  1928→
+  1929→
+  1930→Import traces:
+  1931→  Client Component Browser:
+  1932→    ./src/app/page.tsx [Client Component Browser]
+  1933→    ./src/app/page.tsx [Server Component]
+  1934→
+  1935→  Client Component SSR:
+  1936→    ./src/app/page.tsx [Client Component SSR]
+  1937→    ./src/app/page.tsx [Server Component]
+  1938→
+  1939→https://nextjs.org/docs/messages/module-not-found
+  1940→
+  1941→
+  1942→⨯ ./src/app/page.tsx:19:32
+  1943→Module not found: Can't resolve '@/components/pages/reports-page'
+  1944→[0m [90m 17 |[39m [36mconst[39m [33mSuppliersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/suppliers-page'[39m))[33m;[39m
+  1945→ [90m 18 |[39m [36mconst[39m [33mExpensesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/expenses-page'[39m))[33m;[39m
+  1946→[31m[1m>[22m[39m[90m 19 |[39m [36mconst[39m [33mReportsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/reports-page'[39m))[33m;[39m
+  1947→ [90m    |[39m                                [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+  1948→ [90m 20 |[39m [36mconst[39m [33mStaffPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/staff-page'[39m))[33m;[39m
+  1949→ [90m 21 |[39m [36mconst[39m [33mSettingsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/settings-page'[39m))[33m;[39m
+  1950→ [90m 22 |[39m[0m
+  1951→
+  1952→Import map: aliased to relative './src/components/pages/reports-page' inside of [project]/
+  1953→
+  1954→
+  1955→Import traces:
+  1956→  Client Component Browser:
+  1957→    ./src/app/page.tsx [Client Component Browser]
+  1958→    ./src/app/page.tsx [Server Component]
+  1959→
+  1960→  Client Component SSR:
+  1961→    ./src/app/page.tsx [Client Component SSR]
+  1962→    ./src/app/page.tsx [Server Component]
+  1963→
+  1964→https://nextjs.org/docs/messages/module-not-found
+  1965→
+  1966→
+  1967→⨯ ./src/app/page.tsx:13:30
+  1968→Module not found: Can't resolve '@/components/pages/sales-page'
+  1969→[0m [90m 11 |[39m [36mconst[39m [33mDashboardPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/dashboard-page'[39m))[33m;[39m
+  1970→ [90m 12 |[39m [36mconst[39m [33mPOSPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/pos-page'[39m))[33m;[39m
+  1971→[31m[1m>[22m[39m[90m 13 |[39m [36mconst[39m [33mSalesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/sales-page'[39m))[33m;[39m
+  1972→ [90m    |[39m                              [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+  1973→ [90m 14 |[39m [36mconst[39m [33mProductsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/products-page'[39m))[33m;[39m
+  1974→ [90m 15 |[39m [36mconst[39m [33mInventoryPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/inventory-page'[39m))[33m;[39m
+  1975→ [90m 16 |[39m [36mconst[39m [33mCustomersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/customers-page'[39m))[33m;[39m[0m
+  1976→
+  1977→Import map: aliased to relative './src/components/pages/sales-page' inside of [project]/
+  1978→
+  1979→
+  1980→Import traces:
+  1981→  Client Component Browser:
+  1982→    ./src/app/page.tsx [Client Component Browser]
+  1983→    ./src/app/page.tsx [Server Component]
+  1984→
+  1985→  Client Component SSR:
+  1986→    ./src/app/page.tsx [Client Component SSR]
+  1987→    ./src/app/page.tsx [Server Component]
+  1988→
+  1989→https://nextjs.org/docs/messages/module-not-found
+  1990→
+  1991→
+  1992→⨯ ./src/app/page.tsx:13:30
+  1993→Module not found: Can't resolve '@/components/pages/sales-page'
+  1994→[0m [90m 11 |[39m [36mconst[39m [33mDashboardPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/dashboard-page'[39m))[33m;[39m
+  1995→ [90m 12 |[39m [36mconst[39m [33mPOSPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/pos-page'[39m))[33m;[39m
+  1996→[31m[1m>[22m[39m[90m 13 |[39m [36mconst[39m [33mSalesPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/sales-page'[39m))[33m;[39m
+  1997→ [90m    |[39m                              [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+  1998→ [90m 14 |[39m [36mconst[39m [33mProductsPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/products-page'[39m))[33m;[39m
+  1999→ [90m 15 |[39m [36mconst[39m [33mInventoryPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/inventory-page'[39m))[33m;[39m
+  2000→ [90m 16 |[39m [36mconst[39m [33mCustomersPage[39m [33m=[39m lazy(() [33m=>[39m [36mimport[39m([32m'@/components/pages/customers-page'[39m))[33m;[39m[0m
+
+[showing lines 1-2000 of 22776; use offset=2001 with limit to continue reading]

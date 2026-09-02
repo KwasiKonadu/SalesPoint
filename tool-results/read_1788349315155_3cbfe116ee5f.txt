@@ -1,0 +1,793 @@
+     1→'use client';
+     2→
+     3→import { useState, useEffect, useCallback } from 'react';
+     4→import { useAppStore } from '@/lib/store';
+     5→import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+     6→import { Badge } from '@/components/ui/badge';
+     7→import { Skeleton } from '@/components/ui/skeleton';
+     8→import { Button } from '@/components/ui/button';
+     9→import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+    10→import {
+    11→  DollarSign,
+    12→  ShoppingCart,
+    13→  TrendingUp,
+    14→  Calculator,
+    15→  Users,
+    16→  ArrowUpRight,
+    17→  ArrowDownRight,
+    18→  AlertTriangle,
+    19→  RefreshCw,
+    20→  Plus,
+    21→  PackagePlus,
+    22→  Package,
+    23→  UserPlus,
+    24→  Receipt,
+    25→  ChevronRight,
+    26→  Store,
+    27→} from 'lucide-react';
+    28→import {
+    29→  AreaChart,
+    30→  Area,
+    31→  XAxis,
+    32→  YAxis,
+    33→  CartesianGrid,
+    34→  Tooltip,
+    35→  ResponsiveContainer,
+    36→  PieChart,
+    37→  Pie,
+    38→  Cell,
+    39→} from 'recharts';
+    40→
+    41→// --- Types ---
+    42→
+    43→interface DashboardData {
+    44→  totalSales: number;
+    45→  salesChange: number;
+    46→  totalTransactions: number;
+    47→  transactionsChange: number;
+    48→  totalProfit: number;
+    49→  profitChange: number;
+    50→  avgOrderValue: number;
+    51→  avgOrderValueChange: number;
+    52→  totalCustomers: number;
+    53→  customersChange: number;
+    54→  salesByCategory: { category: string; amount: number; percentage: number }[];
+    55→  topProducts: {
+    56→    productId: string;
+    57→    productName: string;
+    58→    quantitySold: number;
+    59→    revenue: number;
+    60→    image: string | null;
+    61→  }[];
+    62→  lowStockProducts: {
+    63→    id: string;
+    64→    quantity: number;
+    65→    product: {
+    66→      name: string;
+    67→      minStockLevel: number;
+    68→      image: string | null;
+    69→      category?: { name: string } | null;
+    70→      unit?: { name: string } | null;
+    71→    };
+    72→  }[];
+    73→  recentSales: {
+    74→    id: string;
+    75→    transactionNumber: string;
+    76→    totalAmount: number;
+    77→    status: string;
+    78→    paymentMethod: string;
+    79→    createdAt: string;
+    80→    customer: {
+    81→      id: string;
+    82→      name: string;
+    83→    } | null;
+    84→  }[];
+    85→  salesChart: { date: string; amount: number }[];
+    86→}
+    87→
+    88→const CHART_COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
+    89→
+    90→const PRODUCT_COLORS = ['#10b981', '#f59e0b', '#3b82f6', '#8b5cf6', '#ec4899'];
+    91→
+    92→// --- Helpers ---
+    93→
+    94→function formatCurrency(value: number): string {
+    95→  return `\u20A5${value.toLocaleString('en-GH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    96→}
+    97→
+    98→function formatDate(dateStr: string): string {
+    99→  return new Date(dateStr).toLocaleDateString('en-US', {
+   100→    month: 'short',
+   101→    day: 'numeric',
+   102→    year: 'numeric',
+   103→  });
+   104→}
+   105→
+   106→function formatChartDate(dateStr: string): string {
+   107→  const d = new Date(dateStr);
+   108→  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+   109→}
+   110→
+   111→// --- Sub Components ---
+   112→
+   113→function ChangeIndicator({ change, label }: { change: number; label: string }) {
+   114→  const isPositive = change >= 0;
+   115→  return (
+   116→    <div className="flex items-center gap-1 text-xs">
+   117→      {isPositive ? (
+   118→        <ArrowUpRight className="w-3.5 h-3.5 text-emerald-600" />
+   119→      ) : (
+   120→        <ArrowDownRight className="w-3.5 h-3.5 text-red-500" />
+   121→      )}
+   122→      <span className={isPositive ? 'text-emerald-600 font-medium' : 'text-red-500 font-medium'}>
+   123→        {Math.abs(change).toFixed(1)}%
+   124→      </span>
+   125→      <span className="text-muted-foreground">vs last month</span>
+   126→    </div>
+   127→  );
+   128→}
+   129→
+   130→function KPICardSkeleton() {
+   131→  return (
+   132→    <Card className="shadow-sm">
+   133→      <CardHeader className="pb-2">
+   134→        <div className="flex items-center justify-between">
+   135→          <Skeleton className="h-4 w-20" />
+   136→          <Skeleton className="h-9 w-9 rounded-lg" />
+   137→        </div>
+   138→      </CardHeader>
+   139→      <CardContent className="pt-0">
+   140→        <Skeleton className="h-8 w-32 mb-2" />
+   141→        <Skeleton className="h-4 w-40" />
+   142→      </CardContent>
+   143→    </Card>
+   144→  );
+   145→}
+   146→
+   147→function KPICard({
+   148→  icon: Icon,
+   149→  label,
+   150→  value,
+   151→  change,
+   152→  format = 'number',
+   153→  iconBg,
+   154→}: {
+   155→  icon: React.ElementType;
+   156→  label: string;
+   157→  value: number;
+   158→  change: number;
+   159→  format?: 'currency' | 'number' | 'decimal';
+   160→  iconBg: string;
+   161→}) {
+   162→  const displayValue =
+   163→    format === 'currency'
+   164→      ? formatCurrency(value)
+   165→      : format === 'decimal'
+   166→        ? value.toLocaleString('en-GH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+   167→        : value.toLocaleString();
+   168→
+   169→  return (
+   170→    <Card className="shadow-sm hover:shadow-md transition-shadow">
+   171→      <CardHeader className="pb-2">
+   172→        <div className="flex items-center justify-between">
+   173→          <p className="text-sm text-muted-foreground font-medium">{label}</p>
+   174→          <div className={`h-9 w-9 rounded-lg flex items-center justify-center ${iconBg}`}>
+   175→            <Icon className="w-4.5 h-4.5" />
+   176→          </div>
+   177→        </div>
+   178→      </CardHeader>
+   179→      <CardContent className="pt-0">
+   180→        <p className="text-2xl font-bold tracking-tight">{displayValue}</p>
+   181→        <div className="mt-1">
+   182→          <ChangeIndicator change={change} label={label} />
+   183→        </div>
+   184→      </CardContent>
+   185→    </Card>
+   186→  );
+   187→}
+   188→
+   189→// --- Custom Chart Tooltip ---
+   190→
+   191→function SalesChartTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number }>; label?: string }) {
+   192→  if (!active || !payload?.length) return null;
+   193→  return (
+   194→    <div className="bg-popover border rounded-lg px-3 py-2 shadow-md">
+   195→      <p className="text-xs text-muted-foreground mb-1">{label}</p>
+   196→      <p className="text-sm font-semibold">{formatCurrency(payload[0].value)}</p>
+   197→    </div>
+   198→  );
+   199→}
+   200→
+   201→function PieTooltip({ active, payload }: { active?: boolean; payload?: Array<{ name: string; value: number; payload: { percentage: number } }> }) {
+   202→  if (!active || !payload?.length) return null;
+   203→  const item = payload[0];
+   204→  return (
+   205→    <div className="bg-popover border rounded-lg px-3 py-2 shadow-md">
+   206→      <p className="text-sm font-semibold">{item.name}</p>
+   207→      <p className="text-xs text-muted-foreground">
+   208→        {formatCurrency(item.value)} ({item.payload.percentage.toFixed(1)}%)
+   209→      </p>
+   210→    </div>
+   211→  );
+   212→}
+   213→
+   214→// --- Main Component ---
+   215→
+   216→export default function DashboardPage() {
+   217→  const { setCurrentPage } = useAppStore();
+   218→  const [data, setData] = useState<DashboardData | null>(null);
+   219→  const [loading, setLoading] = useState(true);
+   220→  const [error, setError] = useState<string | null>(null);
+   221→  const [chartPeriod, setChartPeriod] = useState('30d');
+   222→
+   223→  const fetchDashboard = useCallback(async () => {
+   224→    setLoading(true);
+   225→    setError(null);
+   226→    try {
+   227→      const res = await fetch('/api/dashboard');
+   228→      if (!res.ok) throw new Error('Failed to fetch dashboard data');
+   229→      const json = await res.json();
+   230→      if (json.error) throw new Error(json.error);
+   231→      setData(json);
+   232→    } catch (err) {
+   233→      setError(err instanceof Error ? err.message : 'Something went wrong');
+   234→    } finally {
+   235→      setLoading(false);
+   236→    }
+   237→  }, []);
+   238→
+   239→  useEffect(() => {
+   240→    fetchDashboard();
+   241→  }, [fetchDashboard]);
+   242→
+   243→  // Filter chart data based on period
+   244→  const getFilteredChartData = useCallback(() => {
+   245→    if (!data?.salesChart) return [];
+   246→    const now = new Date();
+   247→    let daysToSlice = 30;
+   248→
+   249→    switch (chartPeriod) {
+   250→      case '7d':
+   251→        daysToSlice = 7;
+   252→        break;
+   253→      case '30d':
+   254→        daysToSlice = 30;
+   255→        break;
+   256→      case 'thisMonth': {
+   257→        daysToSlice = now.getDate();
+   258→        break;
+   259→      }
+   260→      case 'thisYear': {
+   261→        daysToSlice = Math.ceil(
+   262→          (now.getTime() - new Date(now.getFullYear(), 0, 1).getTime()) / (1000 * 60 * 60 * 24)
+   263→        );
+   264→        break;
+   265→      }
+   266→    }
+   267→    return data.salesChart.slice(-daysToSlice);
+   268→  }, [data, chartPeriod]);
+   269→
+   270→  // Empty state check
+   271→  const isEmpty =
+   272→    data &&
+   273→    data.totalSales === 0 &&
+   274→    data.totalTransactions === 0 &&
+   275→    data.totalCustomers === 0;
+   276→
+   277→  // --- Error State ---
+   278→  if (error) {
+   279→    return (
+   280→      <div className="p-6 max-w-7xl mx-auto">
+   281→        <Card className="shadow-sm">
+   282→          <CardContent className="flex flex-col items-center justify-center py-16 gap-4">
+   283→            <div className="h-16 w-16 rounded-full bg-destructive/10 flex items-center justify-center">
+   284→              <AlertTriangle className="w-8 h-8 text-destructive" />
+   285→            </div>
+   286→            <div className="text-center">
+   287→              <h3 className="text-lg font-semibold">Failed to load dashboard</h3>
+   288→              <p className="text-sm text-muted-foreground mt-1">{error}</p>
+   289→            </div>
+   290→            <Button variant="outline" onClick={fetchDashboard}>
+   291→              <RefreshCw className="w-4 h-4 mr-2" />
+   292→              Try Again
+   293→            </Button>
+   294→          </CardContent>
+   295→        </Card>
+   296→      </div>
+   297→    );
+   298→  }
+   299→
+   300→  // --- Empty State ---
+   301→  if (isEmpty) {
+   302→    return (
+   303→      <div className="p-6 max-w-7xl mx-auto">
+   304→        <Card className="shadow-sm">
+   305→          <CardContent className="flex flex-col items-center justify-center py-16 gap-6">
+   306→            <div className="h-20 w-20 rounded-2xl bg-primary/10 flex items-center justify-center">
+   307→              <Store className="w-10 h-10 text-primary" />
+   308→            </div>
+   309→            <div className="text-center">
+   310→              <h2 className="text-2xl font-bold">Welcome to StorePOS!</h2>
+   311→              <p className="text-muted-foreground mt-2 max-w-md">
+   312→                Your dashboard is ready. Start by adding products, processing your first sale, or setting up your inventory.
+   313→              </p>
+   314→            </div>
+   315→            <div className="flex flex-wrap justify-center gap-3">
+   316→              <Button onClick={() => setCurrentPage('pos')}>
+   317→                <Plus className="w-4 h-4 mr-2" />
+   318→                New Sale
+   319→              </Button>
+   320→              <Button variant="outline" onClick={() => setCurrentPage('products')}>
+   321→                <Package className="w-4 h-4 mr-2" />
+   322→                Add Product
+   323→              </Button>
+   324→              <Button variant="outline" onClick={() => setCurrentPage('customers')}>
+   325→                <UserPlus className="w-4 h-4 mr-2" />
+   326→                Add Customer
+   327→              </Button>
+   328→              <Button variant="outline" onClick={() => setCurrentPage('inventory')}>
+   329→                <PackagePlus className="w-4 h-4 mr-2" />
+   330→                Restock
+   331→              </Button>
+   332→            </div>
+   333→          </CardContent>
+   334→        </Card>
+   335→      </div>
+   336→    );
+   337→  }
+   338→
+   339→  // --- Loading State ---
+   340→  if (loading || !data) {
+   341→    return (
+   342→      <div className="p-6 max-w-7xl mx-auto space-y-6">
+   343→        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+   344→          {Array.from({ length: 5 }).map((_, i) => (
+   345→            <KPICardSkeleton key={i} />
+   346→          ))}
+   347→        </div>
+   348→        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+   349→          {Array.from({ length: 2 }).map((_, i) => (
+   350→            <Card key={i} className="shadow-sm">
+   351→              <CardHeader>
+   352→                <Skeleton className="h-5 w-32" />
+   353→              </CardHeader>
+   354→              <CardContent>
+   355→                <Skeleton className="h-64 w-full" />
+   356→              </CardContent>
+   357→            </Card>
+   358→          ))}
+   359→        </div>
+   360→        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+   361→          <div className="lg:col-span-2 space-y-4">
+   362→            {Array.from({ length: 2 }).map((_, i) => (
+   363→              <Card key={i} className="shadow-sm">
+   364→                <CardHeader>
+   365→                  <Skeleton className="h-5 w-40" />
+   366→                </CardHeader>
+   367→                <CardContent>
+   368→                  <div className="space-y-3">
+   369→                    {Array.from({ length: 5 }).map((_, j) => (
+   370→                      <Skeleton key={j} className="h-12 w-full" />
+   371→                    ))}
+   372→                  </div>
+   373→                </CardContent>
+   374→              </Card>
+   375→            ))}
+   376→          </div>
+   377→          <Card className="shadow-sm">
+   378→            <CardHeader>
+   379→              <Skeleton className="h-5 w-36" />
+   380→            </CardHeader>
+   381→            <CardContent>
+   382→              <div className="space-y-3">
+   383→                {Array.from({ length: 4 }).map((_, i) => (
+   384→                  <Skeleton key={i} className="h-14 w-full" />
+   385→                ))}
+   386→              </div>
+   387→            </CardContent>
+   388→          </Card>
+   389→        </div>
+   390→      </div>
+   391→    );
+   392→  }
+   393→
+   394→  const filteredChartData = getFilteredChartData();
+   395→
+   396→  return (
+   397→    <div className="p-6 max-w-7xl mx-auto space-y-6">
+   398→      {/* KPI Cards Row */}
+   399→      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+   400→        <KPICard
+   401→          icon={DollarSign}
+   402→          label="Total Sales"
+   403→          value={data.totalSales}
+   404→          change={data.salesChange}
+   405→          format="currency"
+   406→          iconBg="bg-emerald-100 text-emerald-700"
+   407→        />
+   408→        <KPICard
+   409→          icon={ShoppingCart}
+   410→          label="Transactions"
+   411→          value={data.totalTransactions}
+   412→          change={data.transactionsChange}
+   413→          iconBg="bg-blue-100 text-blue-700"
+   414→        />
+   415→        <KPICard
+   416→          icon={TrendingUp}
+   417→          label="Total Profit"
+   418→          value={data.totalProfit}
+   419→          change={data.profitChange}
+   420→          format="currency"
+   421→          iconBg="bg-violet-100 text-violet-700"
+   422→        />
+   423→        <KPICard
+   424→          icon={Calculator}
+   425→          label="Avg Order Value"
+   426→          value={data.avgOrderValue}
+   427→          change={data.avgOrderValueChange}
+   428→          format="decimal"
+   429→          iconBg="bg-amber-100 text-amber-700"
+   430→        />
+   431→        <KPICard
+   432→          icon={Users}
+   433→          label="Customers"
+   434→          value={data.totalCustomers}
+   435→          change={data.customersChange}
+   436→          iconBg="bg-pink-100 text-pink-700"
+   437→        />
+   438→      </div>
+   439→
+   440→      {/* Charts Row */}
+   441→      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+   442→        {/* Sales Overview Area Chart */}
+   443→        <Card className="shadow-sm">
+   444→          <CardHeader>
+   445→            <div className="flex items-center justify-between">
+   446→              <CardTitle className="text-base">Sales Overview</CardTitle>
+   447→              <Select value={chartPeriod} onValueChange={setChartPeriod}>
+   448→                <SelectTrigger size="sm" className="w-36">
+   449→                  <SelectValue />
+   450→                </SelectTrigger>
+   451→                <SelectContent>
+   452→                  <SelectItem value="7d">This Week</SelectItem>
+   453→                  <SelectItem value="30d">This Month</SelectItem>
+   454→                  <SelectItem value="thisMonth">Month to Date</SelectItem>
+   455→                  <SelectItem value="thisYear">This Year</SelectItem>
+   456→                </SelectContent>
+   457→              </Select>
+   458→            </div>
+   459→          </CardHeader>
+   460→          <CardContent>
+   461→            <div className="h-64">
+   462→              <ResponsiveContainer width="100%" height="100%">
+   463→                <AreaChart data={filteredChartData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+   464→                  <defs>
+   465→                    <linearGradient id="salesGradient" x1="0" y1="0" x2="0" y2="1">
+   466→                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+   467→                      <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+   468→                    </linearGradient>
+   469→                  </defs>
+   470→                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+   471→                  <XAxis
+   472→                    dataKey="date"
+   473→                    tickFormatter={formatChartDate}
+   474→                    tick={{ fontSize: 11, fill: 'var(--muted-foreground)' }}
+   475→                    axisLine={{ stroke: 'var(--border)' }}
+   476→                    tickLine={false}
+   477→                  />
+   478→                  <YAxis
+   479→                    tick={{ fontSize: 11, fill: 'var(--muted-foreground)' }}
+   480→                    axisLine={false}
+   481→                    tickLine={false}
+   482→                    tickFormatter={(v: number) => v >= 1000 ? `\u20A5${(v / 1000).toFixed(0)}k` : `\u20A5${v}`}
+   483→                  />
+   484→                  <Tooltip content={<SalesChartTooltip />} />
+   485→                  <Area
+   486→                    type="monotone"
+   487→                    dataKey="amount"
+   488→                    stroke="#10b981"
+   489→                    strokeWidth={2}
+   490→                    fill="url(#salesGradient)"
+   491→                  />
+   492→                </AreaChart>
+   493→              </ResponsiveContainer>
+   494→            </div>
+   495→          </CardContent>
+   496→        </Card>
+   497→
+   498→        {/* Sales by Category Pie Chart */}
+   499→        <Card className="shadow-sm">
+   500→          <CardHeader>
+   501→            <CardTitle className="text-base">Sales by Category</CardTitle>
+   502→          </CardHeader>
+   503→          <CardContent>
+   504→            {data.salesByCategory.length === 0 ? (
+   505→              <div className="h-64 flex items-center justify-center text-muted-foreground text-sm">
+   506→                No sales data available
+   507→              </div>
+   508→            ) : (
+   509→              <div className="flex items-center gap-4 h-64">
+   510→                <div className="flex-1 h-full">
+   511→                  <ResponsiveContainer width="100%" height="100%">
+   512→                    <PieChart>
+   513→                      <Pie
+   514→                        data={data.salesByCategory}
+   515→                        cx="50%"
+   516→                        cy="50%"
+   517→                        innerRadius={55}
+   518→                        outerRadius={85}
+   519→                        paddingAngle={3}
+   520→                        dataKey="amount"
+   521→                        nameKey="category"
+   522→                      >
+   523→                        {data.salesByCategory.map((_, index) => (
+   524→                          <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+   525→                        ))}
+   526→                      </Pie>
+   527→                      <Tooltip content={<PieTooltip />} />
+   528→                    </PieChart>
+   529→                  </ResponsiveContainer>
+   530→                </div>
+   531→                <div className="w-40 space-y-2 max-h-64 overflow-y-auto">
+   532→                  {data.salesByCategory.map((cat, index) => (
+   533→                    <div key={cat.category} className="flex items-center gap-2 text-sm">
+   534→                      <div
+   535→                        className="w-3 h-3 rounded-full flex-shrink-0"
+   536→                        style={{ backgroundColor: CHART_COLORS[index % CHART_COLORS.length] }}
+   537→                      />
+   538→                      <div className="flex-1 min-w-0">
+   539→                        <p className="truncate text-foreground font-medium">{cat.category}</p>
+   540→                        <p className="text-xs text-muted-foreground">{cat.percentage.toFixed(1)}%</p>
+   541→                      </div>
+   542→                    </div>
+   543→                  ))}
+   544→                </div>
+   545→              </div>
+   546→            )}
+   547→          </CardContent>
+   548→        </Card>
+   549→      </div>
+   550→
+   551→      {/* Three Column Layout */}
+   552→      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+   553→        {/* Left Column (2 cols) */}
+   554→        <div className="lg:col-span-2 space-y-4">
+   555→          {/* Top Selling Products */}
+   556→          <Card className="shadow-sm">
+   557→            <CardHeader>
+   558→              <div className="flex items-center justify-between">
+   559→                <CardTitle className="text-base">Top Selling Products</CardTitle>
+   560→                <Button
+   561→                  variant="ghost"
+   562→                  size="sm"
+   563→                  className="text-primary text-sm"
+   564→                  onClick={() => setCurrentPage('products')}
+   565→                >
+   566→                  View All
+   567→                  <ChevronRight className="w-4 h-4 ml-1" />
+   568→                </Button>
+   569→              </div>
+   570→            </CardHeader>
+   571→            <CardContent className="pt-0">
+   572→              {data.topProducts.length === 0 ? (
+   573→                <p className="text-sm text-muted-foreground py-4 text-center">
+   574→                  No sales data yet
+   575→                </p>
+   576→              ) : (
+   577→                <div className="space-y-3">
+   578→                  {data.topProducts.map((product, index) => (
+   579→                    <div
+   580→                      key={product.productId}
+   581→                      className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors"
+   582→                    >
+   583→                      <div
+   584→                        className="w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-sm flex-shrink-0"
+   585→                        style={{ backgroundColor: PRODUCT_COLORS[index % PRODUCT_COLORS.length] }}
+   586→                      >
+   587→                        {product.productName.charAt(0).toUpperCase()}
+   588→                      </div>
+   589→                      <div className="flex-1 min-w-0">
+   590→                        <p className="text-sm font-medium truncate">{product.productName}</p>
+   591→                        <p className="text-xs text-muted-foreground">
+   592→                          {product.quantitySold} sold
+   593→                        </p>
+   594→                      </div>
+   595→                      <div className="text-right flex-shrink-0">
+   596→                        <p className="text-sm font-semibold">{formatCurrency(product.revenue)}</p>
+   597→                      </div>
+   598→                    </div>
+   599→                  ))}
+   600→                </div>
+   601→              )}
+   602→            </CardContent>
+   603→          </Card>
+   604→
+   605→          {/* Recent Sales Table */}
+   606→          <Card className="shadow-sm">
+   607→            <CardHeader>
+   608→              <div className="flex items-center justify-between">
+   609→                <CardTitle className="text-base">Recent Sales</CardTitle>
+   610→                <Button
+   611→                  variant="ghost"
+   612→                  size="sm"
+   613→                  className="text-primary text-sm"
+   614→                  onClick={() => setCurrentPage('sales')}
+   615→                >
+   616→                  View All
+   617→                  <ChevronRight className="w-4 h-4 ml-1" />
+   618→                </Button>
+   619→              </div>
+   620→            </CardHeader>
+   621→            <CardContent className="pt-0">
+   622→              {data.recentSales.length === 0 ? (
+   623→                <p className="text-sm text-muted-foreground py-4 text-center">
+   624→                  No recent sales
+   625→                </p>
+   626→              ) : (
+   627→                <div className="overflow-x-auto -mx-6 px-6">
+   628→                  <table className="w-full text-sm">
+   629→                    <thead>
+   630→                      <tr className="border-b border-border">
+   631→                        <th className="text-left font-medium text-muted-foreground pb-2 pr-4">
+   632→                          Transaction
+   633→                        </th>
+   634→                        <th className="text-left font-medium text-muted-foreground pb-2 pr-4 hidden sm:table-cell">
+   635→                          Customer
+   636→                        </th>
+   637→                        <th className="text-right font-medium text-muted-foreground pb-2 pr-4">
+   638→                          Amount
+   639→                        </th>
+   640→                        <th className="text-left font-medium text-muted-foreground pb-2 pr-4 hidden md:table-cell">
+   641→                          Payment
+   642→                        </th>
+   643→                        <th className="text-left font-medium text-muted-foreground pb-2 pr-4 hidden lg:table-cell">
+   644→                          Status
+   645→                        </th>
+   646→                        <th className="text-right font-medium text-muted-foreground pb-2">
+   647→                          Date
+   648→                        </th>
+   649→                      </tr>
+   650→                    </thead>
+   651→                    <tbody className="divide-y divide-border">
+   652→                      {data.recentSales.map((sale) => (
+   653→                        <tr key={sale.id} className="hover:bg-muted/30 transition-colors">
+   654→                          <td className="py-2.5 pr-4 font-mono text-xs">
+   655→                            {sale.transactionNumber}
+   656→                          </td>
+   657→                          <td className="py-2.5 pr-4 hidden sm:table-cell">
+   658→                            {sale.customer?.name || 'Walk-in'}
+   659→                          </td>
+   660→                          <td className="py-2.5 pr-4 text-right font-semibold">
+   661→                            {formatCurrency(sale.totalAmount)}
+   662→                          </td>
+   663→                          <td className="py-2.5 pr-4 hidden md:table-cell">
+   664→                            <Badge variant="secondary" className="capitalize text-xs">
+   665→                              {sale.paymentMethod?.replace('_', ' ') || 'N/A'}
+   666→                            </Badge>
+   667→                          </td>
+   668→                          <td className="py-2.5 pr-4 hidden lg:table-cell">
+   669→                            <Badge
+   670→                              variant={sale.status === 'completed' ? 'default' : 'secondary'}
+   671→                              className="capitalize text-xs"
+   672→                            >
+   673→                              {sale.status}
+   674→                            </Badge>
+   675→                          </td>
+   676→                          <td className="py-2.5 text-right text-muted-foreground text-xs whitespace-nowrap">
+   677→                            {formatDate(sale.createdAt)}
+   678→                          </td>
+   679→                        </tr>
+   680→                      ))}
+   681→                    </tbody>
+   682→                  </table>
+   683→                </div>
+   684→              )}
+   685→            </CardContent>
+   686→          </Card>
+   687→        </div>
+   688→
+   689→        {/* Right Column - Low Stock Alert */}
+   690→        <Card className="shadow-sm">
+   691→          <CardHeader>
+   692→            <div className="flex items-center justify-between">
+   693→              <CardTitle className="text-base">Low Stock Alert</CardTitle>
+   694→              <Badge variant={data.lowStockProducts.length > 0 ? 'destructive' : 'secondary'} className="text-xs">
+   695→                {data.lowStockProducts.length} items
+   696→              </Badge>
+   697→            </div>
+   698→          </CardHeader>
+   699→          <CardContent className="pt-0">
+   700→            {data.lowStockProducts.length === 0 ? (
+   701→              <div className="py-8 text-center">
+   702→                <Package className="w-10 h-10 mx-auto text-muted-foreground/50 mb-2" />
+   703→                <p className="text-sm text-muted-foreground">All products are well stocked</p>
+   704→              </div>
+   705→            ) : (
+   706→              <div className="space-y-3 max-h-96 overflow-y-auto">
+   707→                {data.lowStockProducts.map((item) => {
+   708→                  const isOut = item.quantity === 0;
+   709→                  return (
+   710→                    <div
+   711→                      key={item.id}
+   712→                      className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors"
+   713→                    >
+   714→                      <div
+   715→                        className={`w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-sm flex-shrink-0 ${isOut ? 'bg-red-500' : 'bg-amber-500'}`}
+   716→                      >
+   717→                        {item.product.name.charAt(0).toUpperCase()}
+   718→                      </div>
+   719→                      <div className="flex-1 min-w-0">
+   720→                        <p className="text-sm font-medium truncate">{item.product.name}</p>
+   721→                        <p className="text-xs text-muted-foreground">
+   722→                          {item.quantity} / {item.product.minStockLevel} min
+   723→                        </p>
+   724→                      </div>
+   725→                      <Badge
+   726→                        variant={isOut ? 'destructive' : 'outline'}
+   727→                        className={`text-xs flex-shrink-0 ${!isOut ? 'border-amber-300 text-amber-700 bg-amber-50' : ''}`}
+   728→                      >
+   729→                        {isOut ? 'Out of Stock' : 'Low Stock'}
+   730→                      </Badge>
+   731→                    </div>
+   732→                  );
+   733→                })}
+   734→              </div>
+   735→            )}
+   736→          </CardContent>
+   737→        </Card>
+   738→      </div>
+   739→
+   740→      {/* Quick Actions Row */}
+   741→      <Card className="shadow-sm">
+   742→        <CardHeader>
+   743→          <CardTitle className="text-base">Quick Actions</CardTitle>
+   744→        </CardHeader>
+   745→        <CardContent className="pt-0">
+   746→          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+   747→            <Button
+   748→              variant="outline"
+   749→              className="h-auto py-3 flex-col gap-2 hover:bg-primary/5"
+   750→              onClick={() => setCurrentPage('pos')}
+   751→            >
+   752→              <Plus className="w-5 h-5 text-emerald-600" />
+   753→              <span className="text-xs font-medium">New Sale</span>
+   754→            </Button>
+   755→            <Button
+   756→              variant="outline"
+   757→              className="h-auto py-3 flex-col gap-2 hover:bg-primary/5"
+   758→              onClick={() => setCurrentPage('products')}
+   759→            >
+   760→              <Package className="w-5 h-5 text-blue-600" />
+   761→              <span className="text-xs font-medium">Add Product</span>
+   762→            </Button>
+   763→            <Button
+   764→              variant="outline"
+   765→              className="h-auto py-3 flex-col gap-2 hover:bg-primary/5"
+   766→              onClick={() => setCurrentPage('inventory')}
+   767→            >
+   768→              <PackagePlus className="w-5 h-5 text-violet-600" />
+   769→              <span className="text-xs font-medium">Restock</span>
+   770→            </Button>
+   771→            <Button
+   772→              variant="outline"
+   773→              className="h-auto py-3 flex-col gap-2 hover:bg-primary/5"
+   774→              onClick={() => setCurrentPage('customers')}
+   775→            >
+   776→              <UserPlus className="w-5 h-5 text-pink-600" />
+   777→              <span className="text-xs font-medium">Add Customer</span>
+   778→            </Button>
+   779→            <Button
+   780→              variant="outline"
+   781→              className="h-auto py-3 flex-col gap-2 hover:bg-primary/5"
+   782→              onClick={() => setCurrentPage('expenses')}
+   783→            >
+   784→              <Receipt className="w-5 h-5 text-amber-600" />
+   785→              <span className="text-xs font-medium">Add Expense</span>
+   786→            </Button>
+   787→          </div>
+   788→        </CardContent>
+   789→      </Card>
+   790→    </div>
+   791→  );
+   792→}
+   793→
