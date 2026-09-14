@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { lowStockThreshold, stockStatus } from '@/lib/stock'
 
 export async function GET() {
   try {
@@ -70,7 +71,7 @@ export async function GET() {
     const customersChange =
       lastMonthCustomers === 0 ? 100 : (newCustomers / lastMonthCustomers) * 100
 
-    // Pre-fetch all products with categories for this month's items
+    // Pre-fetch products (+ category) for this month's items
     const thisMonthProductIds = [...new Set(thisMonthItems.map((i) => i.productId))]
     const products = await db.product.findMany({
       where: { id: { in: thisMonthProductIds } },
@@ -127,12 +128,31 @@ export async function GET() {
         product: { include: { category: true, unit: true, productType: true } },
       },
     })
-    const lowStockProducts = allInventory.filter(
-      (inv) =>
-        inv.product.isActive &&
-        inv.product.productType?.tracksStock !== false &&
-        inv.quantity <= inv.product.minStockLevel
-    )
+    const lowStockProducts = allInventory
+      .filter(
+        (inv) =>
+          inv.product.isActive &&
+          inv.product.productType?.tracksStock !== false &&
+          stockStatus(
+            inv.quantity,
+            inv.product.targetStock,
+            inv.product.lowStockPercent,
+          ) !== 'in_stock',
+      )
+      .map((inv) => ({
+        id: inv.id,
+        quantity: inv.quantity,
+        threshold: lowStockThreshold(
+          inv.product.targetStock,
+          inv.product.lowStockPercent,
+        ),
+        product: {
+          name: inv.product.name,
+          image: inv.product.image,
+          category: inv.product.category,
+          unit: inv.product.unit,
+        },
+      }))
 
     // Recent sales
     const recentSales = await db.sale.findMany({

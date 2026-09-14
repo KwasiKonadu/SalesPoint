@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { lowStockThreshold, stockStatus } from '@/lib/stock'
 
 function getDateRange(req: NextRequest): { startDate: Date; endDate: Date } {
   const searchParams = req.nextUrl.searchParams
@@ -287,25 +288,21 @@ async function inventoryStatus() {
   })
 
   const data = inventories.map((inv) => {
-    const status =
-      inv.quantity === 0
-        ? 'out_of_stock'
-        : inv.quantity <= inv.product.minStockLevel
-          ? 'low_stock'
-          : 'in_stock'
+    const p = inv.product
+    const status = stockStatus(inv.quantity, p.targetStock, p.lowStockPercent)
     return {
       inventoryId: inv.id,
-      productId: inv.product.id,
-      productName: inv.product.name,
-      sku: inv.product.sku,
-      category: inv.product.category?.name,
-      unit: inv.product.unit?.name,
+      productId: p.id,
+      productName: p.name,
+      sku: p.sku,
+      category: p.category?.name,
+      unit: p.unit?.name,
       quantity: inv.quantity,
-      minStockLevel: inv.product.minStockLevel,
-      costPrice: inv.product.costPrice,
-      sellingPrice: inv.product.sellingPrice,
-      stockValue: inv.quantity * inv.product.costPrice,
-      retailValue: inv.quantity * inv.product.sellingPrice,
+      minStockLevel: lowStockThreshold(p.targetStock, p.lowStockPercent),
+      costPrice: p.costPrice,
+      sellingPrice: p.sellingPrice,
+      stockValue: inv.quantity * p.costPrice,
+      retailValue: inv.quantity * p.sellingPrice,
       status,
     }
   })
@@ -331,18 +328,22 @@ async function lowStock() {
       (inv) =>
         inv.product.isActive &&
         inv.product.productType?.tracksStock !== false &&
-        inv.quantity <= inv.product.minStockLevel
+        stockStatus(inv.quantity, inv.product.targetStock, inv.product.lowStockPercent) !== 'in_stock',
     )
-    .map((inv) => ({
-      productId: inv.product.id,
-      productName: inv.product.name,
-      sku: inv.product.sku,
-      category: inv.product.category?.name,
-      quantity: inv.quantity,
-      minStockLevel: inv.product.minStockLevel,
-      deficit: inv.product.minStockLevel - inv.quantity,
-      status: inv.quantity === 0 ? 'out_of_stock' : 'low_stock',
-    }))
+    .map((inv) => {
+      const p = inv.product
+      const threshold = lowStockThreshold(p.targetStock, p.lowStockPercent)
+      return {
+        productId: p.id,
+        productName: p.name,
+        sku: p.sku,
+        category: p.category?.name,
+        quantity: inv.quantity,
+        minStockLevel: threshold,
+        deficit: Math.max(0, threshold - inv.quantity),
+        status: inv.quantity === 0 ? 'out_of_stock' : 'low_stock',
+      }
+    })
 
   return NextResponse.json({ data })
 }

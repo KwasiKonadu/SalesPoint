@@ -11,11 +11,12 @@ async function main() {
   await prisma.inventoryMovement.deleteMany()
   await prisma.inventory.deleteMany()
   await prisma.returnItem.deleteMany()
+  await prisma.return.deleteMany()
   await prisma.receipt.deleteMany()
+  await prisma.salePayment.deleteMany()
   await prisma.payment.deleteMany()
   await prisma.saleItem.deleteMany()
   await prisma.sale.deleteMany()
-  // Note: Return table cleaned after sale deletion due to FK constraints
   await prisma.restockItem.deleteMany()
   await prisma.restock.deleteMany()
   await prisma.expense.deleteMany()
@@ -76,6 +77,7 @@ async function main() {
     { key: 'receipt_show_customer', value: 'true' },
     { key: 'low_stock_alert', value: 'true' },
     { key: 'low_stock_threshold', value: '5' },
+    { key: 'default_low_stock_percent', value: '20' },
   ]
 
   for (const setting of businessSettings) {
@@ -153,12 +155,12 @@ async function main() {
   // ==================== UNITS ====================
   console.log('  Creating units of measurement...')
   const units = await Promise.all([
-    prisma.unit.create({ data: { name: 'Piece', shortName: 'pcs', isActive: true } }),
+    prisma.unit.create({ data: { name: 'Millilitre', shortName: 'ml', isActive: true } }),
+    prisma.unit.create({ data: { name: 'Litre', shortName: 'L', isActive: true } }),
+    prisma.unit.create({ data: { name: 'Gram', shortName: 'g', isActive: true } }),
     prisma.unit.create({ data: { name: 'Kilogram', shortName: 'kg', isActive: true } }),
-    prisma.unit.create({ data: { name: 'Liter', shortName: 'L', isActive: true } }),
+    prisma.unit.create({ data: { name: 'Piece', shortName: 'pcs', isActive: true } }),
     prisma.unit.create({ data: { name: 'Pack', shortName: 'pk', isActive: true } }),
-    prisma.unit.create({ data: { name: 'Carton', shortName: 'ctn', isActive: true } }),
-    prisma.unit.create({ data: { name: 'Bag', shortName: 'bag', isActive: true } }),
   ])
   console.log(`    ✅ ${units.length} units created`)
 
@@ -200,215 +202,83 @@ async function main() {
 
   // ==================== PRODUCTS ====================
   console.log('  Creating products...')
-  const productData = [
-    {
-      name: 'Coca-Cola 330ml',
-      sku: 'BEV-COC-001',
-      description: 'Coca-Cola canned drink 330ml',
-      categoryId: categories[0].id,
-      productTypeId: physicalType.id,
-      unitId: units[0].id,
-      costPrice: 3.0,
-      sellingPrice: 5.0,
-      wholesalePrice: 4.0,
-      taxEnabled: true,
-      taxRate: 12.5,
-      isActive: true,
-      minStockLevel: 24,
-      stock: 120,
-    },
-    {
-      name: 'Voltic Water 500ml',
-      sku: 'BEV-VOL-001',
-      description: 'Voltic bottled water 500ml',
-      categoryId: categories[0].id,
-      productTypeId: physicalType.id,
-      unitId: units[0].id,
-      costPrice: 1.5,
-      sellingPrice: 3.0,
-      wholesalePrice: 2.0,
-      taxEnabled: false,
-      taxRate: 0,
-      isActive: true,
-      minStockLevel: 48,
-      stock: 200,
-    },
-    {
-      name: 'Sobolo Drink 1L',
-      sku: 'BEV-SOB-001',
-      description: 'Local hibiscus drink 1L',
-      categoryId: categories[0].id,
-      productTypeId: physicalType.id,
-      unitId: units[2].id,
-      costPrice: 4.0,
-      sellingPrice: 8.0,
-      wholesalePrice: 6.0,
-      taxEnabled: true,
-      taxRate: 12.5,
-      isActive: true,
-      minStockLevel: 12,
-      stock: 50,
-    },
-    {
-      name: 'Chipsy Potato Chips',
-      sku: 'SNK-CHP-001',
-      description: 'Chipsy salted potato chips 75g',
-      categoryId: categories[1].id,
-      productTypeId: physicalType.id,
-      unitId: units[0].id,
-      costPrice: 2.0,
-      sellingPrice: 4.5,
-      wholesalePrice: 3.0,
-      taxEnabled: false,
-      taxRate: 0,
-      isActive: true,
-      minStockLevel: 24,
-      stock: 80,
-    },
-    {
-      name: 'Fan Milk Ice Cream',
-      sku: 'SNK-ICM-001',
-      description: 'Fan Milk FanYogo strawberry 180ml',
-      categoryId: categories[1].id,
-      productTypeId: physicalType.id,
-      unitId: units[0].id,
-      costPrice: 2.5,
-      sellingPrice: 5.0,
-      wholesalePrice: 3.5,
-      taxEnabled: false,
-      taxRate: 0,
-      isActive: true,
-      minStockLevel: 20,
-      stock: 60,
-    },
-    {
-      name: 'Royal Rice 5kg',
-      sku: 'GRC-RCE-001',
-      description: 'Royal Deluxe perfumed rice 5kg bag',
-      categoryId: categories[2].id,
-      productTypeId: physicalType.id,
-      unitId: units[5].id,
-      costPrice: 45.0,
-      sellingPrice: 65.0,
-      wholesalePrice: 55.0,
-      taxEnabled: false,
-      taxRate: 0,
-      isActive: true,
-      minStockLevel: 10,
-      stock: 30,
-    },
-    {
-      name: 'Gino Tomato Paste',
-      sku: 'GRC-TOM-001',
-      description: 'Gino tomato paste 400g',
-      categoryId: categories[2].id,
-      productTypeId: physicalType.id,
-      unitId: units[0].id,
-      costPrice: 3.5,
-      sellingPrice: 6.0,
-      wholesalePrice: 4.5,
-      taxEnabled: false,
-      taxRate: 0,
-      isActive: true,
-      minStockLevel: 24,
-      stock: 100,
-    },
-    {
-      name: 'Ideal Milk Powder 500g',
-      sku: 'GRC-MLK-001',
-      description: 'Ideal full cream milk powder 500g',
-      categoryId: categories[2].id,
-      productTypeId: physicalType.id,
-      unitId: units[0].id,
-      costPrice: 25.0,
-      sellingPrice: 38.0,
-      wholesalePrice: 30.0,
-      taxEnabled: false,
-      taxRate: 0,
-      isActive: true,
-      minStockLevel: 10,
-      stock: 25,
-    },
-    {
-      name: 'Pepsodent Toothpaste',
-      sku: 'PCD-TPA-001',
-      description: 'Pepsodent Cavity Protection toothpaste 150g',
-      categoryId: categories[3].id,
-      productTypeId: physicalType.id,
-      unitId: units[0].id,
-      costPrice: 5.0,
-      sellingPrice: 9.0,
-      wholesalePrice: 7.0,
-      taxEnabled: false,
-      taxRate: 0,
-      isActive: true,
-      minStockLevel: 10,
-      stock: 40,
-    },
-    {
-      name: 'Parazone Bleach 1L',
-      sku: 'HSE-BLC-001',
-      description: 'Parazone multi-surface bleach 1L',
-      categoryId: categories[4].id,
-      productTypeId: physicalType.id,
-      unitId: units[2].id,
-      costPrice: 6.0,
-      sellingPrice: 12.0,
-      wholesalePrice: 9.0,
-      taxEnabled: false,
-      taxRate: 0,
-      isActive: true,
-      minStockLevel: 8,
-      stock: 20,
-    },
-    {
-      name: 'Key Soap 450g',
-      sku: 'HSE-SOP-001',
-      description: 'Key soap bar 450g',
-      categoryId: categories[4].id,
-      productTypeId: physicalType.id,
-      unitId: units[0].id,
-      costPrice: 4.0,
-      sellingPrice: 8.0,
-      wholesalePrice: 6.0,
-      taxEnabled: false,
-      taxRate: 0,
-      isActive: true,
-      minStockLevel: 15,
-      stock: 50,
-    },
-    {
-      name: 'Delivery Service',
-      sku: 'SVC-DEL-001',
-      description: 'Local delivery within 5km radius',
-      categoryId: null,
-      productTypeId: serviceType.id,
-      unitId: units[0].id,
-      costPrice: 0,
-      sellingPrice: 15.0,
-      taxEnabled: true,
-      taxRate: 12.5,
-      isActive: true,
-      minStockLevel: 0,
-      stock: 0,
-    },
+
+  type ProductSeed = {
+    name: string
+    sku: string
+    container?: string
+    size?: string
+    description: string | null
+    categoryId: string | null
+    productTypeId: string
+    unitId: string
+    costPrice: number
+    sellingPrice: number
+    wholesalePrice?: number
+    packSize?: number
+    taxEnabled: boolean
+    taxRate: number
+    stock: number
+  }
+
+  const ML = units[0].id
+  const LITRE = units[1].id
+  const KG = units[3].id
+  const PIECE = units[4].id
+
+  const productData: ProductSeed[] = [
+    // A few similarly-named products so the restock picker's name grouping has
+    // something to match on ("coca cola" -> the four below).
+    { name: 'Coca-Cola', sku: 'BEV-COC-CAN-330', container: 'Can', size: '330ml', description: null, categoryId: categories[0].id, productTypeId: physicalType.id, unitId: ML, costPrice: 3.0, sellingPrice: 5.0, wholesalePrice: 4.0, packSize: 24, taxEnabled: true, taxRate: 12.5, stock: 120 },
+    { name: 'Coca-Cola', sku: 'BEV-COC-CAN-500', container: 'Can', size: '500ml', description: null, categoryId: categories[0].id, productTypeId: physicalType.id, unitId: ML, costPrice: 4.0, sellingPrice: 6.5, wholesalePrice: 5.0, packSize: 12, taxEnabled: true, taxRate: 12.5, stock: 60 },
+    { name: 'Coca-Cola', sku: 'BEV-COC-BTL-1500', container: 'Bottle', size: '1.5L', description: null, categoryId: categories[0].id, productTypeId: physicalType.id, unitId: LITRE, costPrice: 7.0, sellingPrice: 12.0, wholesalePrice: 9.0, packSize: 6, taxEnabled: true, taxRate: 12.5, stock: 40 },
+    { name: 'Coca-Cola', sku: 'BEV-COC-GLS-330', container: 'Glass Bottle', size: '330ml', description: 'Returnable', categoryId: categories[0].id, productTypeId: physicalType.id, unitId: ML, costPrice: 2.5, sellingPrice: 4.5, wholesalePrice: 3.5, packSize: 24, taxEnabled: true, taxRate: 12.5, stock: 90 },
+
+    { name: 'Voltic Water', sku: 'BEV-VOL-500', container: 'Bottle', size: '500ml', description: null, categoryId: categories[0].id, productTypeId: physicalType.id, unitId: ML, costPrice: 1.5, sellingPrice: 3.0, wholesalePrice: 2.0, packSize: 15, taxEnabled: false, taxRate: 0, stock: 200 },
+    { name: 'Voltic Water', sku: 'BEV-VOL-1500', container: 'Bottle', size: '1.5L', description: null, categoryId: categories[0].id, productTypeId: physicalType.id, unitId: LITRE, costPrice: 3.0, sellingPrice: 5.5, wholesalePrice: 4.0, packSize: 6, taxEnabled: false, taxRate: 0, stock: 80 },
+
+    { name: 'Sobolo Drink 1L', sku: 'BEV-SOB-001', description: 'Local hibiscus drink 1L', categoryId: categories[0].id, productTypeId: physicalType.id, unitId: LITRE, costPrice: 4.0, sellingPrice: 8.0, wholesalePrice: 6.0, taxEnabled: true, taxRate: 12.5, stock: 50 },
+    { name: 'Chipsy Potato Chips', sku: 'SNK-CHP-001', description: 'Chipsy salted potato chips 75g', categoryId: categories[1].id, productTypeId: physicalType.id, unitId: PIECE, costPrice: 2.0, sellingPrice: 4.5, wholesalePrice: 3.0, packSize: 24, taxEnabled: false, taxRate: 0, stock: 80 },
+    { name: 'Fan Milk Ice Cream', sku: 'SNK-ICM-001', description: 'Fan Milk FanYogo strawberry 180ml', categoryId: categories[1].id, productTypeId: physicalType.id, unitId: PIECE, costPrice: 2.5, sellingPrice: 5.0, wholesalePrice: 3.5, taxEnabled: false, taxRate: 0, stock: 60 },
+    { name: 'Royal Rice', sku: 'GRC-RCE-5KG', container: 'Bag', size: '5kg', description: null, categoryId: categories[2].id, productTypeId: physicalType.id, unitId: KG, costPrice: 45.0, sellingPrice: 65.0, wholesalePrice: 55.0, taxEnabled: false, taxRate: 0, stock: 30 },
+    { name: 'Royal Rice', sku: 'GRC-RCE-25KG', container: 'Bag', size: '25kg', description: null, categoryId: categories[2].id, productTypeId: physicalType.id, unitId: KG, costPrice: 210.0, sellingPrice: 290.0, wholesalePrice: 255.0, taxEnabled: false, taxRate: 0, stock: 12 },
+    { name: 'Gino Tomato Paste', sku: 'GRC-TOM-001', description: 'Gino tomato paste 400g', categoryId: categories[2].id, productTypeId: physicalType.id, unitId: PIECE, costPrice: 3.5, sellingPrice: 6.0, wholesalePrice: 4.5, packSize: 24, taxEnabled: false, taxRate: 0, stock: 100 },
+    { name: 'Ideal Milk Powder 500g', sku: 'GRC-MLK-001', description: 'Ideal full cream milk powder 500g', categoryId: categories[2].id, productTypeId: physicalType.id, unitId: PIECE, costPrice: 25.0, sellingPrice: 38.0, wholesalePrice: 30.0, packSize: 12, taxEnabled: false, taxRate: 0, stock: 25 },
+    { name: 'Pepsodent Toothpaste', sku: 'PCD-TPA-001', description: 'Pepsodent Cavity Protection toothpaste 150g', categoryId: categories[3].id, productTypeId: physicalType.id, unitId: PIECE, costPrice: 5.0, sellingPrice: 9.0, wholesalePrice: 7.0, taxEnabled: false, taxRate: 0, stock: 40 },
+    { name: 'Parazone Bleach 1L', sku: 'HSE-BLC-001', description: 'Parazone multi-surface bleach 1L', categoryId: categories[4].id, productTypeId: physicalType.id, unitId: LITRE, costPrice: 6.0, sellingPrice: 12.0, wholesalePrice: 9.0, taxEnabled: false, taxRate: 0, stock: 20 },
+    { name: 'Key Soap 450g', sku: 'HSE-SOP-001', description: 'Key soap bar 450g', categoryId: categories[4].id, productTypeId: physicalType.id, unitId: PIECE, costPrice: 4.0, sellingPrice: 8.0, wholesalePrice: 6.0, packSize: 12, taxEnabled: false, taxRate: 0, stock: 50 },
+    { name: 'Delivery Service', sku: 'SVC-DEL-001', description: 'Local delivery within 5km radius', categoryId: null, productTypeId: serviceType.id, unitId: PIECE, costPrice: 0, sellingPrice: 15.0, taxEnabled: true, taxRate: 12.5, stock: 0 },
   ]
 
+  let productCount = 0
   for (const prod of productData) {
-    const { stock, ...productFields } = prod
-    const product = await prisma.product.create({ data: productFields })
+    const { stock, ...fields } = prod
+    const product = await prisma.product.create({
+      data: {
+        ...fields,
+        isActive: true,
+        targetStock: stock > 0 ? stock : null,
+        lowStockPercent: 20,
+      },
+    })
+    productCount++
 
-    // Create inventory only for stock-tracking products
     if (prod.productTypeId === physicalType.id && stock > 0) {
-      await prisma.inventory.create({
+      const inv = await prisma.inventory.create({
+        data: { productId: product.id, quantity: stock },
+      })
+      await prisma.inventoryMovement.create({
         data: {
+          inventoryId: inv.id,
           productId: product.id,
+          type: 'initial_stock',
           quantity: stock,
+          note: 'Opening stock (seed)',
         },
       })
     }
   }
-  console.log(`    ✅ ${productData.length} products created with inventory`)
+  console.log(`    ✅ ${productCount} products created with inventory`)
 
   // ==================== CUSTOMERS ====================
   console.log('  Creating customers...')

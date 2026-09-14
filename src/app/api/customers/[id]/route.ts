@@ -32,10 +32,21 @@ export async function GET(
 
     const totalSpent = sales.reduce((sum, s) => sum + s.totalAmount, 0)
 
+    // What the customer still owes us: the unpaid portion of every sale that
+    // wasn't fully refunded. Credit sales record amountReceived = 0, so their
+    // full total counts here until the balance is settled.
+    const outstandingBalance = sales.reduce((sum, s) => {
+      if (s.status === 'refunded') return sum
+      return sum + Math.max(0, s.totalAmount - (s.amountReceived ?? 0))
+    }, 0)
+
     return NextResponse.json({
       ...customer,
+      _sum: { totalAmount: totalSpent },
+      sales,
       salesHistory: sales,
       totalSpent,
+      outstandingBalance,
     })
   } catch (error) {
     console.error('Error fetching customer:', error)

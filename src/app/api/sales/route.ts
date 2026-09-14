@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { productLabel } from '@/lib/products'
 
 function getUserId(req: NextRequest): string | null {
   return req.headers.get('x-user-id')
@@ -105,8 +106,35 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    // Credit is a tab against a named customer — never a walk-in sale.
+    if (paymentMethod === 'credit' && !customerId) {
+      return NextResponse.json(
+        { error: 'Credit sales require a customer' },
+        { status: 400 }
+      )
+    }
+
+    // Guard against a stale client session pointing at a user/customer that no
+    // longer exists (e.g. after a dev DB reset).
+    const seller = await db.user.findUnique({ where: { id: soldById } })
+    if (!seller) {
+      return NextResponse.json(
+        { error: 'Your session is out of date — log out and back in.' },
+        { status: 400 }
+      )
+    }
+    if (customerId) {
+      const customer = await db.customer.findUnique({ where: { id: customerId } })
+      if (!customer) {
+        return NextResponse.json(
+          { error: 'That customer no longer exists — reload the page.' },
+          { status: 400 }
+        )
+      }
+    }
+
     const result = await db.$transaction(async (tx) => {
-      // Fetch all products with inventory and product type
+      // Fetch all products with inventory and product type.
       const productIds = items.map((i: Record<string, unknown>) => i.productId as string)
       const products = await tx.product.findMany({
         where: { id: { in: productIds } },
@@ -115,51 +143,87 @@ export async function POST(req: NextRequest) {
 
       const productMap = new Map(products.map((p) => [p.id, p]))
 
-      // Validate stock for products that track stock
+      // Total units needed per product (a product may arrive as separate
+      // wholesale-pack and retail-single lines).
+      const unitsByProduct = new Map<string, number>()
       for (const item of items) {
         const product = productMap.get(item.productId as string)
         if (!product) {
-          throw new Error(`Product ${item.productId} not found`)
+          throw new Error(
+            'A product in the cart no longer exists — reload the POS page.',
+          )
         }
+        unitsByProduct.set(
+          product.id,
+          (unitsByProduct.get(product.id) ?? 0) + (item.quantity as number),
+        )
+      }
+
+      // Validate stock for products that track stock
+      for (const [productId, needed] of unitsByProduct) {
+        const product = productMap.get(productId)!
         if (product.productType?.tracksStock !== false) {
-          const inv = product.inventory
-          const currentStock = inv?.quantity || 0
-          if (currentStock < (item.quantity as number)) {
-            throw new Error(`Insufficient stock for ${product.name}. Available: ${currentStock}`)
+          const currentStock = product.inventory?.quantity || 0
+          if (currentStock < needed) {
+            throw new Error(
+              `Insufficient stock for ${product.name}. Available: ${currentStock}`,
+            )
           }
         }
       }
 
-      // Calculate subtotal
+      // Calculate subtotal. Each incoming line becomes its own sale item; a
+      // line flagged `wholesale` is priced at the wholesale price, but only if
+      // it's a genuine whole-pack quantity (otherwise it falls back to retail).
       let subtotal = 0
-      const saleItemsData = items.map((item: Record<string, unknown>) => {
+      const saleItemsData: {
+        productId: string
+        productName: string
+        quantity: number
+        unitPrice: number
+        costPrice: number
+        taxAmount: number
+        subtotal: number
+      }[] = []
+
+      for (const item of items) {
         const product = productMap.get(item.productId as string)!
         const qty = item.quantity as number
-        const unitPrice = product.sellingPrice
-        const costPrice = product.costPrice
-        const itemTax = product.taxEnabled
+        const size = product.packSize ?? 0
+        const wholesaleOk =
+          item.wholesale === true &&
+          product.wholesalePrice != null &&
+          size > 0 &&
+          qty > 0 &&
+          qty % size === 0
+        const unitPrice = wholesaleOk
+          ? product.wholesalePrice!
+          : product.sellingPrice
+        const rowTax = product.taxEnabled
           ? (unitPrice * qty * (product.taxRate || 0)) / 100
           : 0
-        const itemSubtotal = unitPrice * qty + itemTax
-
         subtotal += unitPrice * qty
-
-        return {
+        saleItemsData.push({
           productId: product.id,
-          productName: product.name,
+          productName: productLabel(product),
           quantity: qty,
           unitPrice,
-          costPrice,
-          taxAmount: itemTax,
-          subtotal: itemSubtotal,
-        }
-      })
+          costPrice: product.costPrice,
+          taxAmount: rowTax,
+          subtotal: unitPrice * qty + rowTax,
+        })
+      }
 
       const disc = discountAmount || 0
       const tax = taxAmount || 0
       const totalAmount = subtotal - disc + tax
-      const received = amountReceived || totalAmount
-      const change = received - totalAmount
+      // Only cash is settled at the till. Every other method (card, mobile
+      // money, bank transfer, credit) is created "pending" and confirmed
+      // afterwards — at the POS or later from the Sales History page.
+      const settledNow = paymentMethod === 'cash'
+      const received = settledNow ? amountReceived || totalAmount : 0
+      const change = settledNow ? received - totalAmount : 0
+      const paymentStatus = settledNow ? 'completed' : 'pending'
 
       // Generate transaction number
       const transactionNumber = await generateTransactionNumber(tx)
@@ -191,7 +255,7 @@ export async function POST(req: NextRequest) {
           taxAmount: tax,
           totalAmount,
           paymentMethod,
-          paymentStatus: 'completed',
+          paymentStatus,
           amountReceived: received,
           changeAmount: Math.max(change, 0),
           status: 'completed',
@@ -202,7 +266,7 @@ export async function POST(req: NextRequest) {
               amount: totalAmount,
               amountReceived: received,
               changeAmount: Math.max(change, 0),
-              status: 'completed',
+              status: paymentStatus,
             },
           },
           receipt: {
@@ -220,15 +284,14 @@ export async function POST(req: NextRequest) {
         },
       })
 
-      // Deduct inventory and create movements
-      for (const item of items) {
-        const product = productMap.get(item.productId as string)!
+      // Deduct inventory once per product (across its pack + single lines).
+      for (const [productId, qty] of unitsByProduct) {
+        const product = productMap.get(productId)!
         if (product.productType?.tracksStock === false) continue
 
-        const qty = item.quantity as number
         if (product.inventory) {
           await tx.inventory.update({
-            where: { productId: product.id },
+            where: { productId },
             data: { quantity: { decrement: qty } },
           })
 
@@ -239,7 +302,7 @@ export async function POST(req: NextRequest) {
               quantity: qty,
               note: `Sale ${transactionNumber}`,
               referenceId: sale.id,
-              productId: product.id,
+              productId,
             },
           })
         }

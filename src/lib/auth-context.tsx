@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 
 interface AuthUser {
   id: string;
@@ -25,21 +25,25 @@ const AuthContext = createContext<AuthContextType>({
 
 const SESSION_KEY = 'storepos_session';
 
-function getInitialUser(): AuthUser | null {
-  if (typeof window === 'undefined') return '__loading__' as any;
-  try {
-    const stored = localStorage.getItem(SESSION_KEY);
-    return stored ? JSON.parse(stored) : null;
-  } catch {
-    return null;
-  }
-}
-
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<AuthUser | null>(getInitialUser);
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  // Read the persisted session only after mount so the first client render
+  // matches the server ("loading"), avoiding a hydration mismatch.
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(SESSION_KEY);
+      setUser(stored ? (JSON.parse(stored) as AuthUser) : null);
+    } catch {
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   const status: 'loading' | 'authenticated' | 'unauthenticated' =
-    user === ('__loading__' as any) ? 'loading' : user ? 'authenticated' : 'unauthenticated';
+    loading ? 'loading' : user ? 'authenticated' : 'unauthenticated';
 
   const login = useCallback(async (email: string, password: string) => {
     const res = await fetch('/api/auth/credentials', {
@@ -61,7 +65,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
   }, []);
 
-  const ctxValue: AuthContextType = { user: user === ('__loading__' as any) ? null : user, status, login, logout };
+  const ctxValue: AuthContextType = { user, status, login, logout };
 
   return (
     <AuthContext.Provider value={ctxValue}>

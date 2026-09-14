@@ -1,11 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-
-function getStockStatus(quantity: number, minStockLevel: number): string {
-  if (quantity === 0) return 'out_of_stock'
-  if (quantity <= minStockLevel) return 'low_stock'
-  return 'in_stock'
-}
+import { stockStatus } from '@/lib/stock'
 
 export async function GET(req: NextRequest) {
   try {
@@ -16,7 +11,6 @@ export async function GET(req: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1')
     const pageSize = parseInt(searchParams.get('pageSize') || '20')
 
-    // Build product filter
     const productFilter: Record<string, unknown> = { isActive: true }
     if (search) {
       productFilter.OR = [
@@ -28,41 +22,28 @@ export async function GET(req: NextRequest) {
       productFilter.categoryId = categoryId
     }
 
-    // Fetch inventory with products
     const [inventories, total] = await Promise.all([
       db.inventory.findMany({
-        where: {
-          product: productFilter,
-        },
+        where: { product: productFilter },
         include: {
-          product: {
-            include: {
-              category: true,
-              unit: true,
-            },
-          },
+          product: { include: { category: true, unit: true } },
         },
         orderBy: { updatedAt: 'desc' },
         skip: (page - 1) * pageSize,
         take: pageSize,
       }),
-      db.inventory.count({
-        where: {
-          product: productFilter,
-        },
-      }),
+      db.inventory.count({ where: { product: productFilter } }),
     ])
 
-    // Add computed stock status and filter in memory
-    let data = inventories.map((inv) => {
-      const stockStatus = getStockStatus(inv.quantity, inv.product.minStockLevel)
-      return {
-        ...inv,
-        stockStatus,
-      }
-    })
+    let data = inventories.map((inv) => ({
+      ...inv,
+      stockStatus: stockStatus(
+        inv.quantity,
+        inv.product.targetStock,
+        inv.product.lowStockPercent,
+      ),
+    }))
 
-    // Filter by status if not 'all'
     if (status !== 'all') {
       data = data.filter((item) => item.stockStatus === status)
     }

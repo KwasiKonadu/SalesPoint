@@ -14,6 +14,10 @@ export async function GET(
         soldBy: { select: { id: true, name: true, email: true } },
         items: { include: { product: true } },
         payment: true,
+        payments: {
+          include: { recordedBy: { select: { id: true, name: true } } },
+          orderBy: { createdAt: 'desc' },
+        },
         receipt: true,
         returns: {
           include: {

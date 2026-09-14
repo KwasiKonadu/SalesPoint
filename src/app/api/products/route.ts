@@ -5,14 +5,21 @@ function getUserId(req: NextRequest): string | null {
   return req.headers.get('x-user-id')
 }
 
-function generateSKU(): string {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
-  let sku = 'SKU-'
-  for (let i = 0; i < 8; i++) {
-    sku += chars.charAt(Math.floor(Math.random() * chars.length))
-  }
-  return sku
+function generateSKU(name: string): string {
+  const base = (name || 'SKU')
+    .replace(/[^a-zA-Z0-9]/g, '')
+    .toUpperCase()
+    .slice(0, 4)
+  const rand = Math.random().toString(36).slice(2, 8).toUpperCase()
+  return `${base || 'SKU'}-${rand}`
 }
+
+const productInclude = {
+  category: true,
+  productType: true,
+  unit: true,
+  inventory: true,
+} as const
 
 export async function GET(req: NextRequest) {
   try {
@@ -30,29 +37,47 @@ export async function GET(req: NextRequest) {
       where.OR = [
         { name: { contains: search } },
         { sku: { contains: search } },
+        { container: { contains: search } },
+        { size: { contains: search } },
         { description: { contains: search } },
       ]
     }
     if (status === 'active') where.isActive = true
     if (status === 'inactive') where.isActive = false
 
-    const [data, total] = await Promise.all([
+    // Best sellers: the 8 products with the most units sold in the last 30 days.
+    const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+
+    const [data, total, topSellers] = await Promise.all([
       db.product.findMany({
         where,
-        include: {
-          category: true,
-          productType: true,
-          unit: true,
-          inventory: true,
-        },
+        include: productInclude,
         orderBy: { createdAt: 'desc' },
         skip: (page - 1) * pageSize,
         take: pageSize,
       }),
       db.product.count({ where }),
+      db.saleItem.groupBy({
+        by: ['productId'],
+        where: { sale: { createdAt: { gte: since } } },
+        _sum: { quantity: true },
+        orderBy: { _sum: { quantity: 'desc' } },
+        take: 8,
+      }),
     ])
 
-    return NextResponse.json({ data, total, page, pageSize })
+    const bestSellerIds = new Set(
+      topSellers
+        .filter((t) => (t._sum.quantity ?? 0) > 0)
+        .map((t) => t.productId),
+    )
+
+    return NextResponse.json({
+      data: data.map((p) => ({ ...p, isBestSeller: bestSellerIds.has(p.id) })),
+      total,
+      page,
+      pageSize,
+    })
   } catch (error) {
     console.error('Error fetching products:', error)
     return NextResponse.json({ error: 'Failed to fetch products' }, { status: 500 })
@@ -70,6 +95,8 @@ export async function POST(req: NextRequest) {
     const {
       name,
       sku: providedSku,
+      container,
+      size,
       description,
       image,
       categoryId,
@@ -78,66 +105,72 @@ export async function POST(req: NextRequest) {
       costPrice,
       sellingPrice,
       wholesalePrice,
+      packSize,
       taxEnabled,
       taxRate,
-      minStockLevel,
+      lowStockPercent,
       initialStock,
     } = body
 
-    const sku = providedSku || generateSKU()
+    if (!name || !String(name).trim()) {
+      return NextResponse.json({ error: 'Product name is required' }, { status: 400 })
+    }
 
-    // Check SKU uniqueness
+    const sku = (providedSku || '').trim() || generateSKU(name)
+
     const existing = await db.product.findUnique({ where: { sku } })
     if (existing) {
       return NextResponse.json({ error: 'SKU already exists' }, { status: 409 })
     }
 
-    // Check if product type tracks stock
     let tracksStock = true
     if (productTypeId) {
       const pType = await db.productType.findUnique({ where: { id: productTypeId } })
       if (pType) tracksStock = pType.tracksStock
     }
 
+    // Low-stock baseline starts at the opening stock and then follows the
+    // running total up on every restock.
+    const openingStock = Number(initialStock) || 0
+
     const product = await db.product.create({
       data: {
-        name,
+        name: String(name).trim(),
         sku,
+        container: container?.trim() || null,
+        size: size?.trim() || null,
         description: description || null,
         image: image || null,
         categoryId: categoryId || null,
         productTypeId: productTypeId || null,
         unitId: unitId || null,
-        costPrice: costPrice || 0,
-        sellingPrice,
-        wholesalePrice: wholesalePrice || null,
+        costPrice: Number(costPrice) || 0,
+        sellingPrice: Number(sellingPrice),
+        wholesalePrice: wholesalePrice ? Number(wholesalePrice) : null,
+        packSize: packSize ? Number(packSize) : null,
         taxEnabled: taxEnabled || false,
-        taxRate: taxRate || 0,
-        minStockLevel: minStockLevel || 5,
-        inventory: tracksStock
-          ? {
-              create: {
-                quantity: initialStock || 0,
-                movements: initialStock
-                  ? {
-                      create: {
-                        type: 'initial_stock',
-                        quantity: initialStock,
-                        note: 'Initial stock on product creation',
-                      },
-                    }
-                  : undefined,
-              },
-            }
-          : undefined,
+        taxRate: Number(taxRate) || 0,
+        targetStock: tracksStock && openingStock > 0 ? openingStock : null,
+        lowStockPercent:
+          lowStockPercent === null || lowStockPercent === undefined
+            ? 20
+            : Number(lowStockPercent),
+        inventory: tracksStock ? { create: { quantity: openingStock } } : undefined,
       },
-      include: {
-        category: true,
-        productType: true,
-        unit: true,
-        inventory: true,
-      },
+      include: productInclude,
     })
+
+    if (tracksStock && openingStock > 0 && product.inventory) {
+      await db.inventoryMovement.create({
+        data: {
+          inventoryId: product.inventory.id,
+          productId: product.id,
+          type: 'initial_stock',
+          quantity: openingStock,
+          note: 'Initial stock on product creation',
+        },
+      })
+    }
 
     return NextResponse.json(product, { status: 201 })
   } catch (error) {

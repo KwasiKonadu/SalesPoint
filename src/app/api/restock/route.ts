@@ -106,6 +106,13 @@ export async function POST(req: NextRequest) {
           update: { quantity: { increment: qty } },
         })
 
+        // Reset the low-stock baseline to the new running total, so the
+        // threshold tracks each top-up (e.g. 19 + 50 -> baseline 69).
+        await tx.product.update({
+          where: { id: productId },
+          data: { targetStock: inv.quantity },
+        })
+
         // Create movement
         await tx.inventoryMovement.create({
           data: {

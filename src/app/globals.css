@@ -6,8 +6,12 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  /* Geist Mono has no glyph for some currency signs (e.g. ₵, ₦); the extra
+     monospace fallbacks keep substituted glyphs the same size and baseline. */
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, "SF Mono",
+    Menlo, Consolas, "Liberation Mono", monospace;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -119,4 +123,33 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* On-screen styling for <ReceiptContent>. The same semantic class names
+   (.center / .bold / .separator) are also styled by RECEIPT_PRINT_STYLES in
+   the print window, so the preview and the printout match. */
+.receipt {
+  font-variant-numeric: tabular-nums;
+  line-height: 1.55;
+}
+.receipt .center {
+  text-align: center;
+}
+.receipt .bold {
+  font-weight: 600;
+}
+.receipt .separator {
+  margin: 0.5rem 0;
+  border-top: 1px dashed color-mix(in oklab, currentColor 45%, transparent);
+}
+.receipt table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.receipt thead td {
+  padding-bottom: 0.25rem;
+}
+.receipt td {
+  padding: 0.1rem 0;
+  vertical-align: top;
 }

@@ -5,6 +5,13 @@ function getUserId(req: NextRequest): string | null {
   return req.headers.get('x-user-id')
 }
 
+const productInclude = {
+  category: true,
+  productType: true,
+  unit: true,
+  inventory: true,
+} as const
+
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -13,12 +20,7 @@ export async function GET(
     const { id } = await params
     const product = await db.product.findUnique({
       where: { id },
-      include: {
-        category: true,
-        productType: true,
-        unit: true,
-        inventory: { include: { movements: { orderBy: { createdAt: 'desc' } } } },
-      },
+      include: productInclude,
     })
 
     if (!product) {
@@ -45,29 +47,44 @@ export async function PUT(
     const { id } = await params
     const body = await req.json()
 
+    const num = (v: unknown) =>
+      v === undefined ? undefined : v === null || v === '' ? null : Number(v)
+
     const product = await db.product.update({
       where: { id },
       data: {
-        name: body.name,
-        description: body.description,
-        image: body.image,
-        categoryId: body.categoryId,
-        productTypeId: body.productTypeId,
-        unitId: body.unitId,
-        costPrice: body.costPrice,
-        sellingPrice: body.sellingPrice,
-        wholesalePrice: body.wholesalePrice,
-        taxEnabled: body.taxEnabled,
-        taxRate: body.taxRate,
-        minStockLevel: body.minStockLevel,
-        isActive: body.isActive,
+        ...(body.name === undefined ? {} : { name: String(body.name).trim() }),
+        ...(body.container === undefined
+          ? {}
+          : { container: body.container?.trim() || null }),
+        ...(body.size === undefined ? {} : { size: body.size?.trim() || null }),
+        ...(body.description === undefined
+          ? {}
+          : { description: body.description || null }),
+        ...(body.image === undefined ? {} : { image: body.image || null }),
+        ...(body.categoryId === undefined
+          ? {}
+          : { categoryId: body.categoryId || null }),
+        ...(body.productTypeId === undefined
+          ? {}
+          : { productTypeId: body.productTypeId || null }),
+        ...(body.unitId === undefined ? {} : { unitId: body.unitId || null }),
+        ...(body.costPrice === undefined ? {} : { costPrice: Number(body.costPrice) }),
+        ...(body.sellingPrice === undefined
+          ? {}
+          : { sellingPrice: Number(body.sellingPrice) }),
+        ...(body.wholesalePrice === undefined
+          ? {}
+          : { wholesalePrice: num(body.wholesalePrice) }),
+        ...(body.packSize === undefined ? {} : { packSize: num(body.packSize) }),
+        ...(body.taxEnabled === undefined ? {} : { taxEnabled: body.taxEnabled }),
+        ...(body.taxRate === undefined ? {} : { taxRate: Number(body.taxRate) }),
+        ...(body.lowStockPercent === undefined
+          ? {}
+          : { lowStockPercent: Number(body.lowStockPercent) }),
+        ...(body.isActive === undefined ? {} : { isActive: body.isActive }),
       },
-      include: {
-        category: true,
-        productType: true,
-        unit: true,
-        inventory: true,
-      },
+      include: productInclude,
     })
 
     return NextResponse.json(product)
