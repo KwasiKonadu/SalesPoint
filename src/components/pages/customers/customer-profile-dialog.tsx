@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import {
   Calendar,
   DollarSign,
@@ -10,10 +9,10 @@ import {
   ShoppingBag,
   Wallet,
 } from "lucide-react";
-import { toast } from "sonner";
 
 import { formatCurrency, formatDate } from "@/lib/format";
-import type { CustomerDetail, CustomerSale } from "@/lib/customers";
+import type { CustomerSale } from "@/lib/customers";
+import { useCustomerDetail } from "./use-customers";
 import {
   Dialog,
   DialogContent,
@@ -76,33 +75,7 @@ export function CustomerProfileDialog({
   onOpenChange: (open: boolean) => void;
   customerId: string | null;
 }) {
-  const [customer, setCustomer] = useState<CustomerDetail | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (!open || !customerId) return;
-    let ignore = false;
-    (async () => {
-      setLoading(true);
-      setCustomer(null);
-      try {
-        const res = await fetch(`/api/customers/${customerId}`);
-        if (!res.ok) throw new Error("Failed to fetch customer details");
-        const data: CustomerDetail = await res.json();
-        if (!ignore) setCustomer(data);
-      } catch {
-        if (!ignore) {
-          toast.error("Failed to load customer details");
-          onOpenChange(false);
-        }
-      } finally {
-        if (!ignore) setLoading(false);
-      }
-    })();
-    return () => {
-      ignore = true;
-    };
-  }, [open, customerId, onOpenChange]);
+  const { data: customer, isPending: loading } = useCustomerDetail(open ? customerId : null);
 
   const sales = customer?.sales ?? [];
   const owed = customer?.outstandingBalance ?? 0;

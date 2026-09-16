@@ -18,6 +18,7 @@ import { SearchSelect } from "@/components/molecules/search-select";
 import { formatCurrency } from "@/lib/format";
 import { PAYMENT_METHODS, paymentMethodLabel } from "@/lib/payment";
 import type { SaleResponse } from "@/lib/pos";
+import { useRecordPayment } from "@/components/pages/sales/use-sales";
 
 const METHOD_OPTIONS = PAYMENT_METHODS.filter((m) => m.value !== "credit").map(
   (m) => ({ value: m.value, label: m.label }),
@@ -31,19 +32,17 @@ export function ConfirmPaymentDialog({
   open,
   onOpenChange,
   sale,
-  userId,
   onDone,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   sale: SaleResponse | null;
-  userId: string | undefined;
   onDone: (received?: number) => void;
 }) {
   const total = sale?.totalAmount ?? 0;
   const [amount, setAmount] = useState("");
   const [method, setMethod] = useState("cash");
-  const [submitting, setSubmitting] = useState(false);
+  const recordPayment = useRecordPayment();
 
   // Seed each time it opens: default amount = total, method = the sale's method
   // (credit → cash, since you can't settle credit with credit).
@@ -60,16 +59,9 @@ export function ConfirmPaymentDialog({
   const invalid = !Number.isFinite(amountNum) || amountNum <= 0;
 
   const confirm = async () => {
-    if (!sale || !userId || invalid) return;
-    setSubmitting(true);
+    if (!sale || invalid) return;
     try {
-      const res = await fetch(`/api/sales/${sale.id}/payments`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "x-user-id": userId },
-        body: JSON.stringify({ amount: amountNum, method }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to confirm payment");
+      await recordPayment.mutateAsync({ saleId: sale.id, amount: amountNum, method });
       toast.success("Payment confirmed", {
         description: `${formatCurrency(amountNum)} · ${paymentMethodLabel(method)}`,
       });
@@ -78,15 +70,13 @@ export function ConfirmPaymentDialog({
       toast.error(
         err instanceof Error ? err.message : "Failed to confirm payment",
       );
-    } finally {
-      setSubmitting(false);
     }
   };
 
   return (
     <Dialog
       open={open}
-      onOpenChange={(next) => !submitting && onOpenChange(next)}
+      onOpenChange={(next) => !recordPayment.isPending && onOpenChange(next)}
     >
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
@@ -124,12 +114,12 @@ export function ConfirmPaymentDialog({
           <Button
             variant="outline"
             onClick={() => onDone()}
-            disabled={submitting}
+            disabled={recordPayment.isPending}
           >
             Later
           </Button>
-          <Button onClick={confirm} disabled={submitting || invalid}>
-            {submitting && <Loader2 className="mr-2 size-4 animate-spin" />}
+          <Button onClick={confirm} disabled={recordPayment.isPending || invalid}>
+            {recordPayment.isPending && <Loader2 className="mr-2 size-4 animate-spin" />}
             Confirm Payment
           </Button>
         </DialogFooter>

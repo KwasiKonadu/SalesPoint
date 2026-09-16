@@ -12,7 +12,8 @@ import {
 } from "lucide-react";
 
 import { formatCurrency, formatDate } from "@/lib/format";
-import type { SupplierDetail, SupplierRestock } from "@/lib/suppliers";
+import type { SupplierRestock } from "@/lib/suppliers";
+import { useSupplierDetail } from "./use-suppliers";
 import {
   Dialog,
   DialogContent,
@@ -21,6 +22,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DataTable, type Column } from "@/components/organisms/data-table";
 import { StatCard } from "@/components/molecules/stat-card";
@@ -87,15 +89,31 @@ function InfoRow({
 
 /** Supplier profile: overview KPIs + info, purchase history, products supplied. */
 export function SupplierProfileDialog({
-  supplier,
+  supplierId,
   open,
   onOpenChange,
 }: {
-  supplier: SupplierDetail | null;
+  supplierId: string | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
-  if (!open || !supplier) return null;
+  const { data: supplier, isPending } = useSupplierDetail(open ? supplierId : null);
+
+  if (!open) return null;
+
+  if (isPending || !supplier) {
+    return (
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto">
+          <div className="space-y-4 py-4">
+            <Skeleton className="h-8 w-1/2" />
+            <Skeleton className="h-32 w-full" />
+            <Skeleton className="h-32 w-full" />
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   const history = supplier.restockHistory ?? [];
 

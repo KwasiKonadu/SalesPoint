@@ -15,7 +15,7 @@ import { DataPagination } from "@/components/molecules/data-pagination";
 import { EmptyState } from "@/components/molecules/empty-state";
 import { SearchInput } from "@/components/molecules/search-input";
 import { StaffFormPanel } from "./staff-form-panel";
-import { useStaffList } from "./use-staff-list";
+import { useDeactivateStaff, useStaffList } from "./use-staff";
 
 const ROLE_LABEL: Record<string, string> = {
   admin: "Admin",
@@ -32,7 +32,7 @@ export default function StaffPage() {
   const [deactivateTarget, setDeactivateTarget] = useState<StaffMember | null>(
     null,
   );
-  const [deactivating, setDeactivating] = useState(false);
+  const deactivateStaff = useDeactivateStaff();
 
   const openAdd = () => {
     setEditingStaff(null);
@@ -45,19 +45,12 @@ export default function StaffPage() {
 
   const handleDeactivate = async () => {
     if (!deactivateTarget) return;
-    setDeactivating(true);
     try {
-      const res = await fetch(`/api/staff/${deactivateTarget.id}`, {
-        method: "DELETE",
-      });
-      if (!res.ok) throw new Error("Failed to deactivate staff");
+      await deactivateStaff.mutateAsync(deactivateTarget.id);
       toast.success(`${deactivateTarget.name} has been deactivated`);
       setDeactivateTarget(null);
-      list.refetch();
     } catch {
       toast.error("Failed to deactivate staff member");
-    } finally {
-      setDeactivating(false);
     }
   };
 
@@ -146,7 +139,7 @@ export default function StaffPage() {
         title={`Deactivate ${deactivateTarget?.name ?? ""}?`}
         description={`Are you sure you want to deactivate ${deactivateTarget?.name ?? "this member"}? They will no longer be able to access the system.`}
         confirmLabel="Deactivate"
-        loading={deactivating}
+        loading={deactivateStaff.isPending}
         onConfirm={handleDeactivate}
       />
     </div>

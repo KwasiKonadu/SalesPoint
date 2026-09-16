@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { hash } from 'bcryptjs'
-
-function getUserId(req: NextRequest): string | null {
-  return req.headers.get('x-user-id')
-}
+import { requireAdmin } from '@/lib/api-auth'
 
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const forbidden = requireAdmin(req)
+  if (forbidden) return forbidden
+
   try {
     const { id } = await params
     const user = await db.user.findUnique({
@@ -42,12 +42,10 @@ export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  try {
-    const userId = getUserId(req)
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+  const forbidden = requireAdmin(req)
+  if (forbidden) return forbidden
 
+  try {
     const { id } = await params
     const body = await req.json()
 
@@ -91,12 +89,10 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  try {
-    const userId = getUserId(req)
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+  const forbidden = requireAdmin(req)
+  if (forbidden) return forbidden
 
+  try {
     const { id } = await params
     const user = await db.user.update({
       where: { id },

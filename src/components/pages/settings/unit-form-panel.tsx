@@ -5,6 +5,7 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 import type { Unit } from "@/lib/settings";
+import { useSaveUnit } from "@/hooks/api/use-units";
 import { Button } from "@/components/ui/button";
 import { TextField } from "@/components/atoms/text-field";
 import { FormPanel } from "@/components/molecules/form-panel";
@@ -24,7 +25,7 @@ export function UnitFormPanel({
   const isEditing = !!unit;
   const [name, setName] = useState("");
   const [shortName, setShortName] = useState("");
-  const [saving, setSaving] = useState(false);
+  const saveUnit = useSaveUnit();
 
   // Seed the fields from the unit each time the panel opens.
   const [wasOpen, setWasOpen] = useState(open);
@@ -41,30 +42,17 @@ export function UnitFormPanel({
       toast.error("Name is required");
       return;
     }
-    setSaving(true);
     try {
-      const res = await fetch(
-        isEditing ? `/api/units/${unit.id}` : "/api/units",
-        {
-          method: isEditing ? "PUT" : "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: name.trim(),
-            shortName: shortName.trim() || null,
-          }),
-        },
-      );
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Failed to save");
-      }
+      await saveUnit.mutateAsync({
+        id: unit?.id,
+        name: name.trim(),
+        shortName: shortName.trim() || null,
+      });
       toast.success(isEditing ? "Unit updated" : "Unit added");
       onOpenChange(false);
       onSaved();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to save unit");
-    } finally {
-      setSaving(false);
     }
   };
 
@@ -83,8 +71,8 @@ export function UnitFormPanel({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={handleSave} disabled={saving}>
-            {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          <Button onClick={handleSave} disabled={saveUnit.isPending}>
+            {saveUnit.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {isEditing ? "Update" : "Add"}
           </Button>
         </>

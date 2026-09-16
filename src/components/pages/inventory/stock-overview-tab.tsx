@@ -13,7 +13,7 @@ import type { Category, InventoryItem } from "@/lib/inventory";
 import { AdjustStockDialog } from "./adjust-stock-dialog";
 import { inventoryColumns } from "./inventory-columns";
 import { SummaryCards } from "./summary-cards";
-import type { useInventoryOverview } from "./use-inventory-overview";
+import type { useInventoryOverview } from "./use-inventory";
 
 const STATUS_PILLS: { value: string; label: string }[] = [
   { value: "all", label: "All" },

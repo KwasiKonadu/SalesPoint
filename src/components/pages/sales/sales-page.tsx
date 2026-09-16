@@ -15,8 +15,7 @@ import { ReceiptViewDialog } from "./receipt-view-dialog";
 import { ReturnsTab } from "./returns-tab";
 import { SaleDetailDialog } from "./sale-detail-dialog";
 import { SalesHistoryTab } from "./sales-history-tab";
-import { useReturnsList } from "./use-returns-list";
-import { useSalesList } from "./use-sales-list";
+import { useReturnsList, useSaleDetail, useSalesList } from "./use-sales";
 
 export default function SalesPage() {
   const { user } = useAuth();
@@ -28,8 +27,11 @@ export default function SalesPage() {
 
   // ---- Sale detail ----
   const [detailOpen, setDetailOpen] = useState(false);
-  const [detailSale, setDetailSale] = useState<Sale | null>(null);
-  const [detailLoading, setDetailLoading] = useState(false);
+  const [detailSaleId, setDetailSaleId] = useState<string | null>(null);
+  const { data: detailSaleData, isPending: detailLoading } = useSaleDetail(
+    detailOpen ? detailSaleId : null,
+  );
+  const detailSale = detailSaleData ?? null;
 
   // ---- Receipt / return / payment ----
   const [receiptOpen, setReceiptOpen] = useState(false);
@@ -39,20 +41,9 @@ export default function SalesPage() {
   const [paymentReceiptId, setPaymentReceiptId] = useState<string | null>(null);
   const receiptRef = useRef<HTMLDivElement>(null);
 
-  const openDetail = async (sale: Sale) => {
-    setDetailSale(null);
-    setDetailLoading(true);
+  const openDetail = (sale: Sale) => {
+    setDetailSaleId(sale.id);
     setDetailOpen(true);
-    try {
-      const res = await fetch(`/api/sales/${sale.id}`);
-      if (!res.ok) throw new Error("Failed to fetch sale details");
-      setDetailSale(await res.json());
-    } catch {
-      toast.error("Failed to load sale details");
-      setDetailOpen(false);
-    } finally {
-      setDetailLoading(false);
-    }
   };
 
   const handlePrintReceipt = () => {
@@ -70,13 +61,9 @@ export default function SalesPage() {
 
   const handleReturnSuccess = () => {
     setDetailOpen(false);
-    salesList.refetch();
-    if (activeTab === "returns") returnsList.refetch();
   };
 
   const handlePaymentRecorded = (updated: Sale) => {
-    setDetailSale(updated);
-    salesList.refetch();
     // Pop the payment receipt for the instalment just recorded (newest first).
     const newest = updated.payments?.[0];
     if (newest) {

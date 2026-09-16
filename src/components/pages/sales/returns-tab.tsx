@@ -5,7 +5,7 @@ import { ArrowLeftRight } from "lucide-react";
 import { DataTable } from "@/components/organisms/data-table";
 
 import { returnsColumns } from "./table-columns";
-import type { ReturnsListController } from "./use-returns-list";
+import type { ReturnsListController } from "./use-sales";
 
 /** Returns tab: paginated table of processed returns. */
 export function ReturnsTab({ list }: { list: ReturnsListController }) {

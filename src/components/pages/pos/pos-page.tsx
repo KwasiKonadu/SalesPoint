@@ -18,12 +18,13 @@ import { ProductPanel } from "./product-panel";
 import { ReceiptDialog } from "./receipt-dialog";
 import { SendReceiptDialog } from "./send-receipt-dialog";
 import { useCart } from "./use-cart";
-import { usePosCatalog } from "./use-pos-catalog";
+import { useCheckout, usePosCatalog } from "./use-pos";
 
 export default function POSPage() {
   const { user } = useAuth();
   const catalog = usePosCatalog();
   const cart = useCart();
+  const checkout = useCheckout();
 
   const [addCustomerOpen, setAddCustomerOpen] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
@@ -31,7 +32,6 @@ export default function POSPage() {
   const [confirmPaymentOpen, setConfirmPaymentOpen] = useState(false);
   const [sendReceiptOpen, setSendReceiptOpen] = useState(false);
   const [lastSale, setLastSale] = useState<SaleResponse | null>(null);
-  const [isProcessing, setIsProcessing] = useState(false);
 
   const openCheckout = () => {
     if (!cart.isEmpty) setCheckoutOpen(true);
@@ -65,32 +65,21 @@ export default function POSPage() {
       return;
     }
 
-    setIsProcessing(true);
     try {
-      const res = await fetch("/api/sales", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "x-user-id": user.id },
-        body: JSON.stringify({
-          soldById: user.id,
-          customerId: cart.customer?.id || null,
-          items: cart.items.map((item) => ({
-            productId: item.product.id,
-            quantity: lineUnits(item),
-            wholesale: item.mode === "pack",
-          })),
-          discountAmount: Math.round(discountAmount * 100) / 100,
-          taxAmount: Math.round(taxAmount * 100) / 100,
-          paymentMethod,
-          amountReceived: paymentMethod === "cash" ? amountReceived : total,
-        }),
+      const sale = await checkout.mutateAsync({
+        soldById: user.id,
+        customerId: cart.customer?.id || null,
+        items: cart.items.map((item) => ({
+          productId: item.product.id,
+          quantity: lineUnits(item),
+          wholesale: item.mode === "pack",
+        })),
+        discountAmount: Math.round(discountAmount * 100) / 100,
+        taxAmount: Math.round(taxAmount * 100) / 100,
+        paymentMethod,
+        amountReceived: paymentMethod === "cash" ? amountReceived : total,
       });
 
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Sale failed");
-      }
-
-      const sale: SaleResponse = await res.json();
       setLastSale(sale);
       setCheckoutOpen(false);
       if (paymentMethod === "cash") {
@@ -110,8 +99,6 @@ export default function POSPage() {
         description:
           err instanceof Error ? err.message : "An unexpected error occurred",
       });
-    } finally {
-      setIsProcessing(false);
     }
   };
 
@@ -149,7 +136,6 @@ export default function POSPage() {
       <AddCustomerDialog
         open={addCustomerOpen}
         onOpenChange={setAddCustomerOpen}
-        userId={user?.id}
         onCreated={(customer) => {
           catalog.addCustomer(customer);
           cart.setCustomer(customer);
@@ -163,7 +149,7 @@ export default function POSPage() {
         totals={cart.totals}
         customerName={cart.customer?.name ?? ""}
         hasCustomer={!!cart.customer}
-        isProcessing={isProcessing}
+        isProcessing={checkout.isPending}
         onConfirm={handleCheckout}
       />
 
@@ -171,7 +157,6 @@ export default function POSPage() {
         open={confirmPaymentOpen}
         onOpenChange={setConfirmPaymentOpen}
         sale={lastSale}
-        userId={user?.id}
         onDone={handlePaymentDone}
       />
 

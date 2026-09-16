@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
-import { useAuth } from "@/lib/auth-context";
 import {
   EXPENSE_PAYMENT_METHODS,
   expenseFormValues,
@@ -12,6 +11,7 @@ import {
   type ExpenseCategory,
   type ExpenseFormData,
 } from "@/lib/expenses";
+import { useSaveExpense } from "./use-expenses";
 import { Button } from "@/components/ui/button";
 import { CurrencyInput } from "@/components/atoms/currency-input";
 import { TextField } from "@/components/atoms/text-field";
@@ -24,17 +24,14 @@ export function ExpenseFormPanel({
   onOpenChange,
   expense,
   categories,
-  onSuccess,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   expense: Expense | null;
   categories: ExpenseCategory[];
-  onSuccess: () => void;
 }) {
-  const { user } = useAuth();
   const isEditing = !!expense;
-  const [submitting, setSubmitting] = useState(false);
+  const saveExpense = useSaveExpense();
   const [form, setForm] = useState<ExpenseFormData>(expenseFormValues(expense));
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -75,28 +72,17 @@ export function ExpenseFormPanel({
 
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!user || !validate()) return;
+    if (!validate()) return;
 
-    setSubmitting(true);
     try {
-      const res = await fetch(
-        isEditing ? `/api/expenses/${expense.id}` : "/api/expenses",
-        {
-          method: isEditing ? "PUT" : "POST",
-          headers: { "Content-Type": "application/json", "x-user-id": user.id },
-          body: JSON.stringify({
-            amount: Number(form.amount),
-            date: form.date,
-            paymentMethod: form.paymentMethod || undefined,
-            description: form.description.trim() || undefined,
-            expenseCategoryId: form.expenseCategoryId || undefined,
-          }),
-        },
-      );
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error || "Failed to save expense");
-      }
+      await saveExpense.mutateAsync({
+        id: expense?.id,
+        amount: Number(form.amount),
+        date: form.date,
+        paymentMethod: form.paymentMethod || undefined,
+        description: form.description.trim() || undefined,
+        expenseCategoryId: form.expenseCategoryId || undefined,
+      });
 
       toast.success(
         isEditing
@@ -104,13 +90,10 @@ export function ExpenseFormPanel({
           : "Expense added successfully",
       );
       onOpenChange(false);
-      onSuccess();
     } catch (err) {
       toast.error(
         err instanceof Error ? err.message : "Failed to save expense",
       );
-    } finally {
-      setSubmitting(false);
     }
   };
 
@@ -130,12 +113,12 @@ export function ExpenseFormPanel({
             type="button"
             variant="outline"
             onClick={() => onOpenChange(false)}
-            disabled={submitting}
+            disabled={saveExpense.isPending}
           >
             Cancel
           </Button>
-          <Button type="submit" form="expense-form" disabled={submitting}>
-            {submitting && <Loader2 className="mr-2 size-4 animate-spin" />}
+          <Button type="submit" form="expense-form" disabled={saveExpense.isPending}>
+            {saveExpense.isPending && <Loader2 className="mr-2 size-4 animate-spin" />}
             {isEditing ? "Update Expense" : "Add Expense"}
           </Button>
         </>

@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { useAuth } from "@/lib/auth-context";
 import { formatCurrency } from "@/lib/format";
 import type { Expense, ExpenseCategory } from "@/lib/expenses";
 import { TabBar } from "@/components/molecules/tab-bar";
@@ -15,23 +14,20 @@ import { ExpenseFormPanel } from "./expense-form-panel";
 import { ExpenseCategoryFormPanel } from "./expense-category-form-panel";
 import { ExpenseCategoriesTab } from "./expense-categories-tab";
 import { ExpensesTab } from "./expenses-tab";
-import { useExpenseCategories } from "./use-expense-categories";
-import { useExpenseSummary } from "./use-expense-summary";
-import { useExpensesList } from "./use-expenses-list";
+import {
+  useDeleteExpense,
+  useExpenseCategories,
+  useExpenseSummary,
+  useExpensesList,
+} from "./use-expenses";
 
 export default function ExpensesPage() {
-  const { user } = useAuth();
-
   const [tab, setTab] = useState<"expenses" | "categories">("expenses");
 
   const list = useExpensesList();
-  const { categories, refetch: refetchCategories } = useExpenseCategories();
+  const { categories } = useExpenseCategories();
   assignTypeChipColors(categories.map((c) => c.name));
-  const {
-    summary,
-    loading: summaryLoading,
-    refetch: refetchSummary,
-  } = useExpenseSummary();
+  const { summary, loading: summaryLoading } = useExpenseSummary();
 
   const [expenseFormOpen, setExpenseFormOpen] = useState(false);
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
@@ -41,13 +37,7 @@ export default function ExpensesPage() {
     useState<ExpenseCategory | null>(null);
 
   const [deletingExpense, setDeletingExpense] = useState<Expense | null>(null);
-  const [deleting, setDeleting] = useState(false);
-
-  const refreshAll = () => {
-    list.refetch();
-    refetchCategories();
-    refetchSummary();
-  };
+  const deleteExpense = useDeleteExpense();
 
   const openAddExpense = () => {
     setEditingExpense(null);
@@ -67,27 +57,15 @@ export default function ExpensesPage() {
   };
 
   const confirmDelete = async () => {
-    if (!user || !deletingExpense) return;
-    setDeleting(true);
+    if (!deletingExpense) return;
     try {
-      const res = await fetch(`/api/expenses/${deletingExpense.id}`, {
-        method: "DELETE",
-        headers: { "x-user-id": user.id },
-      });
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error || "Failed to delete expense");
-      }
+      await deleteExpense.mutateAsync(deletingExpense.id);
       toast.success("Expense deleted");
       setDeletingExpense(null);
-      list.refetch();
-      refetchSummary();
     } catch (err) {
       toast.error(
         err instanceof Error ? err.message : "Failed to delete expense",
       );
-    } finally {
-      setDeleting(false);
     }
   };
 
@@ -130,14 +108,12 @@ export default function ExpensesPage() {
         onOpenChange={setExpenseFormOpen}
         expense={editingExpense}
         categories={categories}
-        onSuccess={refreshAll}
       />
 
       <ExpenseCategoryFormPanel
         open={catFormOpen}
         onOpenChange={setCatFormOpen}
         category={editingCategory}
-        onSuccess={refreshAll}
       />
 
       <ConfirmDialog
@@ -154,7 +130,7 @@ export default function ExpensesPage() {
           </>
         }
         confirmLabel="Delete"
-        loading={deleting}
+        loading={deleteExpense.isPending}
         onConfirm={confirmDelete}
       />
     </div>

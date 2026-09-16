@@ -3,9 +3,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
-import { useAuth } from '@/lib/auth-context';
 import { setCurrencyCode } from '@/lib/currency';
 import { setBusinessInfo } from '@/lib/business-info';
+import { useBusinessSettingsQuery, useSaveBusinessSettings } from '@/hooks/api/use-business-settings';
 import type { BusinessSettings } from '@/lib/settings';
 
 /** Push freshly loaded / saved settings into the app-wide stores. */
@@ -19,33 +19,21 @@ function syncStores(settings: BusinessSettings) {
  * and Receipt tabs read the same document, so `errorLabel` tailors the toasts.
  */
 export function useBusinessSettings(errorLabel: string) {
-  const { user } = useAuth();
+  const query = useBusinessSettingsQuery();
+  const saveMutation = useSaveBusinessSettings();
+
+  // Local editable draft, seeded from the server document once it loads.
   const [settings, setSettings] = useState<BusinessSettings>({});
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  useEffect(() => {
+    if (query.data) {
+      setSettings(query.data);
+      syncStores(query.data);
+    }
+  }, [query.data]);
 
   useEffect(() => {
-    let ignore = false;
-    (async () => {
-      setLoading(true);
-      try {
-        const res = await fetch('/api/business-settings');
-        if (!res.ok) throw new Error('Failed to fetch');
-        const data = await res.json();
-        if (!ignore) {
-          setSettings(data);
-          syncStores(data);
-        }
-      } catch {
-        if (!ignore) toast.error(`Failed to load ${errorLabel}`);
-      } finally {
-        if (!ignore) setLoading(false);
-      }
-    })();
-    return () => {
-      ignore = true;
-    };
-  }, [errorLabel]);
+    if (query.isError) toast.error(`Failed to load ${errorLabel}`);
+  }, [query.isError, errorLabel]);
 
   const updateField = useCallback((key: string, value: string) => {
     setSettings((prev) => ({ ...prev, [key]: value }));
@@ -53,34 +41,26 @@ export function useBusinessSettings(errorLabel: string) {
 
   const save = useCallback(
     async (payload: BusinessSettings, successMessage: string) => {
-      if (!user) {
-        toast.error(`Failed to save ${errorLabel}`);
-        return false;
-      }
-      setSaving(true);
       try {
-        const res = await fetch('/api/business-settings', {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-user-id': user.id,
-          },
-          body: JSON.stringify(payload),
-        });
-        if (!res.ok) throw new Error('Failed to save');
-        setSettings(payload);
-        syncStores(payload);
+        const saved = await saveMutation.mutateAsync(payload);
+        setSettings(saved);
+        syncStores(saved);
         toast.success(successMessage);
         return true;
       } catch {
         toast.error(`Failed to save ${errorLabel}`);
         return false;
-      } finally {
-        setSaving(false);
       }
     },
-    [errorLabel, user],
+    [errorLabel, saveMutation],
   );
 
-  return { settings, setSettings, updateField, loading, saving, save };
+  return {
+    settings,
+    setSettings,
+    updateField,
+    loading: query.isPending,
+    saving: saveMutation.isPending,
+    save,
+  };
 }

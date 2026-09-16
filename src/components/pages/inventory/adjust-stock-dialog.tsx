@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
-import { useAuth } from "@/lib/auth-context";
-import type { InventoryProduct } from "@/lib/inventory";
+import { useAdjustStock, useInventoryRefs } from "./use-inventory";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -31,14 +30,13 @@ export function AdjustStockDialog({
   onOpenChange: (open: boolean) => void;
   onSubmitted: () => void;
 }) {
-  const { user } = useAuth();
-  const [products, setProducts] = useState<InventoryProduct[]>([]);
+  const { products } = useInventoryRefs();
   const [productSearch, setProductSearch] = useState("");
   const [selectedProductId, setSelectedProductId] = useState("");
   const [adjustmentType, setAdjustmentType] = useState("damaged");
   const [quantity, setQuantity] = useState("");
   const [note, setNote] = useState("");
-  const [submitting, setSubmitting] = useState(false);
+  const adjustStock = useAdjustStock();
 
   // Clear the form when the panel closes.
   const [wasOpen, setWasOpen] = useState(open);
@@ -53,23 +51,6 @@ export function AdjustStockDialog({
     }
   }
 
-  useEffect(() => {
-    if (!open) return;
-    let ignore = false;
-    (async () => {
-      try {
-        const res = await fetch("/api/products?status=active&pageSize=200");
-        const json = await res.json();
-        if (!ignore) setProducts(json.data || []);
-      } catch {
-        toast.error("Failed to load products");
-      }
-    })();
-    return () => {
-      ignore = true;
-    };
-  }, [open]);
-
   const filteredProducts = products.filter(
     (p) =>
       !productSearch ||
@@ -82,25 +63,13 @@ export function AdjustStockDialog({
       toast.error("Please fill in all required fields");
       return;
     }
-    setSubmitting(true);
     try {
-      const res = await fetch("/api/inventory/adjust", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-user-id": user?.id || "",
-        },
-        body: JSON.stringify({
-          productId: selectedProductId,
-          quantity: parseInt(quantity),
-          type: adjustmentType,
-          note: note || undefined,
-        }),
+      await adjustStock.mutateAsync({
+        productId: selectedProductId,
+        quantity: parseInt(quantity),
+        type: adjustmentType,
+        note: note || undefined,
       });
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Failed to adjust stock");
-      }
       toast.success("Stock adjusted successfully");
       onOpenChange(false);
       onSubmitted();
@@ -108,8 +77,6 @@ export function AdjustStockDialog({
       toast.error(
         err instanceof Error ? err.message : "Failed to adjust stock",
       );
-    } finally {
-      setSubmitting(false);
     }
   };
 
@@ -126,9 +93,9 @@ export function AdjustStockDialog({
           </Button>
           <Button
             onClick={handleSubmit}
-            disabled={submitting || !selectedProductId || !quantity}
+            disabled={adjustStock.isPending || !selectedProductId || !quantity}
           >
-            {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {adjustStock.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Confirm Adjustment
           </Button>
         </>

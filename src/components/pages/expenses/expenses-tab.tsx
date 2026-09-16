@@ -13,7 +13,7 @@ import {
 } from "@/lib/expenses";
 
 import { expenseColumns } from "./expense-columns";
-import type { ExpensesListController } from "./use-expenses-list";
+import type { ExpensesListController } from "./use-expenses";
 
 /** Expenses tab: filter toolbar + paginated table with row actions. */
 export function ExpensesTab({

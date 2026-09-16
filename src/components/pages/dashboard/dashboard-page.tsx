@@ -49,10 +49,11 @@ export default function DashboardPage() {
           <TopProductsCard products={data.topProducts} />
           <RecentSalesCard sales={data.recentSales} />
         </div>
-        <LowStockCard products={data.lowStockProducts} />
+        <div className="flex h-full flex-col gap-4">
+          <LowStockCard products={data.lowStockProducts} />
+          <QuickActionsCard />
+        </div>
       </div>
-
-      <QuickActionsCard />
     </div>
   );
 }

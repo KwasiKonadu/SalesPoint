@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { formatCurrency } from "@/lib/format";
 import { PAYMENT_METHODS } from "@/lib/payment";
 import type { Sale } from "@/lib/sales";
+import { useRecordPayment } from "./use-sales";
 import { Button } from "@/components/ui/button";
 import { CurrencyInput } from "@/components/atoms/currency-input";
 import { TextField } from "@/components/atoms/text-field";
@@ -38,7 +39,7 @@ export function RecordPaymentPanel({
   const [amount, setAmount] = useState("");
   const [method, setMethod] = useState("cash");
   const [note, setNote] = useState("");
-  const [submitting, setSubmitting] = useState(false);
+  const recordPayment = useRecordPayment();
 
   // Seed the amount with the full outstanding balance each time it opens.
   const [wasOpen, setWasOpen] = useState(open);
@@ -59,26 +60,22 @@ export function RecordPaymentPanel({
 
   const handleSubmit = async () => {
     if (!sale || !userId || invalid) return;
-    setSubmitting(true);
     try {
-      const res = await fetch(`/api/sales/${sale.id}/payments`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "x-user-id": userId },
-        body: JSON.stringify({ amount: amountNum, method, note: note || undefined }),
+      const updated = await recordPayment.mutateAsync({
+        saleId: sale.id,
+        amount: amountNum,
+        method,
+        note: note || undefined,
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to record payment");
       toast.success("Payment recorded", {
         description: `${formatCurrency(amountNum)} against ${sale.transactionNumber}`,
       });
       onOpenChange(false);
-      onSuccess(data as Sale);
+      onSuccess(updated);
     } catch (err) {
       toast.error(
         err instanceof Error ? err.message : "Failed to record payment",
       );
-    } finally {
-      setSubmitting(false);
     }
   };
 
@@ -93,12 +90,12 @@ export function RecordPaymentPanel({
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}
-            disabled={submitting}
+            disabled={recordPayment.isPending}
           >
             Cancel
           </Button>
-          <Button onClick={handleSubmit} disabled={submitting || invalid}>
-            {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          <Button onClick={handleSubmit} disabled={recordPayment.isPending || invalid}>
+            {recordPayment.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Record Payment
           </Button>
         </>

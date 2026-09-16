@@ -7,7 +7,7 @@ import type { Sale } from "@/lib/sales";
 
 import { SalesFilters } from "./sales-filters";
 import { salesColumns } from "./table-columns";
-import type { SalesListController } from "./use-sales-list";
+import type { SalesListController } from "./use-sales";
 
 /** Sales-history tab: filterable, paginated table of sales. */
 export function SalesHistoryTab({

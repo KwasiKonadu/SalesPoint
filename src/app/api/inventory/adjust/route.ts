@@ -24,24 +24,23 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid adjustment type' }, { status: 400 })
     }
 
-    // Get inventory
-    const inventory = await db.inventory.findUnique({
-      where: { productId },
-    })
-
-    if (!inventory) {
-      return NextResponse.json({ error: 'Inventory not found for product' }, { status: 404 })
-    }
-
-    if (inventory.quantity < quantity) {
-      return NextResponse.json(
-        { error: 'Insufficient stock for this adjustment' },
-        { status: 400 }
-      )
-    }
-
-    // Deduct from inventory and create movement in transaction
+    // Read the current quantity, validate, and decrement inside the same
+    // transaction — otherwise two concurrent adjustments could each pass the
+    // sufficiency check against the same starting quantity and both proceed,
+    // taking stock negative.
     const result = await db.$transaction(async (tx) => {
+      const inventory = await tx.inventory.findUnique({
+        where: { productId },
+      })
+
+      if (!inventory) {
+        throw new Error('Inventory not found for product')
+      }
+
+      if (inventory.quantity < quantity) {
+        throw new Error('Insufficient stock for this adjustment')
+      }
+
       const updated = await tx.inventory.update({
         where: { productId },
         data: { quantity: { decrement: quantity } },
@@ -62,8 +61,10 @@ export async function POST(req: NextRequest) {
     })
 
     return NextResponse.json(result)
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error adjusting inventory:', error)
-    return NextResponse.json({ error: 'Failed to adjust inventory' }, { status: 500 })
+    const message = error instanceof Error ? error.message : 'Failed to adjust inventory'
+    const status = message.includes('Insufficient') || message.includes('not found') ? 400 : 500
+    return NextResponse.json({ error: message }, { status })
   }
 }

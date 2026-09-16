@@ -4,8 +4,7 @@ import { useState } from "react";
 import { Plus, Truck } from "lucide-react";
 import { toast } from "sonner";
 
-import { useAuth } from "@/lib/auth-context";
-import type { Supplier, SupplierDetail } from "@/lib/suppliers";
+import type { Supplier } from "@/lib/suppliers";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ConfirmDialog } from "@/components/molecules/confirm-dialog";
@@ -15,24 +14,23 @@ import { EmptyState } from "@/components/molecules/empty-state";
 import { SearchInput } from "@/components/molecules/search-input";
 import { SupplierFormPanel } from "./supplier-form-panel";
 import { SupplierProfileDialog } from "./supplier-profile-dialog";
-import { useSuppliersList } from "./use-suppliers-list";
+import { useDeleteSupplier, useSuppliersList } from "./use-suppliers";
 
 export default function SuppliersPage() {
-  const { user } = useAuth();
   const list = useSuppliersList();
 
   const [formOpen, setFormOpen] = useState(false);
   const [editingSupplier, setEditingSupplier] = useState<Supplier | null>(null);
 
   const [viewOpen, setViewOpen] = useState(false);
-  const [viewingSupplier, setViewingSupplier] = useState<SupplierDetail | null>(
+  const [viewingSupplierId, setViewingSupplierId] = useState<string | null>(
     null,
   );
 
   const [deletingSupplier, setDeletingSupplier] = useState<Supplier | null>(
     null,
   );
-  const [deleting, setDeleting] = useState(false);
+  const deleteSupplier = useDeleteSupplier();
 
   const openAdd = () => {
     setEditingSupplier(null);
@@ -43,39 +41,21 @@ export default function SuppliersPage() {
     setFormOpen(true);
   };
 
-  const openView = async (supplier: Supplier) => {
-    try {
-      const res = await fetch(`/api/suppliers/${supplier.id}`);
-      if (!res.ok) throw new Error();
-      setViewingSupplier(await res.json());
-    } catch {
-      toast.error("Failed to load supplier details");
-      setViewingSupplier(supplier as SupplierDetail);
-    }
+  const openView = (supplier: Supplier) => {
+    setViewingSupplierId(supplier.id);
     setViewOpen(true);
   };
 
   const confirmDelete = async () => {
-    if (!user || !deletingSupplier) return;
-    setDeleting(true);
+    if (!deletingSupplier) return;
     try {
-      const res = await fetch(`/api/suppliers/${deletingSupplier.id}`, {
-        method: "DELETE",
-        headers: { "x-user-id": user.id },
-      });
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error || "Failed to delete supplier");
-      }
+      await deleteSupplier.mutateAsync(deletingSupplier.id);
       toast.success("Supplier deactivated");
       setDeletingSupplier(null);
-      list.refetch();
     } catch (err) {
       toast.error(
         err instanceof Error ? err.message : "Failed to delete supplier",
       );
-    } finally {
-      setDeleting(false);
     }
   };
 
@@ -158,11 +138,10 @@ export default function SuppliersPage() {
         open={formOpen}
         onOpenChange={setFormOpen}
         supplier={editingSupplier}
-        onSuccess={list.refetch}
       />
 
       <SupplierProfileDialog
-        supplier={viewingSupplier}
+        supplierId={viewingSupplierId}
         open={viewOpen}
         onOpenChange={setViewOpen}
       />
@@ -179,7 +158,7 @@ export default function SuppliersPage() {
           </>
         }
         confirmLabel="Deactivate"
-        loading={deleting}
+        loading={deleteSupplier.isPending}
         onConfirm={confirmDelete}
       />
     </div>

@@ -15,7 +15,7 @@ import { EmptyState } from "@/components/molecules/empty-state";
 import { SearchInput } from "@/components/molecules/search-input";
 import { CustomerFormPanel } from "./customer-form-panel";
 import { CustomerProfileDialog } from "./customer-profile-dialog";
-import { useCustomersList } from "./use-customers-list";
+import { useCustomersList, useDeleteCustomer } from "./use-customers";
 
 export default function CustomersPage() {
   const list = useCustomersList();
@@ -29,7 +29,7 @@ export default function CustomersPage() {
   const [deletingCustomer, setDeletingCustomer] = useState<Customer | null>(
     null,
   );
-  const [deleting, setDeleting] = useState(false);
+  const deleteCustomer = useDeleteCustomer();
 
   const openAdd = () => {
     setEditingCustomer(null);
@@ -46,19 +46,12 @@ export default function CustomersPage() {
 
   const handleDelete = async () => {
     if (!deletingCustomer) return;
-    setDeleting(true);
     try {
-      const res = await fetch(`/api/customers/${deletingCustomer.id}`, {
-        method: "DELETE",
-      });
-      if (!res.ok) throw new Error("Failed to delete customer");
+      await deleteCustomer.mutateAsync(deletingCustomer.id);
       toast.success("Customer deleted successfully");
       setDeletingCustomer(null);
-      list.refetch();
     } catch {
       toast.error("Failed to delete customer");
-    } finally {
-      setDeleting(false);
     }
   };
 
@@ -148,7 +141,6 @@ export default function CustomersPage() {
         open={formOpen}
         onOpenChange={setFormOpen}
         customer={editingCustomer}
-        onSaved={list.refetch}
       />
 
       <CustomerProfileDialog
@@ -169,7 +161,7 @@ export default function CustomersPage() {
           </>
         }
         confirmLabel="Delete"
-        loading={deleting}
+        loading={deleteCustomer.isPending}
         onConfirm={handleDelete}
       />
     </div>

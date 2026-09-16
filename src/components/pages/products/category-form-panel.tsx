@@ -4,8 +4,8 @@ import React, { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
-import { useAuth } from "@/lib/auth-context";
 import type { Category } from "@/lib/products";
+import { useSaveCategory } from "@/hooks/api/use-categories";
 import { Button } from "@/components/ui/button";
 import { TextField } from "@/components/atoms/text-field";
 import { FormPanel } from "@/components/molecules/form-panel";
@@ -16,19 +16,16 @@ export function CategoryFormPanel({
   open,
   onOpenChange,
   category,
-  onSuccess,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   category: Category | null;
-  onSuccess: () => void;
 }) {
-  const { user } = useAuth();
   const isEditing = !!category;
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [icon, setIcon] = useState("");
-  const [submitting, setSubmitting] = useState(false);
+  const saveCategory = useSaveCategory();
 
   // Seed the fields from the category each time the panel opens.
   const [wasOpen, setWasOpen] = useState(open);
@@ -43,36 +40,22 @@ export function CategoryFormPanel({
 
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!user || !name.trim()) return;
-    setSubmitting(true);
+    if (!name.trim()) return;
     try {
-      const body: Record<string, unknown> = { name: name.trim() };
-      if (description.trim()) body.description = description.trim();
-      body.icon = icon || null;
-      if (isEditing) body.isActive = category.isActive;
-
-      const res = await fetch(
-        isEditing ? `/api/categories/${category.id}` : "/api/categories",
-        {
-          method: isEditing ? "PUT" : "POST",
-          headers: { "Content-Type": "application/json", "x-user-id": user.id },
-          body: JSON.stringify(body),
-        },
-      );
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error || "Failed to save category");
-      }
+      await saveCategory.mutateAsync({
+        id: category?.id,
+        name: name.trim(),
+        description: description.trim() || undefined,
+        icon: icon || null,
+        ...(isEditing ? { isActive: category.isActive } : {}),
+      });
 
       toast.success(isEditing ? "Category updated" : "Category created");
       onOpenChange(false);
-      onSuccess();
     } catch (err) {
       toast.error(
         err instanceof Error ? err.message : "Failed to save category",
       );
-    } finally {
-      setSubmitting(false);
     }
   };
 
@@ -92,16 +75,16 @@ export function CategoryFormPanel({
             type="button"
             variant="outline"
             onClick={() => onOpenChange(false)}
-            disabled={submitting}
+            disabled={saveCategory.isPending}
           >
             Cancel
           </Button>
           <Button
             type="submit"
             form="product-category-form"
-            disabled={submitting || !name.trim()}
+            disabled={saveCategory.isPending || !name.trim()}
           >
-            {submitting && <Loader2 className="mr-2 size-4 animate-spin" />}
+            {saveCategory.isPending && <Loader2 className="mr-2 size-4 animate-spin" />}
             {isEditing ? "Update" : "Create"}
           </Button>
         </>

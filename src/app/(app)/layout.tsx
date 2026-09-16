@@ -1,14 +1,15 @@
 'use client';
 
 import React, { Suspense, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
 import { setCurrencyCode } from '@/lib/currency';
 import { setBusinessInfo } from '@/lib/business-info';
+import { useBusinessSettingsQuery } from '@/hooks/api/use-business-settings';
 import { AppSidebar } from '@/components/app-sidebar';
 import { AppHeader } from '@/components/app-header';
 import { PageTabsBand, PageTabsProvider } from '@/components/molecules/page-tabs';
 import { Loader2 } from 'lucide-react';
-import LoginPage from '@/components/login-page';
 
 function FullScreenLoader({ label }: { label?: string }) {
   return (
@@ -25,40 +26,27 @@ function FullScreenLoader({ label }: { label?: string }) {
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { status } = useAuth();
+  const router = useRouter();
+
+  // No session — send the user back to the login page.
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.replace('/login');
+    }
+  }, [status, router]);
 
   // Hydrate the app-wide business settings once the user is signed in, so every
   // page (not just Settings) formats money with the configured currency and
   // shows the real business identity on receipts.
+  const { data: businessSettings } = useBusinessSettingsQuery({ enabled: status === 'authenticated' });
   useEffect(() => {
-    if (status !== 'authenticated') return;
-    let ignore = false;
-    (async () => {
-      try {
-        const res = await fetch('/api/business-settings');
-        if (!res.ok) return;
-        const data = await res.json();
-        if (ignore) return;
-        setCurrencyCode(data.currency);
-        setBusinessInfo(data);
-      } catch {
-        // Keep the defaults if this fails.
-      }
-    })();
-    return () => {
-      ignore = true;
-    };
-  }, [status]);
+    if (!businessSettings) return;
+    setCurrencyCode(businessSettings.currency);
+    setBusinessInfo(businessSettings);
+  }, [businessSettings]);
 
-  if (status === 'loading') {
+  if (status === 'loading' || status === 'unauthenticated') {
     return <FullScreenLoader label="Loading StorePOS..." />;
-  }
-
-  if (status === 'unauthenticated') {
-    return (
-      <Suspense fallback={<FullScreenLoader />}>
-        <LoginPage />
-      </Suspense>
-    );
   }
 
   return (

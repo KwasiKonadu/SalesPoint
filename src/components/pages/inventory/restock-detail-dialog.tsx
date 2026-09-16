@@ -1,15 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
-
 import { formatCurrency, formatDate, formatDateTime } from "@/lib/format";
 import { variantLabel } from "@/lib/products";
 import {
   paymentStatusConfig,
-  type Restock,
   type RestockItem,
 } from "@/lib/inventory";
+import { useRestockDetail } from "./use-inventory";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -80,30 +77,7 @@ export function RestockDetailDialog({
   onOpenChange: (open: boolean) => void;
   restockId: string | null;
 }) {
-  const [restock, setRestock] = useState<Restock | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (!open || !restockId) return;
-    let ignore = false;
-    (async () => {
-      setLoading(true);
-      setRestock(null);
-      try {
-        const res = await fetch(`/api/restock/${restockId}`);
-        if (!res.ok) throw new Error("Failed to fetch restock");
-        const data = await res.json();
-        if (!ignore) setRestock(data);
-      } catch {
-        if (!ignore) toast.error("Failed to load restock details");
-      } finally {
-        if (!ignore) setLoading(false);
-      }
-    })();
-    return () => {
-      ignore = true;
-    };
-  }, [open, restockId]);
+  const { data: restock, isPending: loading } = useRestockDetail(open ? restockId : null);
 
   const payConfig = paymentStatusConfig(restock?.paymentStatus);
 

@@ -5,6 +5,7 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 import type { ProductType } from "@/lib/settings";
+import { useSaveProductType } from "@/hooks/api/use-product-types";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -27,7 +28,7 @@ export function ProductTypeFormPanel({
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [tracksStock, setTracksStock] = useState(true);
-  const [saving, setSaving] = useState(false);
+  const saveProductType = useSaveProductType();
 
   // Seed the fields from the product type each time the panel opens.
   const [wasOpen, setWasOpen] = useState(open);
@@ -45,26 +46,13 @@ export function ProductTypeFormPanel({
       toast.error("Name is required");
       return;
     }
-    setSaving(true);
     try {
-      const res = await fetch(
-        isEditing
-          ? `/api/product-types/${productType.id}`
-          : "/api/product-types",
-        {
-          method: isEditing ? "PUT" : "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: name.trim(),
-            description: description.trim() || null,
-            tracksStock,
-          }),
-        },
-      );
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Failed to save");
-      }
+      await saveProductType.mutateAsync({
+        id: productType?.id,
+        name: name.trim(),
+        description: description.trim() || null,
+        tracksStock,
+      });
       toast.success(isEditing ? "Product type updated" : "Product type added");
       onOpenChange(false);
       onSaved();
@@ -72,8 +60,6 @@ export function ProductTypeFormPanel({
       toast.error(
         err instanceof Error ? err.message : "Failed to save product type",
       );
-    } finally {
-      setSaving(false);
     }
   };
 
@@ -92,8 +78,8 @@ export function ProductTypeFormPanel({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={handleSave} disabled={saving}>
-            {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          <Button onClick={handleSave} disabled={saveProductType.isPending}>
+            {saveProductType.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {isEditing ? "Update" : "Add"}
           </Button>
         </>

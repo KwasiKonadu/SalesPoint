@@ -52,10 +52,14 @@ export async function POST(req: NextRequest) {
     }
 
     const result = await db.$transaction(async (tx) => {
-      // Get the sale with items
+      // Get the sale with items, and every quantity already returned per
+      // line item (across any earlier, separate return transactions).
       const sale = await tx.sale.findUnique({
         where: { id: saleId },
-        include: { items: true, returns: true },
+        include: {
+          items: { include: { returnItems: true } },
+          returns: true,
+        },
       })
 
       if (!sale) {
@@ -78,25 +82,36 @@ export async function POST(req: NextRequest) {
       }
       const returnNumber = `${prefix}${String(nextNum).padStart(4, '0')}`
 
-      // Calculate refund amount and prepare return items
+      // Calculate refund amount and prepare return items. This is a fast,
+      // friendly pre-check — not the source of truth. The guarded insert
+      // below re-checks the same invariant as part of the write itself, so a
+      // concurrent return on the same sale item can't be raced past it.
       const saleItemMap = new Map(sale.items.map((si) => [si.id, si]))
       let refundAmount = 0
 
-      const returnItemsData = items.map((item: Record<string, unknown>) => {
+      const preparedItems = (items as Record<string, unknown>[]).map((item) => {
         const saleItem = saleItemMap.get(item.saleItemId as string)
         if (!saleItem) {
           throw new Error(`Sale item ${item.saleItemId} not found`)
         }
 
         const qty = item.quantity as number
-        if (qty > saleItem.quantity) {
-          throw new Error(`Return quantity exceeds sold quantity for ${saleItem.productName}`)
+        if (!Number.isFinite(qty) || qty <= 0) {
+          throw new Error(`Invalid return quantity for ${saleItem.productName}`)
+        }
+        const alreadyReturned = saleItem.returnItems.reduce((sum, ri) => sum + ri.quantity, 0)
+        const remaining = saleItem.quantity - alreadyReturned
+        if (qty > remaining) {
+          throw new Error(
+            `Return quantity exceeds remaining returnable quantity for ${saleItem.productName} (${remaining} left)`,
+          )
         }
 
         const itemRefund = saleItem.unitPrice * qty
         refundAmount += itemRefund
 
         return {
+          saleItemId: saleItem.id,
           productId: saleItem.productId,
           productName: saleItem.productName,
           quantity: qty,
@@ -105,8 +120,9 @@ export async function POST(req: NextRequest) {
         }
       })
 
-      // Create return
-      const returnRecord = await tx.return.create({
+      // Create the return header first (its id is the FK target for the
+      // guarded item inserts below).
+      const returnHeader = await tx.return.create({
         data: {
           returnNumber,
           saleId,
@@ -115,42 +131,60 @@ export async function POST(req: NextRequest) {
           reason,
           refundAmount,
           status: 'completed',
-          items: { create: returnItemsData },
-        },
-        include: {
-          items: true,
-          processedBy: { select: { id: true, name: true } },
-          sale: { include: { customer: true } },
         },
       })
 
-      // Restore inventory and create movements
-      for (const item of items) {
-        const saleItem = saleItemMap.get(item.saleItemId as string)!
-        const qty = item.quantity as number
+      // Guarded insert per item: the remaining-quantity check is evaluated by
+      // SQLite as part of this single INSERT statement, against whichever
+      // ReturnItem/SaleItem rows exist at the moment it actually runs under
+      // the write lock — not against a value read earlier in JS. A row count
+      // of 0 means the check failed (either a concurrent return already used
+      // up the remaining quantity, or the sale item vanished).
+      for (const p of preparedItems) {
+        const inserted = await tx.$executeRaw`
+          INSERT INTO "ReturnItem" ("id", "returnId", "saleItemId", "productId", "productName", "quantity", "unitPrice", "refundAmount")
+          SELECT ${crypto.randomUUID()}, ${returnHeader.id}, ${p.saleItemId}, ${p.productId}, ${p.productName}, ${p.quantity}, ${p.unitPrice}, ${p.refundAmount}
+          WHERE (
+            SELECT COALESCE(SUM("quantity"), 0) FROM "ReturnItem" WHERE "saleItemId" = ${p.saleItemId}
+          ) + ${p.quantity} <= (
+            SELECT "quantity" FROM "SaleItem" WHERE "id" = ${p.saleItemId}
+          )
+        `
+        if (inserted === 0) {
+          throw new Error(
+            `Return quantity exceeds remaining returnable quantity for ${p.productName} — reload and try again.`,
+          )
+        }
 
-        const inv = await tx.inventory.findUnique({
-          where: { productId: saleItem.productId },
-        })
-
+        // Restore inventory and log the movement for this item.
+        const inv = await tx.inventory.findUnique({ where: { productId: p.productId } })
         if (inv) {
           await tx.inventory.update({
-            where: { productId: saleItem.productId },
-            data: { quantity: { increment: qty } },
+            where: { productId: p.productId },
+            data: { quantity: { increment: p.quantity } },
           })
 
           await tx.inventoryMovement.create({
             data: {
               inventoryId: inv.id,
               type: 'return',
-              quantity: qty,
+              quantity: p.quantity,
               note: `Return ${returnNumber}`,
-              referenceId: returnRecord.id,
-              productId: saleItem.productId,
+              referenceId: returnHeader.id,
+              productId: p.productId,
             },
           })
         }
       }
+
+      const returnRecord = await tx.return.findUniqueOrThrow({
+        where: { id: returnHeader.id },
+        include: {
+          items: true,
+          processedBy: { select: { id: true, name: true } },
+          sale: { include: { customer: true } },
+        },
+      })
 
       // Update sale status
       const totalReturned = sale.returns.reduce((sum, r) => sum + r.refundAmount, 0) + refundAmount

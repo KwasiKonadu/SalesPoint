@@ -1,7 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
+import { DEFAULT_ROUTE } from '@/lib/nav';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { FieldLabel } from '@/components/atoms/field-label';
@@ -10,6 +12,7 @@ import { Store, Eye, EyeOff, Loader2 } from 'lucide-react';
 
 export default function LoginPage() {
   const { login } = useAuth();
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -22,6 +25,7 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await login(email, password);
+      router.replace(DEFAULT_ROUTE);
     } catch {
       setError('Invalid email or password');
     } finally {

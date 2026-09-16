@@ -4,13 +4,13 @@ import React, { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
-import { useAuth } from "@/lib/auth-context";
 import {
   EMAIL_RE,
   supplierFormValues,
   type Supplier,
   type SupplierFormData,
 } from "@/lib/suppliers";
+import { useSaveSupplier } from "./use-suppliers";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { TextField } from "@/components/atoms/text-field";
@@ -21,16 +21,13 @@ export function SupplierFormPanel({
   open,
   onOpenChange,
   supplier,
-  onSuccess,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   supplier: Supplier | null;
-  onSuccess: () => void;
 }) {
-  const { user } = useAuth();
   const isEditing = !!supplier;
-  const [submitting, setSubmitting] = useState(false);
+  const saveSupplier = useSaveSupplier();
   const [form, setForm] = useState<SupplierFormData>(
     supplierFormValues(supplier),
   );
@@ -72,32 +69,19 @@ export function SupplierFormPanel({
 
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!user || !validate()) return;
+    if (!validate()) return;
 
-    setSubmitting(true);
     try {
-      const body: Record<string, unknown> = {
+      await saveSupplier.mutateAsync({
+        id: supplier?.id,
         businessName: form.businessName.trim(),
         contactPerson: form.contactPerson.trim() || undefined,
         phone: form.phone.trim() || undefined,
         email: form.email.trim() || undefined,
         address: form.address.trim() || undefined,
         notes: form.notes.trim() || undefined,
-      };
-      if (isEditing) body.isActive = form.isActive;
-
-      const res = await fetch(
-        isEditing ? `/api/suppliers/${supplier.id}` : "/api/suppliers",
-        {
-          method: isEditing ? "PUT" : "POST",
-          headers: { "Content-Type": "application/json", "x-user-id": user.id },
-          body: JSON.stringify(body),
-        },
-      );
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error || "Failed to save supplier");
-      }
+        ...(isEditing ? { isActive: form.isActive } : {}),
+      });
 
       toast.success(
         isEditing
@@ -105,13 +89,10 @@ export function SupplierFormPanel({
           : "Supplier created successfully",
       );
       onOpenChange(false);
-      onSuccess();
     } catch (err) {
       toast.error(
         err instanceof Error ? err.message : "Failed to save supplier",
       );
-    } finally {
-      setSubmitting(false);
     }
   };
 
@@ -131,12 +112,12 @@ export function SupplierFormPanel({
             type="button"
             variant="outline"
             onClick={() => onOpenChange(false)}
-            disabled={submitting}
+            disabled={saveSupplier.isPending}
           >
             Cancel
           </Button>
-          <Button type="submit" form="supplier-form" disabled={submitting}>
-            {submitting && <Loader2 className="mr-2 size-4 animate-spin" />}
+          <Button type="submit" form="supplier-form" disabled={saveSupplier.isPending}>
+            {saveSupplier.isPending && <Loader2 className="mr-2 size-4 animate-spin" />}
             {isEditing ? "Update Supplier" : "Add Supplier"}
           </Button>
         </>

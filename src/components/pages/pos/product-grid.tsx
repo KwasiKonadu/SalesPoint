@@ -9,7 +9,7 @@ import type { PosProduct } from "@/lib/pos";
 import { ProductCard } from "./product-card";
 
 const GRID_CLASS =
-  "grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4";
+  "grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3";
 
 /** The scrollable product area: loading / error / empty / populated states. */
 export function ProductGrid({

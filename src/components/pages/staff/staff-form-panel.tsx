@@ -16,6 +16,7 @@ import { PasswordField } from "@/components/atoms/password-field";
 import { TextField } from "@/components/atoms/text-field";
 import { FormPanel } from "@/components/molecules/form-panel";
 import { SearchSelect } from "@/components/molecules/search-select";
+import { useSaveStaff } from "./use-staff";
 
 /** Slide-over form for adding or editing a staff member. */
 export function StaffFormPanel({
@@ -31,7 +32,7 @@ export function StaffFormPanel({
 }) {
   const isEditing = !!staff;
   const [form, setForm] = useState<StaffFormData>(staffFormValues(staff));
-  const [saving, setSaving] = useState(false);
+  const saveStaff = useSaveStaff();
 
   // Seed the form from the staff member each time the panel opens.
   const [wasOpen, setWasOpen] = useState(open);
@@ -50,29 +51,15 @@ export function StaffFormPanel({
       return;
     }
 
-    setSaving(true);
     try {
-      const body: Record<string, string | null> = {
+      await saveStaff.mutateAsync({
+        id: staff?.id,
         name: form.name.trim(),
         email: form.email.trim(),
         phone: form.phone.trim() || null,
         role: form.role,
-      };
-      if (form.password) body.password = form.password;
-
-      const res = await fetch(
-        isEditing ? `/api/staff/${staff.id}` : "/api/staff",
-        {
-          method: isEditing ? "PUT" : "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body),
-        },
-      );
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Failed to save staff");
-      }
-
+        ...(form.password ? { password: form.password } : {}),
+      });
       toast.success(isEditing ? "Staff member updated" : "Staff member added");
       onOpenChange(false);
       onSaved();
@@ -80,8 +67,6 @@ export function StaffFormPanel({
       toast.error(
         err instanceof Error ? err.message : "Failed to save staff member",
       );
-    } finally {
-      setSaving(false);
     }
   };
 
@@ -100,8 +85,8 @@ export function StaffFormPanel({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={handleSave} disabled={saving}>
-            {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          <Button onClick={handleSave} disabled={saveStaff.isPending}>
+            {saveStaff.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {isEditing ? "Update" : "Add"} Staff
           </Button>
         </>

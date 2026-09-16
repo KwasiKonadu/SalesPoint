@@ -1,6 +1,17 @@
 'use client';
 
-import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+// Thin wrapper around NextAuth so the rest of the app keeps the same small
+// surface (`useAuth`/`useSession` returning `{ user, status, login, logout }`)
+// it had before, while the actual session is now a real HttpOnly cookie
+// (JWT) issued and verified by NextAuth — not a client-side flag.
+
+import React, { createContext, useContext, useCallback, useMemo } from 'react';
+import {
+  SessionProvider,
+  signIn,
+  signOut,
+  useSession as useNextAuthSession,
+} from 'next-auth/react';
 
 interface AuthUser {
   id: string;
@@ -23,54 +34,40 @@ const AuthContext = createContext<AuthContextType>({
   logout: () => {},
 });
 
-const SESSION_KEY = 'storepos_session';
+function AuthBridge({ children }: { children: React.ReactNode }) {
+  const { data, status } = useNextAuthSession();
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<AuthUser | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  // Read the persisted session only after mount so the first client render
-  // matches the server ("loading"), avoiding a hydration mismatch.
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem(SESSION_KEY);
-      setUser(stored ? (JSON.parse(stored) as AuthUser) : null);
-    } catch {
-      setUser(null);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  const status: 'loading' | 'authenticated' | 'unauthenticated' =
-    loading ? 'loading' : user ? 'authenticated' : 'unauthenticated';
+  const user = useMemo<AuthUser | null>(() => {
+    if (!data?.user) return null;
+    const { id, email, name, role } = data.user as AuthUser;
+    return { id, email, name, role };
+  }, [data]);
 
   const login = useCallback(async (email: string, password: string) => {
-    const res = await fetch('/api/auth/credentials', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
+    const result = await signIn('credentials', {
+      redirect: false,
+      email,
+      password,
     });
-    if (!res.ok) {
-      const data = await res.json();
-      throw new Error(data.error || 'Login failed');
+    if (result?.error) {
+      throw new Error(result.error);
     }
-    const userData = await res.json();
-    localStorage.setItem(SESSION_KEY, JSON.stringify(userData));
-    setUser(userData);
   }, []);
 
   const logout = useCallback(() => {
-    localStorage.removeItem(SESSION_KEY);
-    setUser(null);
+    void signOut({ redirect: false });
   }, []);
 
   const ctxValue: AuthContextType = { user, status, login, logout };
 
+  return <AuthContext.Provider value={ctxValue}>{children}</AuthContext.Provider>;
+}
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
   return (
-    <AuthContext.Provider value={ctxValue}>
-      {children}
-    </AuthContext.Provider>
+    <SessionProvider>
+      <AuthBridge>{children}</AuthBridge>
+    </SessionProvider>
   );
 }
 
@@ -80,5 +77,5 @@ export function useAuth() {
 
 export function useSession() {
   const ctx = useContext(AuthContext);
-  return { ...ctx, session: ctx.user as any };
+  return { ...ctx, session: ctx.user };
 }

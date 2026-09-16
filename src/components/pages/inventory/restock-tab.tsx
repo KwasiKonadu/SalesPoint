@@ -12,7 +12,7 @@ import type { Restock, Supplier } from '@/lib/inventory';
 import { NewRestockDialog } from './new-restock-dialog';
 import { RestockDetailDialog } from './restock-detail-dialog';
 import { restockColumns } from './inventory-columns';
-import type { useRestocks } from './use-restocks';
+import type { useRestocks } from './use-inventory';
 
 const PAYMENT_FILTER_OPTIONS = [
   { value: 'all', label: 'All Statuses' },

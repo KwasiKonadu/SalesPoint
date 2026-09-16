@@ -10,6 +10,8 @@ import { DataTable } from "@/components/organisms/data-table";
 import { ConfirmDialog } from "@/components/molecules/confirm-dialog";
 import { TextField } from "@/components/atoms/text-field";
 import type { ProductType, Unit } from "@/lib/settings";
+import { useDeleteProductType } from "@/hooks/api/use-product-types";
+import { useDeleteUnit } from "@/hooks/api/use-units";
 
 import { productTypeColumns, unitColumns } from "./config-tables";
 import { ConfigTableSkeleton } from "./settings-skeletons";
@@ -22,7 +24,9 @@ const DEFAULT_LOW_STOCK_PERCENT = "20";
 
 /** Product Config tab: product types, units of measurement, default min stock. */
 export function ProductConfigTab() {
-  const { productTypes, units, loading, refetch } = useProductConfig();
+  const { productTypes, units, loading } = useProductConfig();
+  const deleteProductType = useDeleteProductType();
+  const deleteUnit = useDeleteUnit();
   const {
     settings,
     updateField,
@@ -39,34 +43,12 @@ export function ProductConfigTab() {
   const [ptDeleteTarget, setPtDeleteTarget] = useState<ProductType | null>(
     null,
   );
-  const [ptDeleting, setPtDeleting] = useState(false);
 
   const [unitFormOpen, setUnitFormOpen] = useState(false);
   const [unitEditing, setUnitEditing] = useState<Unit | null>(null);
   const [unitDeleteTarget, setUnitDeleteTarget] = useState<Unit | null>(null);
-  const [unitDeleting, setUnitDeleting] = useState(false);
 
   if (loading || settingsLoading) return <ConfigTableSkeleton />;
-
-  const deleteResource = async (
-    url: string,
-    onDone: () => void,
-    setBusy: (busy: boolean) => void,
-    label: string,
-  ) => {
-    setBusy(true);
-    try {
-      const res = await fetch(url, { method: "DELETE" });
-      if (!res.ok) throw new Error("Failed to delete");
-      toast.success(`${label} deleted`);
-      onDone();
-      refetch();
-    } catch {
-      toast.error(`Failed to delete ${label.toLowerCase()}`);
-    } finally {
-      setBusy(false);
-    }
-  };
 
   return (
     <div className="space-y-8">
@@ -215,7 +197,7 @@ export function ProductConfigTab() {
         open={ptFormOpen}
         onOpenChange={setPtFormOpen}
         productType={ptEditing}
-        onSaved={refetch}
+        onSaved={() => {}}
       />
       <ConfirmDialog
         open={!!ptDeleteTarget}
@@ -223,23 +205,24 @@ export function ProductConfigTab() {
         title={`Delete "${ptDeleteTarget?.name ?? ""}"?`}
         description="This will deactivate the product type. Existing products using this type will not be affected."
         confirmLabel="Delete"
-        loading={ptDeleting}
-        onConfirm={() =>
-          ptDeleteTarget &&
-          deleteResource(
-            `/api/product-types/${ptDeleteTarget.id}`,
-            () => setPtDeleteTarget(null),
-            setPtDeleting,
-            "Product type",
-          )
-        }
+        loading={deleteProductType.isPending}
+        onConfirm={async () => {
+          if (!ptDeleteTarget) return;
+          try {
+            await deleteProductType.mutateAsync(ptDeleteTarget.id);
+            toast.success("Product type deleted");
+            setPtDeleteTarget(null);
+          } catch {
+            toast.error("Failed to delete product type");
+          }
+        }}
       />
 
       <UnitFormPanel
         open={unitFormOpen}
         onOpenChange={setUnitFormOpen}
         unit={unitEditing}
-        onSaved={refetch}
+        onSaved={() => {}}
       />
       <ConfirmDialog
         open={!!unitDeleteTarget}
@@ -247,16 +230,17 @@ export function ProductConfigTab() {
         title={`Delete "${unitDeleteTarget?.name ?? ""}"?`}
         description="This will deactivate the unit. Existing products using this unit will not be affected."
         confirmLabel="Delete"
-        loading={unitDeleting}
-        onConfirm={() =>
-          unitDeleteTarget &&
-          deleteResource(
-            `/api/units/${unitDeleteTarget.id}`,
-            () => setUnitDeleteTarget(null),
-            setUnitDeleting,
-            "Unit",
-          )
-        }
+        loading={deleteUnit.isPending}
+        onConfirm={async () => {
+          if (!unitDeleteTarget) return;
+          try {
+            await deleteUnit.mutateAsync(unitDeleteTarget.id);
+            toast.success("Unit deleted");
+            setUnitDeleteTarget(null);
+          } catch {
+            toast.error("Failed to delete unit");
+          }
+        }}
       />
     </div>
   );

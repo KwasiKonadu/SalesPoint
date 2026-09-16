@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 // ==================== ENUMS (as String constants) ====================
@@ -242,8 +243,9 @@ model SaleItem {
   taxAmount   Float  @default(0)
   subtotal    Float
 
-  sale    Sale    @relation(fields: [saleId], references: [id], onDelete: Cascade)
-  product Product @relation(fields: [productId], references: [id])
+  sale        Sale         @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  product     Product      @relation(fields: [productId], references: [id])
+  returnItems ReturnItem[]
 }
 
 model Payment {
@@ -309,14 +311,21 @@ model Return {
 model ReturnItem {
   id           String @id @default(cuid())
   returnId     String
+  saleItemId   String
   productId    String
   productName  String
   quantity     Int
   unitPrice    Float
   refundAmount Float
 
-  return  Return  @relation(fields: [returnId], references: [id], onDelete: Cascade)
-  product Product @relation(fields: [productId], references: [id])
+  return   Return   @relation(fields: [returnId], references: [id], onDelete: Cascade)
+  saleItem SaleItem @relation(fields: [saleItemId], references: [id])
+  product  Product  @relation(fields: [productId], references: [id])
+
+  // A saleItem can be returned across multiple separate return transactions,
+  // but the sum of those returns' quantities is enforced in the API layer
+  // (SQLite has no CHECK-across-rows constraint) against SaleItem.quantity.
+  @@index([saleItemId])
 }
 
 // ==================== EXPENSES ====================

@@ -1,17 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight, Loader2, Search } from "lucide-react";
 import { toast } from "sonner";
 
-import { useAuth } from "@/lib/auth-context";
-import {
-  todayISO,
-  type InventoryProduct,
-  type Supplier,
-} from "@/lib/inventory";
+import { todayISO } from "@/lib/inventory";
 import { formatCurrency } from "@/lib/format";
 import { variantLabel } from "@/lib/products";
+import { useCreateRestock, useInventoryRefs } from "./use-inventory";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
@@ -32,10 +28,8 @@ export function NewRestockDialog({
   onOpenChange: (open: boolean) => void;
   onSubmitted: () => void;
 }) {
-  const { user } = useAuth();
+  const { suppliers, products } = useInventoryRefs();
   const [step, setStep] = useState<1 | 2>(1);
-  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
-  const [products, setProducts] = useState<InventoryProduct[]>([]);
   const [productSearch, setProductSearch] = useState("");
   const [supplierId, setSupplierId] = useState("");
   const [reference, setReference] = useState("");
@@ -46,7 +40,7 @@ export function NewRestockDialog({
   const [paymentStatus, setPaymentStatus] = useState("unpaid");
   // productId -> line. A product is included when its quantity > 0.
   const [lines, setLines] = useState<Record<string, Line>>({});
-  const [submitting, setSubmitting] = useState(false);
+  const createRestock = useCreateRestock();
 
   // Reset the wizard when it closes.
   const [wasOpen, setWasOpen] = useState(open);
@@ -65,29 +59,6 @@ export function NewRestockDialog({
       setProductSearch("");
     }
   }
-
-  useEffect(() => {
-    if (!open) return;
-    let ignore = false;
-    (async () => {
-      try {
-        const [supRes, prodRes] = await Promise.all([
-          fetch("/api/suppliers?pageSize=100"),
-          fetch("/api/products?status=active&pageSize=500"),
-        ]);
-        const supJson = await supRes.json();
-        const prodJson = await prodRes.json();
-        if (ignore) return;
-        setSuppliers(supJson.data || []);
-        setProducts(prodJson.data || []);
-      } catch {
-        toast.error("Failed to load data");
-      }
-    })();
-    return () => {
-      ignore = true;
-    };
-  }, [open]);
 
   const filteredProducts = useMemo(() => {
     const q = productSearch.trim().toLowerCase();
@@ -124,34 +95,22 @@ export function NewRestockDialog({
       toast.error("Set a quantity on at least one product");
       return;
     }
-    setSubmitting(true);
     try {
-      const res = await fetch("/api/restock", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-user-id": user?.id || "",
-        },
-        body: JSON.stringify({
-          supplierId: supplierId || null,
-          reference: reference || null,
-          batchNumber: batchNumber || null,
-          expiryDate: expiryDate || null,
-          dateReceived,
-          notes: notes || null,
-          paymentStatus,
-          items: selected.map(([productId, l]) => ({
-            productId,
-            quantity: l.quantity,
-            costPrice: l.costPrice,
-            expiryDate: l.expiryDate || null,
-          })),
-        }),
+      await createRestock.mutateAsync({
+        supplierId: supplierId || null,
+        reference: reference || null,
+        batchNumber: batchNumber || null,
+        expiryDate: expiryDate || null,
+        dateReceived,
+        notes: notes || null,
+        paymentStatus,
+        items: selected.map(([productId, l]) => ({
+          productId,
+          quantity: l.quantity,
+          costPrice: l.costPrice,
+          expiryDate: l.expiryDate || null,
+        })),
       });
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Failed to create restock");
-      }
       toast.success("Restock created successfully");
       onOpenChange(false);
       onSubmitted();
@@ -159,8 +118,6 @@ export function NewRestockDialog({
       toast.error(
         err instanceof Error ? err.message : "Failed to create restock",
       );
-    } finally {
-      setSubmitting(false);
     }
   };
 
@@ -199,9 +156,9 @@ export function NewRestockDialog({
               </Button>
               <Button
                 onClick={handleSubmit}
-                disabled={submitting || selected.length === 0}
+                disabled={createRestock.isPending || selected.length === 0}
               >
-                {submitting && (
+                {createRestock.isPending && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}
                 Create Restock

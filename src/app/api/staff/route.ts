@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { hash } from 'bcryptjs'
+import { requireAdmin } from '@/lib/api-auth'
 
-function getUserId(req: NextRequest): string | null {
-  return req.headers.get('x-user-id')
-}
-
+// Any authenticated user can list staff (e.g. the "Sales Person" filter on
+// the sales history page) — only creating/editing/deleting is admin-only.
 export async function GET() {
   try {
     const staff = await db.user.findMany({
@@ -30,12 +29,10 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  try {
-    const userId = getUserId(req)
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+  const forbidden = requireAdmin(req)
+  if (forbidden) return forbidden
 
+  try {
     const body = await req.json()
     const { email, password, name, role, avatar, phone } = body
 

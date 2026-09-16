@@ -5,7 +5,7 @@ import type { PosProduct } from "@/lib/pos";
 import { CategoryFilter } from "./category-filter";
 import { ProductGrid } from "./product-grid";
 import { ProductSearch } from "./product-search";
-import type { usePosCatalog } from "./use-pos-catalog";
+import type { usePosCatalog } from "./use-pos";
 
 /** Left column of the POS screen: search + category pills + product grid. */
 export function ProductPanel({

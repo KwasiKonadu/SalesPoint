@@ -8,12 +8,12 @@ import { QUICK_ACTIONS } from "@/lib/dashboard";
 /** Shortcut buttons to the common create flows. */
 export function QuickActionsCard() {
   return (
-    <Card className="shadow-sm">
+    <Card className="flex-[1] shadow-sm">
       <CardHeader>
         <CardTitle className="text-base">Quick Actions</CardTitle>
       </CardHeader>
       <CardContent className="pt-0">
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
+        <div className="grid grid-cols-2 gap-3">
           {QUICK_ACTIONS.map((action) => (
             <Button
               key={action.href}

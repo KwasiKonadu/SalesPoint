@@ -15,7 +15,7 @@ import {
 } from "@/lib/inventory";
 
 import { movementColumns } from "./inventory-columns";
-import type { useStockMovements } from "./use-stock-movements";
+import type { useStockMovements } from "./use-inventory";
 
 /** Stock Movements tab: date-range / product / type filters + movement log table. */
 export function StockMovementsTab({

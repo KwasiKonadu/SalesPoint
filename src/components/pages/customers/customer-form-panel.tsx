@@ -9,6 +9,7 @@ import {
   type Customer,
   type CustomerFormData,
 } from "@/lib/customers";
+import { useSaveCustomer } from "./use-customers";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { TextField } from "@/components/atoms/text-field";
@@ -19,18 +20,16 @@ export function CustomerFormPanel({
   open,
   onOpenChange,
   customer,
-  onSaved,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   customer: Customer | null;
-  onSaved: () => void;
 }) {
   const isEditing = !!customer;
   const [form, setForm] = useState<CustomerFormData>(
     customerFormValues(customer),
   );
-  const [saving, setSaving] = useState(false);
+  const saveCustomer = useSaveCustomer();
 
   // Seed the form from the customer each time the panel opens.
   const [wasOpen, setWasOpen] = useState(open);
@@ -47,30 +46,18 @@ export function CustomerFormPanel({
       toast.error("Customer name is required");
       return;
     }
-    setSaving(true);
     try {
-      const res = await fetch(
-        isEditing ? `/api/customers/${customer.id}` : "/api/customers",
-        {
-          method: isEditing ? "PUT" : "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(form),
-        },
-      );
-      if (!res.ok) throw new Error("Request failed");
+      await saveCustomer.mutateAsync({ id: customer?.id, ...form });
       toast.success(
         isEditing
           ? "Customer updated successfully"
           : "Customer added successfully",
       );
       onOpenChange(false);
-      onSaved();
     } catch {
       toast.error(
         isEditing ? "Failed to update customer" : "Failed to add customer",
       );
-    } finally {
-      setSaving(false);
     }
   };
 
@@ -89,8 +76,8 @@ export function CustomerFormPanel({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={handleSave} disabled={saving}>
-            {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          <Button onClick={handleSave} disabled={saveCustomer.isPending}>
+            {saveCustomer.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {isEditing ? "Update" : "Add"} Customer
           </Button>
         </>

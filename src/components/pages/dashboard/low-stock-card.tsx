@@ -8,7 +8,7 @@ import type { LowStockProduct } from "@/lib/dashboard";
 /** Products at or below their minimum stock level. */
 export function LowStockCard({ products }: { products: LowStockProduct[] }) {
   return (
-    <Card className="shadow-sm">
+    <Card className="flex min-h-0 flex-[3] flex-col shadow-sm">
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="text-base">Low Stock Alert</CardTitle>
@@ -20,7 +20,7 @@ export function LowStockCard({ products }: { products: LowStockProduct[] }) {
           </Badge>
         </div>
       </CardHeader>
-      <CardContent className="pt-0">
+      <CardContent className="flex-1 overflow-hidden pt-0">
         {products.length === 0 ? (
           <div className="py-8 text-center">
             <Package className="mx-auto mb-2 h-10 w-10 text-muted-foreground/50" />
@@ -29,7 +29,7 @@ export function LowStockCard({ products }: { products: LowStockProduct[] }) {
             </p>
           </div>
         ) : (
-          <div className="max-h-96 space-y-3 overflow-y-auto">
+          <div className="h-full space-y-3 overflow-y-auto">
             {products.map((item) => {
               const isOut = item.quantity === 0;
               return (

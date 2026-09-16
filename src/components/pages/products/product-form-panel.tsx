@@ -5,7 +5,6 @@ import { useForm, useWatch } from "react-hook-form";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
-import { useAuth } from "@/lib/auth-context";
 import { useBusinessInfo } from "@/lib/business-info";
 import {
   productFormDefaults,
@@ -24,6 +23,7 @@ import { FieldLabel } from "@/components/atoms/field-label";
 import { FormPanel } from "@/components/molecules/form-panel";
 import { RegisteredField } from "@/components/molecules/registered-field";
 import { SearchSelect } from "@/components/molecules/search-select";
+import { useAllProducts, useSaveProduct } from "./use-products";
 
 /** Slide-over form for creating or editing a product. Posts to `/api/products`. */
 export function ProductFormPanel({
@@ -33,7 +33,6 @@ export function ProductFormPanel({
   productTypes,
   categories,
   units,
-  onSuccess,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -41,36 +40,17 @@ export function ProductFormPanel({
   productTypes: ProductType[];
   categories: Category[];
   units: Unit[];
-  onSuccess: () => void;
 }) {
-  const { user } = useAuth();
   const { defaultLowStockPercent } = useBusinessInfo();
   const isEditing = !!product;
-  const [submitting, setSubmitting] = useState(false);
+  const saveProduct = useSaveProduct();
   // The numeric part of "size" — composed with the selected unit into `size`
   // (e.g. "500" + "ml" -> "500ml").
   const [sizeAmount, setSizeAmount] = useState("");
 
   // Every product already in the system — powers the name dropdown and lets a
   // new "variant" inherit its group's classification.
-  const [allProducts, setAllProducts] = useState<ProductItem[]>([]);
-  useEffect(() => {
-    if (!open) return;
-    let ignore = false;
-    (async () => {
-      try {
-        const res = await fetch("/api/products?pageSize=500");
-        if (!res.ok) return;
-        const json = await res.json();
-        if (!ignore) setAllProducts(json.data ?? []);
-      } catch {
-        /* non-critical */
-      }
-    })();
-    return () => {
-      ignore = true;
-    };
-  }, [open]);
+  const { data: allProducts = [] } = useAllProducts(open);
 
   const {
     register,
@@ -176,8 +156,6 @@ export function ProductFormPanel({
   };
 
   const onSubmit = async (data: ProductFormValues) => {
-    if (!user) return;
-    setSubmitting(true);
     try {
       const body: Record<string, unknown> = {
         name: data.name,
@@ -202,28 +180,14 @@ export function ProductFormPanel({
       }
       if (isEditing) body.isActive = data.isActive;
 
-      const res = await fetch(
-        isEditing ? `/api/products/${product.id}` : "/api/products",
-        {
-          method: isEditing ? "PUT" : "POST",
-          headers: { "Content-Type": "application/json", "x-user-id": user.id },
-          body: JSON.stringify(body),
-        },
-      );
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error || "Failed to save product");
-      }
+      await saveProduct.mutateAsync({ id: product?.id, ...body } as never);
 
       toast.success(isEditing ? "Product updated" : "Product created");
       onOpenChange(false);
-      onSuccess();
     } catch (err) {
       toast.error(
         err instanceof Error ? err.message : "Failed to save product",
       );
-    } finally {
-      setSubmitting(false);
     }
   };
 
@@ -243,12 +207,12 @@ export function ProductFormPanel({
             type="button"
             variant="outline"
             onClick={() => onOpenChange(false)}
-            disabled={submitting}
+            disabled={saveProduct.isPending}
           >
             Cancel
           </Button>
-          <Button type="submit" form="product-form" disabled={submitting}>
-            {submitting && <Loader2 className="mr-2 size-4 animate-spin" />}
+          <Button type="submit" form="product-form" disabled={saveProduct.isPending}>
+            {saveProduct.isPending && <Loader2 className="mr-2 size-4 animate-spin" />}
             {isEditing ? "Update Product" : "Create Product"}
           </Button>
         </>

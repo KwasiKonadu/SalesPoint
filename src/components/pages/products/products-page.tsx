@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { useAuth } from "@/lib/auth-context";
 import type { Category, ProductItem, ViewMode } from "@/lib/products";
+import { useCategories, useDeleteCategory, useSaveCategory } from "@/hooks/api/use-categories";
 import { TabBar } from "@/components/molecules/tab-bar";
 import { PageTabsSlot } from "@/components/molecules/page-tabs";
 import { ConfirmDialog } from "@/components/molecules/confirm-dialog";
@@ -19,20 +19,22 @@ import {
   ProductGridSkeleton,
   ProductTableSkeleton,
 } from "./skeletons";
-import { useCategoryAdmin } from "./use-category-admin";
-import { useProductsCatalog } from "./use-products-catalog";
+import { useDeleteProduct, useProductsCatalog, useSaveProduct } from "./use-products";
 import { ViewProductDialog } from "./view-product-dialog";
 
 export default function ProductsPage() {
-  const { user } = useAuth();
-
   const [activeTab, setActiveTab] = useState<"products" | "categories">(
     "products",
   );
   const [viewMode, setViewMode] = useState<ViewMode>("table");
 
   const catalog = useProductsCatalog();
-  const categoryAdmin = useCategoryAdmin(activeTab === "categories");
+  const categoryAdminQuery = useCategories({ all: true, enabled: activeTab === "categories" });
+  const categoryAdmin = { categories: categoryAdminQuery.data ?? [], loading: categoryAdminQuery.isPending };
+  const saveProduct = useSaveProduct();
+  const deleteProduct = useDeleteProduct();
+  const saveCategory = useSaveCategory();
+  const deleteCategory = useDeleteCategory();
 
   // Give the visible categories distinct chip colours (no hash collisions).
   assignTypeChipColors(catalog.categories.map((c) => c.name));
@@ -50,7 +52,6 @@ export default function ProductsPage() {
     null,
   );
   const [deleteOpen, setDeleteOpen] = useState(false);
-  const [deleting, setDeleting] = useState(false);
 
   // Category dialogs
   const [catFormOpen, setCatFormOpen] = useState(false);
@@ -59,12 +60,6 @@ export default function ProductsPage() {
     null,
   );
   const [catDeleteOpen, setCatDeleteOpen] = useState(false);
-  const [catDeleting, setCatDeleting] = useState(false);
-
-  const reloadCategoryLists = () => {
-    categoryAdmin.refresh();
-    void catalog.reloadFilterCategories();
-  };
 
   // ---- Product actions ----
   const openAddProduct = () => {
@@ -81,42 +76,25 @@ export default function ProductsPage() {
   };
 
   const toggleProductActive = async (product: ProductItem) => {
-    if (!user) return;
     try {
-      const res = await fetch(`/api/products/${product.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json", "x-user-id": user.id },
-        body: JSON.stringify({ isActive: !product.isActive }),
-      });
-      if (res.ok) {
-        toast.success(
-          product.isActive ? "Product deactivated" : "Product activated",
-        );
-        catalog.refreshAll();
-      }
+      await saveProduct.mutateAsync({ id: product.id, isActive: !product.isActive } as never);
+      toast.success(
+        product.isActive ? "Product deactivated" : "Product activated",
+      );
     } catch {
       toast.error("Failed to update product");
     }
   };
 
   const confirmDeleteProduct = async () => {
-    if (!user || !deletingProduct) return;
-    setDeleting(true);
+    if (!deletingProduct) return;
     try {
-      const res = await fetch(`/api/products/${deletingProduct.id}`, {
-        method: "DELETE",
-        headers: { "x-user-id": user.id },
-      });
-      if (res.ok) {
-        toast.success("Product deactivated");
-        setDeleteOpen(false);
-        setDeletingProduct(null);
-        catalog.refreshAll();
-      }
+      await deleteProduct.mutateAsync(deletingProduct.id);
+      toast.success("Product deactivated");
+      setDeleteOpen(false);
+      setDeletingProduct(null);
     } catch {
       toast.error("Failed to delete product");
-    } finally {
-      setDeleting(false);
     }
   };
 
@@ -131,46 +109,30 @@ export default function ProductsPage() {
   };
 
   const toggleCategoryActive = async (cat: Category) => {
-    if (!user) return;
     try {
-      const res = await fetch(`/api/categories/${cat.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json", "x-user-id": user.id },
-        body: JSON.stringify({
-          name: cat.name,
-          description: cat.description,
-          isActive: !cat.isActive,
-        }),
+      await saveCategory.mutateAsync({
+        id: cat.id,
+        name: cat.name,
+        description: cat.description,
+        isActive: !cat.isActive,
       });
-      if (res.ok) {
-        toast.success(
-          cat.isActive ? "Category deactivated" : "Category activated",
-        );
-        reloadCategoryLists();
-      }
+      toast.success(
+        cat.isActive ? "Category deactivated" : "Category activated",
+      );
     } catch {
       toast.error("Failed to update category");
     }
   };
 
   const confirmDeleteCategory = async () => {
-    if (!user || !deletingCategory) return;
-    setCatDeleting(true);
+    if (!deletingCategory) return;
     try {
-      const res = await fetch(`/api/categories/${deletingCategory.id}`, {
-        method: "DELETE",
-        headers: { "x-user-id": user.id },
-      });
-      if (res.ok) {
-        toast.success("Category deactivated");
-        setCatDeleteOpen(false);
-        setDeletingCategory(null);
-        reloadCategoryLists();
-      }
+      await deleteCategory.mutateAsync(deletingCategory.id);
+      toast.success("Category deactivated");
+      setCatDeleteOpen(false);
+      setDeletingCategory(null);
     } catch {
       toast.error("Failed to delete category");
-    } finally {
-      setCatDeleting(false);
     }
   };
 
@@ -264,7 +226,6 @@ export default function ProductsPage() {
         productTypes={catalog.productTypes}
         categories={catalog.categories}
         units={catalog.units}
-        onSuccess={catalog.refreshAll}
       />
 
       <ViewProductDialog
@@ -285,7 +246,7 @@ export default function ProductsPage() {
           </>
         }
         confirmLabel="Deactivate"
-        loading={deleting}
+        loading={deleteProduct.isPending}
         onConfirm={confirmDeleteProduct}
       />
 
@@ -293,7 +254,6 @@ export default function ProductsPage() {
         open={catFormOpen}
         onOpenChange={setCatFormOpen}
         category={editingCategory}
-        onSuccess={reloadCategoryLists}
       />
 
       <ConfirmDialog
@@ -307,7 +267,7 @@ export default function ProductsPage() {
           </>
         }
         confirmLabel="Deactivate"
-        loading={catDeleting}
+        loading={deleteCategory.isPending}
         onConfirm={confirmDeleteCategory}
       />
     </div>

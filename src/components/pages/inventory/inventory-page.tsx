@@ -9,10 +9,7 @@ import { assignTypeChipColors } from "@/components/atoms/type-chip";
 import { RestockTab } from "./restock-tab";
 import { StockMovementsTab } from "./stock-movements-tab";
 import { StockOverviewTab } from "./stock-overview-tab";
-import { useInventoryOverview } from "./use-inventory-overview";
-import { useInventoryRefs } from "./use-inventory-refs";
-import { useRestocks } from "./use-restocks";
-import { useStockMovements } from "./use-stock-movements";
+import { useInventoryOverview, useInventoryRefs, useRestocks, useStockMovements } from "./use-inventory";
 
 export default function InventoryPage() {
   const { user } = useAuth();

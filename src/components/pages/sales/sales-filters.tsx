@@ -9,7 +9,7 @@ import {
   type StaffMember,
 } from "@/lib/sales";
 
-import type { SalesListController } from "./use-sales-list";
+import type { SalesListController } from "./use-sales";
 
 /** Date-range + payment / status / sales-person selects for the sales table. */
 export function SalesFilters({

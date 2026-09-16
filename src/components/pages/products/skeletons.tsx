@@ -26,7 +26,7 @@ export function ProductTableSkeleton() {
 /** Loading placeholder for the product grid view. */
 export function ProductGridSkeleton() {
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+    <div className="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3">
       {Array.from({ length: 10 }).map((_, i) => (
         <div key={i} className="overflow-hidden rounded-2xl border bg-card">
           <Skeleton className="h-24 w-full rounded-none" />

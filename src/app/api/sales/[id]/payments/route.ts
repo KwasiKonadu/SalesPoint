@@ -46,20 +46,41 @@ export async function POST(
     }
 
     const result = await db.$transaction(async (tx) => {
-      const sale = await tx.sale.findUnique({ where: { id } })
-      if (!sale) throw new Error('Sale not found')
-      if (sale.status === 'refunded') throw new Error('This sale has been reversed')
-
-      const alreadyPaid = sale.amountReceived ?? 0
-      const balance = Math.round((sale.totalAmount - alreadyPaid) * 100) / 100
-      if (balance <= 0) throw new Error('This sale is already fully paid')
-      if (amount - balance > 0.01) {
-        throw new Error(`Payment exceeds the outstanding balance of ${balance.toFixed(2)}`)
+      // A fast, friendly pre-check — not the source of truth. SQLite doesn't
+      // take a write lock until the first write statement in a transaction,
+      // so two concurrent payments on the same sale could both read this
+      // same "before" state and both pass this check. The guarded UPDATE
+      // below is what actually enforces the balance atomically.
+      const existing = await tx.sale.findUnique({ where: { id } })
+      if (!existing) throw new Error('Sale not found')
+      if (existing.status === 'refunded') throw new Error('This sale has been reversed')
+      const naiveBalance = Math.round((existing.totalAmount - (existing.amountReceived ?? 0)) * 100) / 100
+      if (naiveBalance <= 0) throw new Error('This sale is already fully paid')
+      if (amount - naiveBalance > 0.01) {
+        throw new Error(`Payment exceeds the outstanding balance of ${naiveBalance.toFixed(2)}`)
       }
 
-      const newReceived = Math.round((alreadyPaid + amount) * 100) / 100
-      const paymentStatus =
-        newReceived >= sale.totalAmount - 0.01 ? 'completed' : 'partial'
+      // Re-checks the same invariant as part of the write itself, against
+      // whatever the row's current values are at the moment this statement
+      // actually runs — so a concurrent payment can't be raced past it.
+      const affected = await tx.$executeRaw`
+        UPDATE "Sale"
+        SET "amountReceived" = COALESCE("amountReceived", 0) + ${amount},
+            "paymentStatus" = CASE
+              WHEN COALESCE("amountReceived", 0) + ${amount} >= "totalAmount" - 0.01 THEN 'completed'
+              ELSE 'partial'
+            END
+        WHERE "id" = ${id}
+          AND "status" != 'refunded'
+          AND (COALESCE("amountReceived", 0) + ${amount}) <= "totalAmount" + 0.01
+      `
+      if (affected === 0) {
+        throw new Error(
+          'This payment could not be applied — the sale balance changed. Reload and try again.',
+        )
+      }
+
+      const sale = await tx.sale.findUniqueOrThrow({ where: { id } })
 
       // Payment-receipt number: PAY-YYYYMMDD-NNNN, sequential per day.
       const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '')
@@ -78,15 +99,11 @@ export async function POST(
         data: { saleId: id, receiptNumber, amount, method, note, recordedById: userId },
       })
 
-      await tx.sale.update({
-        where: { id },
-        data: { amountReceived: newReceived, paymentStatus },
-      })
-
-      // Keep the one-row payment summary in step with the balance.
+      // Keep the one-row payment summary in step with the balance actually
+      // written above (not recomputed — avoids drifting from it).
       await tx.payment.updateMany({
         where: { saleId: id },
-        data: { amountReceived: newReceived, status: paymentStatus },
+        data: { amountReceived: sale.amountReceived, status: sale.paymentStatus },
       })
 
       return tx.sale.findUnique({ where: { id }, include: saleInclude })
@@ -97,7 +114,7 @@ export async function POST(
     console.error('Error recording payment:', error)
     const message =
       error instanceof Error ? error.message : 'Failed to record payment'
-    const status = /not found|already|exceeds|reversed|valid|invalid/i.test(message)
+    const status = /not found|already|exceeds|reversed|valid|invalid|could not be applied/i.test(message)
       ? 400
       : 500
     return NextResponse.json({ error: message }, { status })

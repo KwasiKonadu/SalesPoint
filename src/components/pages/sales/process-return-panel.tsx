@@ -19,6 +19,7 @@ import {
   type Sale,
   type SaleItem,
 } from "@/lib/sales";
+import { useProcessReturn } from "./use-sales";
 
 /** Side panel for processing a partial/full return against a completed sale. */
 export function ProcessReturnPanel({
@@ -37,7 +38,7 @@ export function ProcessReturnPanel({
   const [reason, setReason] = useState("");
   const [notes, setNotes] = useState("");
   const [items, setItems] = useState<ReturnItemInput[]>([]);
-  const [submitting, setSubmitting] = useState(false);
+  const processReturn = useProcessReturn();
 
   // Seed one return-qty row per sale item each time the panel opens.
   const [wasOpen, setWasOpen] = useState(open);
@@ -115,23 +116,14 @@ export function ProcessReturnPanel({
       return;
     }
 
-    setSubmitting(true);
     try {
-      const res = await fetch("/api/returns", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          saleId: sale.id,
-          processedById: userId,
-          reason,
-          notes: notes || undefined,
-          items: itemsToReturn,
-        }),
+      await processReturn.mutateAsync({
+        saleId: sale.id,
+        processedById: userId,
+        reason,
+        notes: notes || undefined,
+        items: itemsToReturn,
       });
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error || "Failed to process return");
-      }
       toast.success("Return processed successfully");
       onOpenChange(false);
       onSuccess();
@@ -139,8 +131,6 @@ export function ProcessReturnPanel({
       toast.error(
         err instanceof Error ? err.message : "Failed to process return",
       );
-    } finally {
-      setSubmitting(false);
     }
   };
 
@@ -157,10 +147,10 @@ export function ProcessReturnPanel({
           </Button>
           <Button
             onClick={handleSubmit}
-            disabled={submitting}
+            disabled={processReturn.isPending}
             className="bg-amber-600 hover:bg-amber-700"
           >
-            {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {processReturn.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Confirm Return
           </Button>
         </>
