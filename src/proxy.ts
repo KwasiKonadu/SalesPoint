@@ -31,6 +31,7 @@ export async function proxy(req: NextRequest) {
     const raw = req.cookies.get(cookieName)?.value;
     res.headers.set('x-debug-raw-found', String(!!raw));
     res.headers.set('x-debug-raw-len', String(raw?.length ?? 0));
+    res.headers.set('x-debug-nextauth-url', JSON.stringify(process.env.NEXTAUTH_URL ?? null));
     if (raw) {
       try {
         const decoded = await decodeJwt({ token: raw, secret: process.env.NEXTAUTH_SECRET as string });
