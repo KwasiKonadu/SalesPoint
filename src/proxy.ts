@@ -14,18 +14,18 @@ export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const isApi = pathname.startsWith('/api');
 
-  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  const token = await getToken({
+    req,
+    secret: process.env.NEXTAUTH_SECRET,
+    secureCookie: process.env.NEXTAUTH_URL?.startsWith('https://') ?? true,
+  });
 
   if (!token) {
     if (isApi) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     const loginUrl = new URL('/login', req.url);
-    const res = NextResponse.redirect(loginUrl);
-    res.headers.set('x-debug-cookies', req.cookies.getAll().map((c) => c.name).join(','));
-    res.headers.set('x-debug-secret-len', String(process.env.NEXTAUTH_SECRET?.length ?? 0));
-    res.headers.set('x-debug-runtime', String(typeof (globalThis as any).EdgeRuntime));
-    return res;
+    return NextResponse.redirect(loginUrl);
   }
 
   const headers = new Headers(req.headers);
