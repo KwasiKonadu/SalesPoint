@@ -24,11 +24,12 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  sales            Sale[]
-  processedReturns Return[]
-  restocks         Restock[]
-  expenses         Expense[]
-  recordedPayments SalePayment[]
+  sales                   Sale[]
+  processedReturns        Return[]
+  restocks                Restock[]
+  expenses                Expense[]
+  recordedPayments        SalePayment[]
+  recordedRestockPayments RestockPayment[]
 }
 
 // ==================== BUSINESS SETTINGS ====================
@@ -162,15 +163,19 @@ model Restock {
   dateReceived  DateTime  @default(now())
   expiryDate    DateTime?
   notes         String?
+  // Derived from amountPaid vs totalCost — never set directly by the user.
+  // See POST /api/restock and POST /api/restock/[id]/payments.
   paymentStatus String    @default("unpaid") // paid, partially_paid, unpaid
   totalCost     Float     @default(0)
+  amountPaid    Float     @default(0)
   createdById   String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  supplier  Supplier?     @relation(fields: [supplierId], references: [id])
-  createdBy User?         @relation(fields: [createdById], references: [id])
+  supplier  Supplier?        @relation(fields: [supplierId], references: [id])
+  createdBy User?            @relation(fields: [createdById], references: [id])
   items     RestockItem[]
+  payments  RestockPayment[]
 }
 
 model RestockItem {
@@ -183,6 +188,22 @@ model RestockItem {
 
   restock Restock @relation(fields: [restockId], references: [id], onDelete: Cascade)
   product Product @relation(fields: [productId], references: [id])
+}
+
+// A payment recorded against a restock (settling the balance owed to a
+// supplier) — one row per instalment, mirrors SalePayment.
+model RestockPayment {
+  id            String   @id @default(cuid())
+  restockId     String
+  receiptNumber String   @unique
+  amount        Float
+  method        String // cash, mobile_money, card, bank_transfer
+  note          String?
+  recordedById  String?
+  createdAt     DateTime @default(now())
+
+  restock    Restock @relation(fields: [restockId], references: [id], onDelete: Cascade)
+  recordedBy User?   @relation(fields: [recordedById], references: [id])
 }
 
 // ==================== CUSTOMERS ====================

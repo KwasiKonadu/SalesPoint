@@ -1,12 +1,20 @@
 "use client";
 
+import { useState } from "react";
+import { Wallet } from "lucide-react";
+
 import { formatCurrency, formatDate, formatDateTime } from "@/lib/format";
 import { variantLabel } from "@/lib/products";
+import { paymentMethodLabel } from "@/lib/payment";
+import { useAuth } from "@/lib/auth-context";
 import {
   paymentStatusConfig,
+  restockBalance,
   type RestockItem,
+  type RestockPayment,
 } from "@/lib/inventory";
 import { useRestockDetail } from "./use-inventory";
+import { RecordRestockPaymentPanel } from "./record-restock-payment-panel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -67,7 +75,35 @@ const itemColumns: Column<RestockItem>[] = [
   },
 ];
 
-/** Read-only breakdown of one restock: header info + line items + total. */
+const paymentColumns: Column<RestockPayment>[] = [
+  {
+    key: "createdAt",
+    label: "Date",
+    render: (p) => <span>{formatDateTime(p.createdAt)}</span>,
+  },
+  {
+    key: "method",
+    label: "Method",
+    render: (p) => <span>{paymentMethodLabel(p.method)}</span>,
+  },
+  {
+    key: "recordedBy",
+    label: "By",
+    render: (p) => <span>{p.recordedBy?.name || "—"}</span>,
+  },
+  {
+    key: "amount",
+    label: "Amount",
+    align: "right",
+    render: (p) => (
+      <span className="font-medium tabular-nums">
+        {formatCurrency(p.amount)}
+      </span>
+    ),
+  },
+];
+
+/** Header info + line items + payment history for one restock. */
 export function RestockDetailDialog({
   open,
   onOpenChange,
@@ -78,8 +114,11 @@ export function RestockDetailDialog({
   restockId: string | null;
 }) {
   const { data: restock, isPending: loading } = useRestockDetail(open ? restockId : null);
+  const { user } = useAuth();
+  const [paymentOpen, setPaymentOpen] = useState(false);
 
   const payConfig = paymentStatusConfig(restock?.paymentStatus);
+  const balanceDue = restock ? restockBalance(restock) : 0;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -152,12 +191,38 @@ export function RestockDetailDialog({
 
               <Separator />
 
-              <div className="flex items-center justify-between rounded-lg bg-muted/50 p-3">
-                <span className="text-sm font-semibold">Total Cost</span>
-                <span className="text-lg font-bold tabular-nums">
-                  {formatCurrency(restock.totalCost)}
-                </span>
+              <div className="space-y-1 rounded-lg bg-muted/50 p-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-semibold">Total Cost</span>
+                  <span className="text-lg font-bold tabular-nums">
+                    {formatCurrency(restock.totalCost)}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-sm text-muted-foreground">
+                  <span>Paid</span>
+                  <span className="tabular-nums">{formatCurrency(restock.amountPaid)}</span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="font-medium">Balance Due</span>
+                  <span
+                    className={`font-semibold tabular-nums ${balanceDue > 0 ? "text-rose-600" : "text-emerald-600"}`}
+                  >
+                    {formatCurrency(balanceDue)}
+                  </span>
+                </div>
               </div>
+
+              {(restock.payments?.length ?? 0) > 0 && (
+                <div>
+                  <h4 className="mb-2 text-sm font-semibold">Payment History</h4>
+                  <DataTable<RestockPayment>
+                    dense
+                    columns={paymentColumns}
+                    data={restock.payments ?? []}
+                    getRowKey={(p) => p.id}
+                  />
+                </div>
+              )}
             </div>
           </ScrollArea>
         ) : (
@@ -170,8 +235,24 @@ export function RestockDetailDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Close
           </Button>
+          {restock && balanceDue > 0 && (
+            <Button
+              onClick={() => setPaymentOpen(true)}
+              icon={<Wallet className="h-4 w-4" />}
+            >
+              Record Payment
+            </Button>
+          )}
         </DialogFooter>
       </DialogContent>
+
+      <RecordRestockPaymentPanel
+        open={paymentOpen}
+        onOpenChange={setPaymentOpen}
+        restock={restock ?? null}
+        userId={user?.id}
+        onSuccess={() => setPaymentOpen(false)}
+      />
     </Dialog>
   );
 }

@@ -292,8 +292,9 @@ export interface RestockSaveInput {
   expiryDate: string | null;
   dateReceived: string;
   notes: string | null;
-  paymentStatus: string;
   items: RestockLineInput[];
+  /** Optional payment made at the time of restock (e.g. paid on delivery). */
+  initialPayment?: { amount: number; method: string } | null;
 }
 
 export function useCreateRestock() {
@@ -303,6 +304,26 @@ export function useCreateRestock() {
     onSuccess: () => {
       invalidateInventory(queryClient);
       queryClient.invalidateQueries({ queryKey: queryKeys.restocks.all });
+    },
+  });
+}
+
+export interface RecordRestockPaymentInput {
+  restockId: string;
+  amount: number;
+  method: string;
+  note?: string;
+}
+
+export function useRecordRestockPayment() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ restockId, ...body }: RecordRestockPaymentInput) =>
+      apiClient.post<Restock>(`/api/restock/${restockId}/payments`, body, 'Failed to record payment'),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.restocks.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.suppliers.all });
+      queryClient.setQueryData(queryKeys.restocks.detail(data.id), data);
     },
   });
 }

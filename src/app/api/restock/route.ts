@@ -1,8 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 
+const VALID_METHODS = ['cash', 'mobile_money', 'card', 'bank_transfer']
+
 function getUserId(req: NextRequest): string | null {
   return req.headers.get('x-user-id')
+}
+
+/** paymentStatus is always derived from amountPaid vs totalCost, never chosen directly. */
+function derivePaymentStatus(amountPaid: number, totalCost: number): string {
+  if (amountPaid <= 0) return 'unpaid'
+  if (amountPaid >= totalCost - 0.01) return 'paid'
+  return 'partially_paid'
 }
 
 export async function GET(req: NextRequest) {
@@ -55,7 +64,7 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json()
-    const { supplierId, reference, batchNumber, expiryDate, notes, paymentStatus, items } = body
+    const { supplierId, reference, batchNumber, expiryDate, notes, items, initialPayment } = body
 
     if (!items || items.length === 0) {
       return NextResponse.json({ error: 'Restock items are required' }, { status: 400 })
@@ -67,6 +76,24 @@ export async function POST(req: NextRequest) {
       totalCost += (item.quantity || 0) * (item.costPrice || 0)
     }
 
+    // Optional payment made at the time of restock (e.g. paid the supplier on delivery).
+    let initialAmount = 0
+    let initialMethod: string | null = null
+    if (initialPayment && Number(initialPayment.amount) > 0) {
+      initialAmount = Math.round(Number(initialPayment.amount) * 100) / 100
+      initialMethod = String(initialPayment.method || '')
+      if (!VALID_METHODS.includes(initialMethod)) {
+        return NextResponse.json({ error: 'Invalid payment method' }, { status: 400 })
+      }
+      if (initialAmount - totalCost > 0.01) {
+        return NextResponse.json(
+          { error: `Payment exceeds the restock total of ${totalCost.toFixed(2)}` },
+          { status: 400 },
+        )
+      }
+    }
+    const paymentStatus = derivePaymentStatus(initialAmount, totalCost)
+
     const result = await db.$transaction(async (tx) => {
       // Create restock
       const restock = await tx.restock.create({
@@ -76,8 +103,9 @@ export async function POST(req: NextRequest) {
           batchNumber: batchNumber || null,
           expiryDate: expiryDate ? new Date(expiryDate) : null,
           notes: notes || null,
-          paymentStatus: paymentStatus || 'unpaid',
+          paymentStatus,
           totalCost,
+          amountPaid: initialAmount,
           createdById: userId,
           items: {
             create: items.map((item: Record<string, unknown>) => ({
@@ -93,6 +121,30 @@ export async function POST(req: NextRequest) {
           items: { include: { product: true } },
         },
       })
+
+      if (initialAmount > 0 && initialMethod) {
+        const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '')
+        const receiptPrefix = `RPAY-${dateStr}-`
+        const lastReceipt = await tx.restockPayment.findFirst({
+          where: { receiptNumber: { startsWith: receiptPrefix } },
+          orderBy: { receiptNumber: 'desc' },
+          select: { receiptNumber: true },
+        })
+        const nextNum = lastReceipt
+          ? parseInt(lastReceipt.receiptNumber.slice(receiptPrefix.length), 10) + 1
+          : 1
+        const receiptNumber = `${receiptPrefix}${String(nextNum).padStart(4, '0')}`
+
+        await tx.restockPayment.create({
+          data: {
+            restockId: restock.id,
+            receiptNumber,
+            amount: initialAmount,
+            method: initialMethod,
+            recordedById: userId,
+          },
+        })
+      }
 
       // Process each item: increase inventory, create movement
       for (const item of items) {

@@ -13,6 +13,10 @@ export async function GET(
         supplier: true,
         createdBy: { select: { id: true, name: true, email: true } },
         items: { include: { product: true } },
+        payments: {
+          include: { recordedBy: { select: { id: true, name: true } } },
+          orderBy: { createdAt: 'desc' },
+        },
       },
     })
 

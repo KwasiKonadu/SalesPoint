@@ -63,6 +63,17 @@ export interface RestockItem {
   product: { id: string; name: string; sku: string; container?: string | null; size?: string | null };
 }
 
+export interface RestockPayment {
+  id: string;
+  restockId: string;
+  receiptNumber: string;
+  amount: number;
+  method: string;
+  note?: string | null;
+  createdAt: string;
+  recordedBy?: { id: string; name: string } | null;
+}
+
 export interface Restock {
   id: string;
   supplierId?: string | null;
@@ -71,15 +82,23 @@ export interface Restock {
   dateReceived: string;
   expiryDate?: string | null;
   notes?: string | null;
+  /** Always derived from amountPaid vs totalCost — never set directly. */
   paymentStatus: string;
   totalCost: number;
+  amountPaid: number;
   createdById?: string | null;
   createdAt: string;
   updatedAt: string;
   supplier?: { id: string; businessName: string } | null;
   createdBy?: { id: string; name: string; email: string } | null;
   items?: RestockItem[];
+  payments?: RestockPayment[];
   _count?: { items: number };
+}
+
+/** Outstanding balance owed to the supplier for this restock. */
+export function restockBalance(restock: Pick<Restock, 'totalCost' | 'amountPaid'>): number {
+  return Math.max(0, Math.round((restock.totalCost - restock.amountPaid) * 100) / 100);
 }
 
 export interface Paginated<T> {

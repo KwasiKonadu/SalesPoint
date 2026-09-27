@@ -79,11 +79,21 @@ export const NAV_ROUTES: NavRoute[] = [
     icon: Truck,
     adminOnly: true,
   },
+  // Hidden for now — old expenses tracker, superseded by the goods-expense
+  // page below. Page still works at /expenses if navigated to directly.
+  // {
+  //   href: '/expenses',
+  //   label: 'Expenses',
+  //   title: 'Expenses',
+  //   description: 'Track business expenses',
+  //   icon: Receipt,
+  //   adminOnly: true,
+  // },
   {
-    href: '/expenses',
-    label: 'Expenses',
-    title: 'Expenses',
-    description: 'Track business expenses',
+    href: '/goods-expense',
+    label: 'Expense',
+    title: 'Expense',
+    description: 'Amount paid for restocked goods vs. amount sold',
     icon: Receipt,
     adminOnly: true,
   },

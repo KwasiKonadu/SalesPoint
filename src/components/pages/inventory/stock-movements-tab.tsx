@@ -69,18 +69,18 @@ export function StockMovementsTab({
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-1 rounded-lg bg-muted p-1">
-          {MOVEMENT_TYPE_FILTERS.map((t) => (
-            <Button
-              key={t}
-              variant={movements.type === t ? "default" : "ghost"}
-              size="sm"
-              className="h-7 px-2.5 text-xs"
-              onClick={() => movements.setType(t)}
-            >
-              {t === "all" ? "All" : MOVEMENT_TYPE_CONFIG[t]?.label || t}
-            </Button>
-          ))}
+        <div className="w-full sm:w-48">
+          <SearchSelect
+            size="sm"
+            clearable={false}
+            placeholder="All Types"
+            value={movements.type}
+            onChange={movements.setType}
+            options={MOVEMENT_TYPE_FILTERS.map((t) => ({
+              value: t,
+              label: t === "all" ? "All" : MOVEMENT_TYPE_CONFIG[t]?.label || t,
+            }))}
+          />
         </div>
       </div>
 

@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { todayISO } from "@/lib/inventory";
 import { formatCurrency } from "@/lib/format";
 import { variantLabel } from "@/lib/products";
+import { PAYMENT_METHODS } from "@/lib/payment";
 import { useCreateRestock, useInventoryRefs } from "./use-inventory";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +18,10 @@ import { FormPanel } from "@/components/molecules/form-panel";
 import { SearchSelect } from "@/components/molecules/search-select";
 
 type Line = { quantity: number; costPrice: number; expiryDate: string };
+
+const METHOD_OPTIONS = PAYMENT_METHODS.filter((m) => m.value !== "credit").map(
+  (m) => ({ value: m.value, label: m.label }),
+);
 
 /** Two-step wizard for recording a supplier restock. Posts to `/api/restock`. */
 export function NewRestockDialog({
@@ -37,7 +42,8 @@ export function NewRestockDialog({
   const [dateReceived, setDateReceived] = useState(todayISO());
   const [expiryDate, setExpiryDate] = useState("");
   const [notes, setNotes] = useState("");
-  const [paymentStatus, setPaymentStatus] = useState("unpaid");
+  const [amountPaidNow, setAmountPaidNow] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("cash");
   // productId -> line. A product is included when its quantity > 0.
   const [lines, setLines] = useState<Record<string, Line>>({});
   const createRestock = useCreateRestock();
@@ -54,7 +60,8 @@ export function NewRestockDialog({
       setDateReceived(todayISO());
       setExpiryDate("");
       setNotes("");
-      setPaymentStatus("unpaid");
+      setAmountPaidNow("");
+      setPaymentMethod("cash");
       setLines({});
       setProductSearch("");
     }
@@ -90,9 +97,17 @@ export function NewRestockDialog({
     0,
   );
 
+  const amountPaidValue = parseFloat(amountPaidNow) || 0;
+
   const handleSubmit = async () => {
     if (selected.length === 0) {
       toast.error("Set a quantity on at least one product");
+      return;
+    }
+    if (amountPaidValue > totalCost + 0.01) {
+      toast.error(
+        `Amount paid can't exceed the restock total of ${formatCurrency(totalCost)}`,
+      );
       return;
     }
     try {
@@ -103,7 +118,10 @@ export function NewRestockDialog({
         expiryDate: expiryDate || null,
         dateReceived,
         notes: notes || null,
-        paymentStatus,
+        initialPayment:
+          amountPaidValue > 0
+            ? { amount: amountPaidValue, method: paymentMethod }
+            : null,
         items: selected.map(([productId, l]) => ({
           productId,
           quantity: l.quantity,
@@ -217,17 +235,6 @@ export function NewRestockDialog({
               onChange={(e) => setExpiryDate(e.target.value)}
             />
           </div>
-          <SearchSelect
-            label="Payment Status"
-            clearable={false}
-            value={paymentStatus}
-            onChange={setPaymentStatus}
-            options={[
-              { value: "unpaid", label: "Unpaid" },
-              { value: "partially_paid", label: "Partially Paid" },
-              { value: "paid", label: "Paid" },
-            ]}
-          />
           <TextField
             label="Notes"
             type="textarea"
@@ -334,6 +341,31 @@ export function NewRestockDialog({
             <span className="text-lg font-bold tabular-nums">
               {formatCurrency(totalCost)}
             </span>
+          </div>
+
+          <div className="space-y-3 rounded-lg border p-3">
+            <p className="text-sm font-medium">Payment (optional)</p>
+            <p className="text-xs text-muted-foreground">
+              Paid the supplier something already? Record it here — the
+              balance owed is tracked from this point on.
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              <CurrencyInput
+                label="Amount Paid Now"
+                lockCurrency
+                value={amountPaidNow}
+                onValueChange={setAmountPaidNow}
+              />
+              {amountPaidValue > 0 && (
+                <SearchSelect
+                  label="Payment Method"
+                  clearable={false}
+                  value={paymentMethod}
+                  onChange={setPaymentMethod}
+                  options={METHOD_OPTIONS}
+                />
+              )}
+            </div>
           </div>
         </div>
       )}

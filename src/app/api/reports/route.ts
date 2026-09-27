@@ -89,6 +89,8 @@ export async function GET(req: NextRequest) {
         return expensesByCategory(startDate, endDate)
       case 'profit':
         return profitReport(startDate, endDate)
+      case 'goods_expense':
+        return goodsExpense(startDate, endDate)
       default:
         return NextResponse.json({ error: 'Unknown report type' }, { status: 400 })
     }
@@ -427,18 +429,19 @@ async function supplierPurchases(startDate: Date, endDate: Date) {
 
   for (const restock of restocks) {
     if (!restock.supplier) continue
+    const balance = Math.max(0, restock.totalCost - restock.amountPaid)
     const existing = supplierMap.get(restock.supplierId!)
     if (existing) {
       existing.totalPurchases += restock.totalCost
       existing.restockCount += 1
-      if (restock.paymentStatus !== 'paid') existing.outstandingBalance += restock.totalCost
+      existing.outstandingBalance += balance
     } else {
       supplierMap.set(restock.supplierId!, {
         supplierId: restock.supplierId!,
         supplierName: restock.supplier.businessName,
         totalPurchases: restock.totalCost,
         restockCount: 1,
-        outstandingBalance: restock.paymentStatus !== 'paid' ? restock.totalCost : 0,
+        outstandingBalance: balance,
       })
     }
   }
@@ -475,6 +478,36 @@ async function expensesByCategory(startDate: Date, endDate: Date) {
   return NextResponse.json({
     data,
     summary: { totalExpenses },
+    period: { startDate, endDate },
+  })
+}
+
+/**
+ * Lump-sum comparison of goods sold vs. goods bought for inventory.
+ * No per-category breakdown yet — that's planned for a later version.
+ */
+async function goodsExpense(startDate: Date, endDate: Date) {
+  const [sales, restocks] = await Promise.all([
+    db.sale.findMany({
+      where: { status: 'completed', createdAt: { gte: startDate, lte: endDate } },
+      select: { totalAmount: true },
+    }),
+    db.restock.findMany({
+      where: { dateReceived: { gte: startDate, lte: endDate } },
+      select: { totalCost: true, amountPaid: true },
+    }),
+  ])
+
+  const totalSold = sales.reduce((sum, s) => sum + s.totalAmount, 0)
+  const totalPaidForGoods = restocks.reduce((sum, r) => sum + r.totalCost, 0)
+  const paidExpenses = restocks.reduce((sum, r) => sum + r.amountPaid, 0)
+  const unpaidExpenses = restocks.reduce(
+    (sum, r) => sum + Math.max(0, r.totalCost - r.amountPaid),
+    0,
+  )
+
+  return NextResponse.json({
+    data: { totalSold, totalPaidForGoods, paidExpenses, unpaidExpenses },
     period: { startDate, endDate },
   })
 }

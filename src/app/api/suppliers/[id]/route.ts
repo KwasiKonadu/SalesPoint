@@ -27,9 +27,10 @@ export async function GET(
     })
 
     const totalPurchases = restocks.reduce((sum, r) => sum + r.totalCost, 0)
-    const outstandingBalance = restocks
-      .filter((r) => r.paymentStatus !== 'paid')
-      .reduce((sum, r) => sum + r.totalCost, 0)
+    const outstandingBalance = restocks.reduce(
+      (sum, r) => sum + Math.max(0, r.totalCost - r.amountPaid),
+      0,
+    )
 
     return NextResponse.json({
       ...supplier,
