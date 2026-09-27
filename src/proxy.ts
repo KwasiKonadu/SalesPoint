@@ -10,7 +10,7 @@ import type { NextRequest } from 'next/server';
 // - Authenticated requests get `x-user-id` / `x-user-role` set from the
 //   verified JWT, overriding whatever a client sent — API routes trust
 //   these headers instead of a client-supplied `x-user-id`.
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const isApi = pathname.startsWith('/api');
 
