@@ -21,7 +21,11 @@ export async function proxy(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     const loginUrl = new URL('/login', req.url);
-    return NextResponse.redirect(loginUrl);
+    const res = NextResponse.redirect(loginUrl);
+    res.headers.set('x-debug-cookies', req.cookies.getAll().map((c) => c.name).join(','));
+    res.headers.set('x-debug-secret-len', String(process.env.NEXTAUTH_SECRET?.length ?? 0));
+    res.headers.set('x-debug-runtime', String(typeof (globalThis as any).EdgeRuntime));
+    return res;
   }
 
   const headers = new Headers(req.headers);
