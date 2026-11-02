@@ -304,6 +304,7 @@ export function useCreateRestock() {
     onSuccess: () => {
       invalidateInventory(queryClient);
       queryClient.invalidateQueries({ queryKey: queryKeys.restocks.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.suppliers.all });
     },
   });
 }

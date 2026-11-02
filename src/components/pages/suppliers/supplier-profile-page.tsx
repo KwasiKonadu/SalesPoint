@@ -1,12 +1,17 @@
 "use client";
 
+import Link from "next/link";
+import { useState } from "react";
+import { useParams } from "next/navigation";
 import {
   AlertCircle,
+  ArrowLeft,
   Building2,
   FileText,
   Mail,
   MapPin,
   Phone,
+  Plus,
   ShoppingBag,
   Truck,
 } from "lucide-react";
@@ -14,13 +19,9 @@ import {
 import { formatCurrency, formatDate } from "@/lib/format";
 import type { SupplierRestock } from "@/lib/suppliers";
 import { useSupplierDetail } from "./use-suppliers";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { NewRestockDialog } from "../inventory/new-restock-dialog";
+import { RestockDetailDialog } from "../inventory/restock-detail-dialog";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -87,48 +88,65 @@ function InfoRow({
   );
 }
 
-/** Supplier profile: overview KPIs + info, purchase history, products supplied. */
-export function SupplierProfileDialog({
-  supplierId,
-  open,
-  onOpenChange,
-}: {
-  supplierId: string | null;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}) {
-  const { data: supplier, isPending } = useSupplierDetail(open ? supplierId : null);
+/** Full-page supplier profile: overview KPIs + info, purchase history, products supplied. */
+export default function SupplierProfilePage() {
+  const { id } = useParams<{ id: string }>();
+  const { data: supplier, isPending } = useSupplierDetail(id ?? null);
+  const [orderOpen, setOrderOpen] = useState(false);
+  const [detailId, setDetailId] = useState<string | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
 
-  if (!open) return null;
+  const back = (
+    <Link
+      href="/suppliers"
+      className="mb-3 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+    >
+      <ArrowLeft className="size-4" /> Suppliers
+    </Link>
+  );
 
   if (isPending || !supplier) {
     return (
-      <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto">
-          <div className="space-y-4 py-4">
-            <Skeleton className="h-8 w-1/2" />
-            <Skeleton className="h-32 w-full" />
-            <Skeleton className="h-32 w-full" />
-          </div>
-        </DialogContent>
-      </Dialog>
+      <div className="space-y-4">
+        {back}
+        <Skeleton className="h-8 w-1/2" />
+        <Skeleton className="h-32 w-full" />
+        <Skeleton className="h-32 w-full" />
+      </div>
     );
   }
 
   const history = supplier.restockHistory ?? [];
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Building2 className="size-5" />
+    <div className="space-y-6">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          {back}
+          <h1 className="flex items-center gap-2 text-2xl font-semibold">
+            <Building2 className="size-6" />
             {supplier.businessName || "Supplier Details"}
-          </DialogTitle>
-          <DialogDescription>
+          </h1>
+          <p className="text-sm text-muted-foreground">
             Supplier profile and purchase history
-          </DialogDescription>
-        </DialogHeader>
+          </p>
+        </div>
+        <Button onClick={() => setOrderOpen(true)}>
+          <Plus className="mr-2 size-4" /> New order
+        </Button>
+      </div>
+
+      <NewRestockDialog
+        open={orderOpen}
+        onOpenChange={setOrderOpen}
+        onSubmitted={() => {}}
+        defaultSupplierId={supplier.id}
+      />
+      <RestockDetailDialog
+        open={detailOpen}
+        onOpenChange={setDetailOpen}
+        restockId={detailId}
+      />
 
         <Tabs defaultValue="overview">
           <TabsList>
@@ -218,6 +236,10 @@ export function SupplierProfileDialog({
                 columns={historyColumns}
                 data={history}
                 getRowKey={(r) => r.id}
+                onRowClick={(r) => {
+                  setDetailId(r.id);
+                  setDetailOpen(true);
+                }}
               />
             ) : (
               <div className="flex flex-col items-center justify-center py-12 text-center">
@@ -239,7 +261,6 @@ export function SupplierProfileDialog({
             </div>
           </TabsContent>
         </Tabs>
-      </DialogContent>
-    </Dialog>
+    </div>
   );
 }

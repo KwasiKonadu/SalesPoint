@@ -8,6 +8,7 @@ import { queryKeys } from '@/lib/query-keys';
 import { useCategories } from '@/hooks/api/use-categories';
 import { useProductTypes } from '@/hooks/api/use-product-types';
 import { useUnits } from '@/hooks/api/use-units';
+import type { RawProductRow } from '@/lib/csv';
 import type { ProductItem, ProductsResponse } from '@/lib/products';
 
 const PAGE_SIZE = 20;
@@ -114,6 +115,9 @@ export interface ProductSaveInput {
   image?: string;
   initialStock?: number;
   isActive?: boolean;
+  showOnWebsite?: boolean;
+  featured?: boolean;
+  images?: string[];
 }
 
 export function useSaveProduct() {
@@ -131,6 +135,50 @@ export function useDeleteProduct() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => apiClient.delete<ProductItem>(`/api/products/${id}`, 'Failed to delete product'),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.products.all }),
+  });
+}
+
+export type DiscountInput =
+  | { clear: true }
+  | { type: 'percent' | 'fixed'; value: number; start: string; end: string; channel: 'both' | 'web' | 'pos' };
+
+export function useSaveDiscount() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, ...body }: DiscountInput & { id: string }) =>
+      apiClient.put<ProductItem>(`/api/products/${id}/discount`, body, 'Failed to save discount'),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.products.all }),
+  });
+}
+
+export interface BulkResponse {
+  valid: boolean;
+  created: number;
+  results: { row: number; name: string; errors: string[] }[];
+}
+
+/** Check (`dryRun`) or import a batch of products. Nothing is created unless every row is valid. */
+export function useBulkProducts() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (body: { rows: RawProductRow[]; dryRun: boolean }) =>
+      apiClient.post<BulkResponse>('/api/products/bulk', body, 'Failed to import products'),
+    onSuccess: (res, vars) => {
+      if (!vars.dryRun && res.created > 0) {
+        queryClient.invalidateQueries({ queryKey: queryKeys.products.all });
+        queryClient.invalidateQueries({ queryKey: ['inventory'] });
+      }
+    },
+  });
+}
+
+/** Show / hide / feature many products on the website at once. */
+export function useWebsiteProductsBulk() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (body: { ids: string[]; showOnWebsite?: boolean; featured?: boolean }) =>
+      apiClient.put<{ updated: number; skipped: number }>('/api/products/website', body, 'Failed to update products'),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.products.all }),
   });
 }

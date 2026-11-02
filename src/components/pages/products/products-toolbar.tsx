@@ -6,6 +6,7 @@ import {
   LayoutList,
   Plus,
   Search,
+  Upload,
   X,
 } from "lucide-react";
 
@@ -30,6 +31,7 @@ export function ProductsToolbar({
   viewMode,
   onViewModeChange,
   onAddProduct,
+  onImport,
   onExport,
 }: {
   search: string;
@@ -42,6 +44,7 @@ export function ProductsToolbar({
   viewMode: ViewMode;
   onViewModeChange: (mode: ViewMode) => void;
   onAddProduct: () => void;
+  onImport?: () => void;
   onExport?: () => void;
 }) {
   return (
@@ -124,6 +127,12 @@ export function ProductsToolbar({
           >
             Export
           </Button>
+
+          {onImport && (
+            <Button size="sm" variant="outline" onClick={onImport} icon={<Upload className="size-4" />}>
+              Import
+            </Button>
+          )}
 
           <Button
             size="sm"

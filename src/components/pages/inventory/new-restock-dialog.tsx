@@ -28,15 +28,18 @@ export function NewRestockDialog({
   open,
   onOpenChange,
   onSubmitted,
+  defaultSupplierId = "",
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmitted: () => void;
+  /** Pre-selects the supplier (e.g. when ordering from a supplier's page). */
+  defaultSupplierId?: string;
 }) {
   const { suppliers, products } = useInventoryRefs();
   const [step, setStep] = useState<1 | 2>(1);
   const [productSearch, setProductSearch] = useState("");
-  const [supplierId, setSupplierId] = useState("");
+  const [supplierId, setSupplierId] = useState(defaultSupplierId);
   const [reference, setReference] = useState("");
   const [batchNumber, setBatchNumber] = useState("");
   const [dateReceived, setDateReceived] = useState(todayISO());
@@ -54,7 +57,7 @@ export function NewRestockDialog({
     setWasOpen(open);
     if (!open) {
       setStep(1);
-      setSupplierId("");
+      setSupplierId(defaultSupplierId);
       setReference("");
       setBatchNumber("");
       setDateReceived(todayISO());

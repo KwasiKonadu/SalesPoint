@@ -15,7 +15,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-export function AppSidebar() {
+export function AppSidebar({ badges = {} }: { /** Count shown on a nav item, keyed by its href. */ badges?: Record<string, number> }) {
   const pathname = usePathname();
   const { session } = useSession();
   const { sidebarOpen, toggleSidebar, setSidebarOpen } = useAppStore();
@@ -90,6 +90,7 @@ export function AppSidebar() {
           {nav.map((item) => {
             const Icon = item.icon;
             const isActive = activeHref === item.href;
+            const badge = badges[item.href] ?? 0;
             const link = (
               <Link
                 key={item.href}
@@ -106,8 +107,18 @@ export function AppSidebar() {
                   !sidebarOpen && "justify-center px-2",
                 )}
               >
-                <Icon className="w-5 h-5 shrink-0" />
-                {sidebarOpen && <span>{item.label}</span>}
+                <span className="relative shrink-0">
+                  <Icon className="w-5 h-5" />
+                  {!sidebarOpen && badge > 0 && (
+                    <span className="absolute -right-1 -top-1 size-2.5 rounded-full bg-red-500 ring-2 ring-white" />
+                  )}
+                </span>
+                {sidebarOpen && <span className="flex-1">{item.label}</span>}
+                {sidebarOpen && badge > 0 && (
+                  <span className="min-w-5 rounded-full bg-red-500 px-1.5 text-center text-xs font-semibold leading-5 text-white">
+                    {badge > 99 ? "99+" : badge}
+                  </span>
+                )}
               </Link>
             );
 

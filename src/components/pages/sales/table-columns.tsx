@@ -27,7 +27,7 @@ export const salesColumns: Column<Sale>[] = [
   {
     key: 'soldBy',
     label: 'Sales Person',
-    width: '150px',
+    width: 'minmax(100px, 1fr)',
     render: (s) => s.soldBy.name,
   },
   {

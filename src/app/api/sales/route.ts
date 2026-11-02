@@ -1,30 +1,11 @@
+import { effectivePrice } from '@/lib/pricing'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { nextReceiptNumber, nextTransactionNumber } from '@/lib/sale-numbers'
 import { productLabel } from '@/lib/products'
 
 function getUserId(req: NextRequest): string | null {
   return req.headers.get('x-user-id')
-}
-
-async function generateTransactionNumber(tx: Parameters<Parameters<typeof db.$transaction>[0]>[0]): Promise<string> {
-  const today = new Date()
-  const dateStr = today.toISOString().slice(0, 10).replace(/-/g, '')
-  const prefix = `TXN-${dateStr}-`
-
-  // Find the latest transaction number for today
-  const lastSale = await tx.sale.findFirst({
-    where: { transactionNumber: { startsWith: prefix } },
-    orderBy: { transactionNumber: 'desc' },
-    select: { transactionNumber: true },
-  })
-
-  let nextNum = 1
-  if (lastSale) {
-    const lastNumStr = lastSale.transactionNumber.slice(prefix.length)
-    nextNum = parseInt(lastNumStr, 10) + 1
-  }
-
-  return `${prefix}${String(nextNum).padStart(4, '0')}`
 }
 
 export async function GET(req: NextRequest) {
@@ -198,7 +179,7 @@ export async function POST(req: NextRequest) {
           qty % size === 0
         const unitPrice = wholesaleOk
           ? product.wholesalePrice!
-          : product.sellingPrice
+          : effectivePrice(product, new Date(), 'pos')
         const rowTax = product.taxEnabled
           ? (unitPrice * qty * (product.taxRate || 0)) / 100
           : 0
@@ -225,24 +206,8 @@ export async function POST(req: NextRequest) {
       const change = settledNow ? received - totalAmount : 0
       const paymentStatus = settledNow ? 'completed' : 'pending'
 
-      // Generate transaction number
-      const transactionNumber = await generateTransactionNumber(tx)
-
-      // Generate receipt number
-      const today = new Date()
-      const dateStr = today.toISOString().slice(0, 10).replace(/-/g, '')
-      const receiptPrefix = `RCP-${dateStr}-`
-      const lastReceipt = await tx.receipt.findFirst({
-        where: { receiptNumber: { startsWith: receiptPrefix } },
-        orderBy: { receiptNumber: 'desc' },
-        select: { receiptNumber: true },
-      })
-      let nextReceiptNum = 1
-      if (lastReceipt) {
-        const lastNum = lastReceipt.receiptNumber.slice(receiptPrefix.length)
-        nextReceiptNum = parseInt(lastNum, 10) + 1
-      }
-      const receiptNumber = `${receiptPrefix}${String(nextReceiptNum).padStart(4, '0')}`
+      const transactionNumber = await nextTransactionNumber(tx)
+      const receiptNumber = await nextReceiptNumber(tx)
 
       // Create sale with items, payment, and receipt
       const sale = await tx.sale.create({

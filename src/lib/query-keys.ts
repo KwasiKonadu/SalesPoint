@@ -2,6 +2,18 @@
 // avoids typo'd cache keys and makes cross-hook invalidation (e.g. a sale
 // affecting both /api/sales and /api/inventory) easy to find.
 export const queryKeys = {
+  webOrders: {
+    list: (status: string) => ['web-orders', status] as const,
+    all: ['web-orders'] as const,
+    pending: ['web-orders', 'pending'] as const,
+  },
+  webReturns: { all: ['web-returns'] as const },
+  webMessages: { all: ['web-messages'] as const },
+  website: {
+    slots: ['website', 'slots'] as const,
+    promises: ['website', 'promises'] as const,
+    store: ['website', 'store'] as const,
+  },
   staff: {
     all: ['staff'] as const,
     list: (params: Record<string, unknown>) => ['staff', 'list', params] as const,

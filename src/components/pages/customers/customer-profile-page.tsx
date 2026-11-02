@@ -1,6 +1,9 @@
 "use client";
 
+import Link from "next/link";
+import { useParams } from "next/navigation";
 import {
+  ArrowLeft,
   Calendar,
   DollarSign,
   Mail,
@@ -13,13 +16,6 @@ import {
 import { formatCurrency, formatDate } from "@/lib/format";
 import type { CustomerSale } from "@/lib/customers";
 import { useCustomerDetail } from "./use-customers";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -34,12 +30,13 @@ const saleColumns: Column<CustomerSale>[] = [
   {
     key: "transactionNumber",
     label: "Transaction #",
+    width: "minmax(11rem, 1fr)",
     render: (s) => <span className="font-mono">{s.transactionNumber}</span>,
   },
   {
     key: "date",
     label: "Date",
-    width: "8rem",
+    width: "9rem",
     render: (s) => formatDate(s.createdAt),
   },
   {
@@ -65,32 +62,28 @@ const saleColumns: Column<CustomerSale>[] = [
   },
 ];
 
-/** Customer profile with KPI tiles, contact details and purchase history. */
-export function CustomerProfileDialog({
-  open,
-  onOpenChange,
-  customerId,
-}: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  customerId: string | null;
-}) {
-  const { data: customer, isPending: loading } = useCustomerDetail(open ? customerId : null);
+/** Full-page customer profile with KPI tiles, contact details and purchase history. */
+export default function CustomerProfilePage() {
+  const { id } = useParams<{ id: string }>();
+  const { data: customer, isPending: loading } = useCustomerDetail(id ?? null);
 
   const sales = customer?.sales ?? [];
   const owed = customer?.outstandingBalance ?? 0;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-160">
-        <DialogHeader>
-          <DialogTitle className="text-xl">
-            {customer?.name ?? "Customer"}
-          </DialogTitle>
-          <DialogDescription>
-            Customer profile &amp; purchase history
-          </DialogDescription>
-        </DialogHeader>
+    <div className="space-y-6">
+      <div>
+        <Link
+          href="/customers"
+          className="mb-3 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+        >
+          <ArrowLeft className="size-4" /> Customers
+        </Link>
+        <h1 className="text-2xl font-semibold">{customer?.name ?? "Customer"}</h1>
+        <p className="text-sm text-muted-foreground">
+          Customer profile &amp; purchase history
+        </p>
+      </div>
 
         {loading ? (
           <div className="space-y-4 py-4">
@@ -110,7 +103,7 @@ export function CustomerProfileDialog({
             </TabsList>
 
             <TabsContent value="purchases" className="mt-4 space-y-4">
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 <StatCard
                   icon={DollarSign}
                   label="Total Spent"
@@ -184,7 +177,6 @@ export function CustomerProfileDialog({
             </TabsContent>
           </Tabs>
         ) : null}
-      </DialogContent>
-    </Dialog>
+    </div>
   );
 }

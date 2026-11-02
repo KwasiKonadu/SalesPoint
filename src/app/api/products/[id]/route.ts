@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { Prisma } from '@prisma/client'
+import { deleteImage } from '@/lib/storage'
+import { slugify, uniqueSlug } from '@/lib/slug'
 
 function getUserId(req: NextRequest): string | null {
   return req.headers.get('x-user-id')
@@ -50,9 +53,33 @@ export async function PUT(
     const num = (v: unknown) =>
       v === undefined ? undefined : v === null || v === '' ? null : Number(v)
 
+    // Remember the current picture so a replaced or removed one can be deleted from storage.
+    const previousImage =
+      body.image === undefined ? undefined : (await db.product.findUnique({ where: { id }, select: { image: true } }))?.image
+
+    const previousGallery =
+      body.images === undefined ? undefined : (await db.product.findUnique({ where: { id }, select: { images: true } }))?.images
+
+    const slug =
+      body.slug === undefined || !String(body.slug).trim()
+        ? undefined
+        : await uniqueSlug(slugify(String(body.slug)), id)
+
     const product = await db.product.update({
       where: { id },
       data: {
+        ...(slug ? { slug } : {}),
+        ...(body.showOnWebsite === undefined ? {} : { showOnWebsite: !!body.showOnWebsite }),
+        ...(body.featured === undefined ? {} : { featured: !!body.featured }),
+        ...(body.images === undefined
+          ? {}
+          : { images: Array.isArray(body.images) ? body.images.filter(Boolean) : [] }),
+        ...(body.details === undefined
+          ? {}
+          : { details: Array.isArray(body.details) ? body.details : Prisma.DbNull }),
+        ...(body.variantGroup === undefined
+          ? {}
+          : { variantGroup: body.variantGroup?.trim() || null }),
         ...(body.name === undefined ? {} : { name: String(body.name).trim() }),
         ...(body.container === undefined
           ? {}
@@ -86,6 +113,11 @@ export async function PUT(
       },
       include: productInclude,
     })
+
+    // A picture still used as the main image or in the gallery is kept.
+    const stillUsed = new Set([product.image, ...product.images])
+    if (previousImage && !stillUsed.has(previousImage)) await deleteImage(previousImage)
+    for (const url of previousGallery ?? []) if (!stillUsed.has(url)) await deleteImage(url)
 
     return NextResponse.json(product)
   } catch (error) {

@@ -10,6 +10,8 @@ import {
   UserCog,
   Settings,
   Zap,
+  Globe,
+  PackageCheck,
 } from 'lucide-react';
 
 export type UserRole = 'admin' | 'sales_person' | string;
@@ -56,6 +58,21 @@ export const NAV_ROUTES: NavRoute[] = [
     title: 'Products',
     description: 'Manage your product catalog',
     icon: Package,
+  },
+  {
+    href: '/website',
+    label: 'Website',
+    title: 'Website',
+    description: 'Homepage promotions and website-only discounts',
+    icon: Globe,
+    adminOnly: true,
+  },
+  {
+    href: '/web-orders',
+    label: 'Web orders',
+    title: 'Web orders',
+    description: 'Orders placed on the website: confirm, prepare, deliver or hand over',
+    icon: PackageCheck,
   },
   {
     href: '/inventory',

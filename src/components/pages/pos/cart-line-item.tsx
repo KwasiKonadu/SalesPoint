@@ -103,7 +103,7 @@ export function CartLineItem({
               {lineUnits(item)} units
             </>
           ) : (
-            <>{formatCurrency(product.sellingPrice)} each</>
+            <>{formatCurrency(lineUnitPrice(item))} each</>
           )}
         </p>
 

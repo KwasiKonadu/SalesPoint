@@ -173,7 +173,8 @@ export function ProductFormPanel({
         taxEnabled: data.taxEnabled,
         taxRate: data.taxEnabled ? Number(data.taxRate) : 0,
         lowStockPercent: Number(data.lowStockPercent),
-        image: data.imageUrl || undefined,
+        showOnWebsite: data.showOnWebsite,
+        featured: data.featured,
       };
       if (!isEditing && tracksStock) {
         body.initialStock = Number(data.initialStock) || 0;
@@ -432,31 +433,44 @@ export function ProductFormPanel({
           </div>
         </div>
 
+        {isEditing && (
+          <>
+            <Separator />
+
+            {/* Status */}
+            <div className="space-y-2">
+              <h4 className="text-sm font-medium text-muted-foreground">Status</h4>
+              <label className="flex items-center gap-3 text-sm font-medium">
+                <Switch
+                  checked={isActive}
+                  onCheckedChange={(c) => setValue("isActive", c)}
+                />
+                Active
+              </label>
+            </div>
+          </>
+        )}
+
         <Separator />
 
-        {/* Image & Status */}
+        {/* Website */}
         <div className="space-y-2">
-          <h4 className="text-sm font-medium text-muted-foreground">
-            Image &amp; Status
-          </h4>
+          <h4 className="text-sm font-medium text-muted-foreground">Website</h4>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <RegisteredField
-              label="Image URL"
-              placeholder="https://example.com/image.jpg"
-              registration={register("imageUrl")}
-            />
-            {isEditing && (
-              <div className="flex flex-col gap-1.5">
-                <FieldLabel>Status</FieldLabel>
-                <label className="flex items-center gap-3 text-sm font-medium">
-                  <Switch
-                    checked={isActive}
-                    onCheckedChange={(c) => setValue("isActive", c)}
-                  />
-                  Active
-                </label>
-              </div>
-            )}
+            <label className="flex items-center gap-3 text-sm font-medium">
+              <Switch
+                checked={values.showOnWebsite ?? false}
+                onCheckedChange={(c) => setValue("showOnWebsite", c)}
+              />
+              Show on website
+            </label>
+            <label className="flex items-center gap-3 text-sm font-medium">
+              <Switch
+                checked={values.featured ?? false}
+                onCheckedChange={(c) => setValue("featured", c)}
+              />
+              Featured on homepage
+            </label>
           </div>
         </div>
       </form>

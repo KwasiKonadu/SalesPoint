@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
       ]
     }
 
-    const [data, total] = await Promise.all([
+    const [customers, total] = await Promise.all([
       db.customer.findMany({
         where,
         include: { _count: { select: { sales: true } } },
@@ -30,6 +30,18 @@ export async function GET(req: NextRequest) {
       }),
       db.customer.count({ where }),
     ])
+
+    // Lifetime spend per customer on this page (fully refunded sales excluded).
+    const spend = await db.sale.groupBy({
+      by: ['customerId'],
+      where: { customerId: { in: customers.map((c) => c.id) }, status: { not: 'refunded' } },
+      _sum: { totalAmount: true },
+    })
+    const spentById = new Map(spend.map((s) => [s.customerId, s._sum.totalAmount ?? 0]))
+    const data = customers.map((c) => ({
+      ...c,
+      _sum: { totalAmount: spentById.get(c.id) ?? 0 },
+    }))
 
     return NextResponse.json({ data, total, page, pageSize })
   } catch (error) {

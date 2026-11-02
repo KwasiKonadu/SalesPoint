@@ -1,107 +1,55 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import { formatCurrency } from "@/lib/format";
 import { variantLabel, type ProductItem } from "@/lib/products";
 
-import { ProductImage } from "./product-image";
+import { ProductDiscountSection } from "./product-discount-section";
+import { ProductStoreToggles } from "./product-store-toggles";
 
-/** Read-only product detail view. */
+/** Quick manage popup: online store switches, price and discount. */
 export function ViewProductDialog({
   product,
   open,
   onOpenChange,
+  onProductChange,
 }: {
   product: ProductItem | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  /** Receives the refreshed product after a price, discount or store change. */
+  onProductChange?: (product: ProductItem) => void;
 }) {
   if (!product) return null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Product Details</DialogTitle>
+          <DialogTitle>{product.name}</DialogTitle>
+          <DialogDescription>
+            {variantLabel(product) || product.sku}
+          </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
-          <div className="flex items-center gap-4">
-            <ProductImage name={product.name} image={product.image} size="lg" />
-            <div>
-              <h3 className="text-lg font-semibold">{product.name}</h3>
-              {variantLabel(product) && (
-                <p className="text-sm font-medium text-muted-foreground">
-                  {variantLabel(product)}
-                </p>
-              )}
-              <p className="text-xs text-muted-foreground">{product.sku}</p>
-              <div className="mt-1">
-                <Badge variant={product.isActive ? "default" : "secondary"}>
-                  {product.isActive ? "Active" : "Inactive"}
-                </Badge>
-              </div>
-            </div>
-          </div>
-
-          {product.description && (
-            <p className="text-sm text-muted-foreground">
-              {product.description}
-            </p>
-          )}
-
+          <ProductStoreToggles
+            product={product}
+            onSaved={(p) => onProductChange?.(p)}
+          />
           <Separator />
-
-          <div className="grid grid-cols-2 gap-3 text-sm">
-            <Detail label="Category" value={product.category?.name || "None"} />
-            <Detail label="Type" value={product.productType?.name || "None"} />
-            <Detail label="Unit" value={product.unit?.name || "None"} />
-            <Detail label="Stock" value={product.inventory?.quantity ?? 0} />
-            <Detail
-              label="Cost Price"
-              value={formatCurrency(product.costPrice)}
-            />
-            <Detail
-              label="Selling Price"
-              value={formatCurrency(product.sellingPrice)}
-            />
-            {product.wholesalePrice != null && (
-              <Detail
-                label="Wholesale Price"
-                value={formatCurrency(product.wholesalePrice)}
-              />
-            )}
-            {product.packSize != null && (
-              <Detail label="Pack Size" value={product.packSize} />
-            )}
-            {product.targetStock != null && (
-              <Detail label="Low Stock Baseline" value={product.targetStock} />
-            )}
-            <Detail
-              label="Low Stock Alert"
-              value={`${product.lowStockPercent}%`}
-            />
-            {product.taxEnabled && (
-              <Detail label="Tax Rate" value={`${product.taxRate}%`} />
-            )}
-          </div>
+          <ProductDiscountSection
+            key={product.id}
+            product={product}
+            onSaved={(p) => onProductChange?.(p)}
+          />
         </div>
       </DialogContent>
     </Dialog>
-  );
-}
-
-function Detail({ label, value }: { label: string; value: React.ReactNode }) {
-  return (
-    <div className="space-y-1">
-      <span className="text-muted-foreground">{label}</span>
-      <p className="font-medium tabular-nums">{value}</p>
-    </div>
   );
 }

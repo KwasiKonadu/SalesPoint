@@ -1,6 +1,6 @@
 "use client";
 
-import { Eye, Pencil, Power, Trash2 } from "lucide-react";
+import { Eye, ImageIcon, Power, Tag, Trash2 } from "lucide-react";
 
 import { DataTable } from "@/components/organisms/data-table";
 import { DataPagination } from "@/components/molecules/data-pagination";
@@ -21,11 +21,16 @@ export function ProductTableView({
   onPageChange,
   onAdd,
   onView,
-  onEdit,
+  onDetails,
+  onChangeImage,
   onToggleActive,
   onDelete,
 }: ProductViewProps & {
+  /** Opens the quick popup: online store, price and discount. Also what tapping a row does. */
   onView: (product: ProductItem) => void;
+  /** Opens the read-only details. */
+  onDetails: (product: ProductItem) => void;
+  onChangeImage: (product: ProductItem) => void;
   onToggleActive: (product: ProductItem) => void;
   onDelete: (product: ProductItem) => void;
 }) {
@@ -39,12 +44,14 @@ export function ProductTableView({
         columns={productColumns}
         data={products}
         getRowKey={(product) => product.id}
+        onRowClick={onView}
         rowClassName={(product) =>
           !product.isActive ? "opacity-60" : undefined
         }
         rowActions={(product) => [
-          { label: "View Details", icon: Eye, onClick: () => onView(product) },
-          { label: "Edit", icon: Pencil, onClick: () => onEdit(product) },
+          { label: "View Details", icon: Eye, onClick: () => onDetails(product) },
+          { label: "Price & discount", icon: Tag, onClick: () => onView(product) },
+          { label: "Change image", icon: ImageIcon, onClick: () => onChangeImage(product) },
           {
             label: product.isActive ? "Deactivate" : "Activate",
             icon: Power,

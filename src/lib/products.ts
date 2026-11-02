@@ -27,6 +27,18 @@ export interface ProductItem {
   isActive: boolean;
   targetStock?: number | null;
   lowStockPercent: number;
+  slug?: string | null;
+  showOnWebsite?: boolean;
+  featured?: boolean;
+  images?: string[];
+  variantGroup?: string | null;
+  /** Scheduled discount; the base `sellingPrice` is never overwritten. */
+  discountType?: 'percent' | 'fixed' | null;
+  discountValue?: number | null;
+  discountStart?: string | null;
+  discountEnd?: string | null;
+  /** Where the discount applies: both (default), web only or till (pos) only. */
+  discountChannel?: 'both' | 'web' | 'pos' | null;
   /** Among the top units-sold products in the last 30 days (set by the API). */
   isBestSeller?: boolean;
   createdAt: string;
@@ -56,6 +68,7 @@ export interface Category {
   name: string;
   description?: string | null;
   icon?: string | null;
+  image?: string | null;
   isActive: boolean;
   createdAt: string;
   _count?: { products: number };
@@ -131,6 +144,10 @@ export const productFormSchema = z.object({
   taxEnabled: z.boolean(),
   taxRate: z.coerce.number().min(0).max(100),
   isActive: z.boolean(),
+  showOnWebsite: z.boolean(),
+  featured: z.boolean(),
+  /** One extra image URL per line. */
+  extraImages: z.string().optional(),
 });
 
 export type ProductFormValues = z.infer<typeof productFormSchema>;
@@ -163,5 +180,8 @@ export function productFormDefaults(
     taxEnabled: product?.taxEnabled || false,
     taxRate: product?.taxRate || 0,
     isActive: product?.isActive !== false,
+    showOnWebsite: product?.showOnWebsite ?? false,
+    featured: product?.featured ?? false,
+    extraImages: (product?.images ?? []).join('\n'),
   };
 }

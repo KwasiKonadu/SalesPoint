@@ -1,5 +1,6 @@
 "use client";
 
+import { effectivePrice, isDiscountLive } from "@/lib/pricing";
 import { motion } from "framer-motion";
 import { Package } from "lucide-react";
 
@@ -112,7 +113,16 @@ export function ProductCard({
           <div className="flex justify-between">
             <span className="text-muted-foreground">Price</span>
             <span className="font-medium tabular-nums">
-              {formatCurrency(product.sellingPrice)}
+              {isDiscountLive(product, "pos") ? (
+                <>
+                  <span className="mr-1 text-muted-foreground line-through">
+                    {formatCurrency(product.sellingPrice)}
+                  </span>
+                  {formatCurrency(effectivePrice(product, new Date(), "pos"))}
+                </>
+              ) : (
+                formatCurrency(product.sellingPrice)
+              )}
             </span>
           </div>
           <div className="flex justify-between">
