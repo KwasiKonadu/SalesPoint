@@ -173,7 +173,9 @@ export function ProductFormPanel({
         taxEnabled: data.taxEnabled,
         taxRate: data.taxEnabled ? Number(data.taxRate) : 0,
         lowStockPercent: Number(data.lowStockPercent),
-        image: data.imageUrl || undefined,
+        showOnWebsite: data.showOnWebsite,
+        featured: data.featured,
+        perishable: data.perishable,
       };
       if (!isEditing && tracksStock) {
         body.initialStock = Number(data.initialStock) || 0;
@@ -432,31 +434,60 @@ export function ProductFormPanel({
           </div>
         </div>
 
+        {isEditing && (
+          <>
+            <Separator />
+
+            {/* Status */}
+            <div className="space-y-2">
+              <h4 className="text-sm font-medium text-muted-foreground">Status</h4>
+              <label className="flex items-center gap-3 text-sm font-medium">
+                <Switch
+                  checked={isActive}
+                  onCheckedChange={(c) => setValue("isActive", c)}
+                />
+                Active
+              </label>
+            </div>
+          </>
+        )}
+
         <Separator />
 
-        {/* Image & Status */}
+        {/* Expiry */}
         <div className="space-y-2">
-          <h4 className="text-sm font-medium text-muted-foreground">
-            Image &amp; Status
-          </h4>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <RegisteredField
-              label="Image URL"
-              placeholder="https://example.com/image.jpg"
-              registration={register("imageUrl")}
+          <h4 className="text-sm font-medium text-muted-foreground">Expiry</h4>
+          <label className="flex items-center gap-3 text-sm font-medium">
+            <Switch
+              checked={values.perishable ?? false}
+              onCheckedChange={(c) => setValue("perishable", c)}
             />
-            {isEditing && (
-              <div className="flex flex-col gap-1.5">
-                <FieldLabel>Status</FieldLabel>
-                <label className="flex items-center gap-3 text-sm font-medium">
-                  <Switch
-                    checked={isActive}
-                    onCheckedChange={(c) => setValue("isActive", c)}
-                  />
-                  Active
-                </label>
-              </div>
-            )}
+            Has an expiry date
+          </label>
+          <p className="text-xs text-muted-foreground">
+            Restocks will ask for an expiry date on this product, and stock is
+            tracked by batch so the earliest expiry sells first.
+          </p>
+        </div>
+
+        {/* Website */}
+        <div className="space-y-2">
+          <h4 className="text-sm font-medium text-muted-foreground">Website</h4>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <label className="flex items-center gap-3 text-sm font-medium">
+              <Switch
+                checked={values.showOnWebsite ?? false}
+                onCheckedChange={(c) => setValue("showOnWebsite", c)}
+              />
+              Show on website
+            </label>
+            <label className="flex items-center gap-3 text-sm font-medium">
+              <Switch
+                checked={values.featured ?? false}
+                onCheckedChange={(c) => setValue("featured", c)}
+              />
+              Featured on homepage
+            </label>
           </div>
         </div>
       </form>

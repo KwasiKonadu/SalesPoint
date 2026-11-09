@@ -6,6 +6,7 @@ import { useAuth } from '@/lib/auth-context';
 import { setCurrencyCode } from '@/lib/currency';
 import { setBusinessInfo } from '@/lib/business-info';
 import { useBusinessSettingsQuery } from '@/hooks/api/use-business-settings';
+import { useNewOrderAlert } from '@/hooks/api/use-new-order-alert';
 import { AppSidebar } from '@/components/app-sidebar';
 import { AppHeader } from '@/components/app-header';
 import { PageTabsBand, PageTabsProvider } from '@/components/molecules/page-tabs';
@@ -45,6 +46,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     setBusinessInfo(businessSettings);
   }, [businessSettings]);
 
+  const waitingOrders = useNewOrderAlert(status === 'authenticated');
+
   if (status === 'loading' || status === 'unauthenticated') {
     return <FullScreenLoader label="Loading StorePOS..." />;
   }
@@ -52,7 +55,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <PageTabsProvider>
       <div className="flex h-screen overflow-hidden bg-muted/50 lg:gap-2 lg:p-2">
-        <AppSidebar />
+        <AppSidebar badges={{ '/web-orders': waitingOrders }} />
         <main className="flex-1 flex flex-col overflow-hidden bg-card lg:rounded-lg lg:border lg:border-border lg:shadow-sm">
           <AppHeader />
           <PageTabsBand />

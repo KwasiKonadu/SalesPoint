@@ -125,6 +125,18 @@ export interface InventoryProduct {
   container?: string | null;
   size?: string | null;
   costPrice: number;
+  perishable?: boolean;
+}
+
+export interface StockBatchRow {
+  id: string;
+  productId: string;
+  label?: string | null;
+  expiryDate?: string | null;
+  received: number;
+  remaining: number;
+  createdAt: string;
+  product: { id: string; name: string; sku: string; container?: string | null; size?: string | null; costPrice: number };
 }
 
 export interface RestockFormItem {

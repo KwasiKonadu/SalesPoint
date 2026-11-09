@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { deleteImage } from '@/lib/storage'
 
 function getUserId(req: NextRequest): string | null {
   return req.headers.get('x-user-id')
@@ -18,15 +19,21 @@ export async function PUT(
     const { id } = await params
     const body = await req.json()
 
+    const previousImage =
+      body.image === undefined ? undefined : (await db.productCategory.findUnique({ where: { id }, select: { image: true } }))?.image
+
     const category = await db.productCategory.update({
       where: { id },
       data: {
         name: body.name,
         description: body.description,
         icon: body.icon,
+        ...(body.image === undefined ? {} : { image: body.image || null }),
         isActive: body.isActive,
       },
     })
+
+    if (previousImage && previousImage !== category.image) await deleteImage(previousImage)
 
     return NextResponse.json(category)
   } catch (error) {

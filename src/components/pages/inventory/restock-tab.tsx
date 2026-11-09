@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Eye, Plus, Truck } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -9,7 +10,6 @@ import { DataTable } from '@/components/organisms/data-table';
 import { SearchSelect } from '@/components/molecules/search-select';
 import type { Restock, Supplier } from '@/lib/inventory';
 
-import { NewRestockDialog } from './new-restock-dialog';
 import { RestockDetailDialog } from './restock-detail-dialog';
 import { restockColumns } from './inventory-columns';
 import type { useRestocks } from './use-inventory';
@@ -26,15 +26,12 @@ export function RestockTab({
   restocks,
   suppliers,
   isAdmin,
-  newRestockOpen,
-  onNewRestockOpenChange,
 }: {
   restocks: ReturnType<typeof useRestocks>;
   suppliers: Supplier[];
   isAdmin: boolean;
-  newRestockOpen: boolean;
-  onNewRestockOpenChange: (open: boolean) => void;
 }) {
+  const router = useRouter();
   const [detailId, setDetailId] = useState<string | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
 
@@ -74,7 +71,7 @@ export function RestockTab({
 
         {isAdmin && (
           <Button
-            onClick={() => onNewRestockOpenChange(true)}
+            onClick={() => router.push('/inventory/restock/new')}
             icon={<Plus className="h-4 w-4" />}
           >
             New Restock
@@ -97,7 +94,7 @@ export function RestockTab({
           isAdmin ? (
             <Button
               size="sm"
-              onClick={() => onNewRestockOpenChange(true)}
+              onClick={() => router.push('/inventory/restock/new')}
               icon={<Plus className="h-4 w-4" />}
             >
               Create First Restock
@@ -118,11 +115,6 @@ export function RestockTab({
         showNumbers
       />
 
-      <NewRestockDialog
-        open={newRestockOpen}
-        onOpenChange={onNewRestockOpenChange}
-        onSubmitted={restocks.refresh}
-      />
       <RestockDetailDialog
         open={detailOpen}
         onOpenChange={setDetailOpen}

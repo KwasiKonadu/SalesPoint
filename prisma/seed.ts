@@ -267,6 +267,9 @@ async function main() {
       const inv = await prisma.inventory.create({
         data: { productId: product.id, quantity: stock },
       })
+      await prisma.stockBatch.create({
+        data: { productId: product.id, label: 'Opening stock', received: stock, remaining: stock },
+      })
       await prisma.inventoryMovement.create({
         data: {
           inventoryId: inv.id,

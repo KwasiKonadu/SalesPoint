@@ -10,6 +10,8 @@ import {
   UserCog,
   Settings,
   Zap,
+  Globe,
+  PackageCheck,
 } from 'lucide-react';
 
 export type UserRole = 'admin' | 'sales_person' | string;
@@ -26,6 +28,8 @@ export interface NavRoute {
   icon: React.ElementType;
   /** Only visible / accessible to admins. */
   adminOnly?: boolean;
+  /** Resolves titles/access for the path but is not shown in the sidebar. */
+  hidden?: boolean;
 }
 
 export const NAV_ROUTES: NavRoute[] = [
@@ -42,6 +46,13 @@ export const NAV_ROUTES: NavRoute[] = [
     title: 'Point of Sale',
     description: 'Process new sales transactions',
     icon: Zap,
+  },
+  {
+    href: '/web-orders',
+    label: 'Web orders',
+    title: 'Web orders',
+    description: 'Orders placed on the website: confirm, prepare, deliver or hand over',
+    icon: PackageCheck,
   },
   {
     href: '/sales',
@@ -65,11 +76,19 @@ export const NAV_ROUTES: NavRoute[] = [
     icon: Warehouse,
   },
   {
+    href: '/contacts',
+    label: 'Customers & Suppliers',
+    title: 'Customers & Suppliers',
+    description: 'Manage customers and supplier relationships',
+    icon: Users,
+  },
+  {
     href: '/customers',
     label: 'Customers',
     title: 'Customers',
     description: 'Manage customer information',
     icon: Users,
+    hidden: true,
   },
   {
     href: '/suppliers',
@@ -78,6 +97,7 @@ export const NAV_ROUTES: NavRoute[] = [
     description: 'Manage supplier relationships',
     icon: Truck,
     adminOnly: true,
+    hidden: true,
   },
   // Hidden for now — old expenses tracker, superseded by the goods-expense
   // page below. Page still works at /expenses if navigated to directly.
@@ -111,6 +131,15 @@ export const NAV_ROUTES: NavRoute[] = [
     description: 'Manage team members and permissions',
     icon: UserCog,
     adminOnly: true,
+    hidden: true,
+  },
+  {
+    href: '/website',
+    label: 'Website management',
+    title: 'Website',
+    description: 'Homepage promotions and website-only discounts',
+    icon: Globe,
+    adminOnly: true,
   },
   {
     href: '/settings',
@@ -132,7 +161,7 @@ export function routeForPath(pathname: string): NavRoute | undefined {
 }
 
 export function visibleRoutes(role: UserRole): NavRoute[] {
-  return NAV_ROUTES.filter((r) => !r.adminOnly || role === 'admin');
+  return NAV_ROUTES.filter((r) => !r.hidden && (!r.adminOnly || role === 'admin'));
 }
 
 export function canAccess(pathname: string, role: UserRole): boolean {

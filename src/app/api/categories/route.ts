@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json()
-    const { name, description, icon } = body
+    const { name, description, icon, image } = body
 
     const existing = await db.productCategory.findUnique({ where: { name } })
     if (existing) {
@@ -43,6 +43,7 @@ export async function POST(req: NextRequest) {
         name,
         description: description || null,
         icon: icon || null,
+        image: image || null,
       },
     })
 

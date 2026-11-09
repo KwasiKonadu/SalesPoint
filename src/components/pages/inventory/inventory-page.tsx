@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 import { useAuth } from "@/lib/auth-context";
 import { TabBar } from "@/components/molecules/tab-bar";
 import { PageTabsSlot } from "@/components/molecules/page-tabs";
 import { assignTypeChipColors } from "@/components/atoms/type-chip";
+import { ExpiryTab } from "./expiry-tab";
 import { RestockTab } from "./restock-tab";
 import { StockMovementsTab } from "./stock-movements-tab";
 import { StockOverviewTab } from "./stock-overview-tab";
@@ -16,7 +18,7 @@ export default function InventoryPage() {
   const isAdmin = user?.role === "admin";
 
   const [activeTab, setActiveTab] = useState("overview");
-  const [newRestockOpen, setNewRestockOpen] = useState(false);
+  const router = useRouter();
 
   const refs = useInventoryRefs();
   assignTypeChipColors(refs.categories.map((c) => c.name));
@@ -35,6 +37,7 @@ export default function InventoryPage() {
             { key: "overview", label: "Stock Overview" },
             { key: "movements", label: "Stock Movements" },
             { key: "restock", label: "Restock" },
+            { key: "expiry", label: "Expiry" },
           ]}
         />
       </PageTabsSlot>
@@ -44,10 +47,7 @@ export default function InventoryPage() {
           overview={overview}
           categories={refs.categories}
           isAdmin={isAdmin}
-          onNewRestock={() => {
-            setActiveTab("restock");
-            setNewRestockOpen(true);
-          }}
+          onNewRestock={() => router.push("/inventory/restock/new")}
         />
       )}
 
@@ -55,13 +55,15 @@ export default function InventoryPage() {
         <StockMovementsTab movements={movements} products={refs.products} />
       )}
 
+      {activeTab === "expiry" && (
+        <ExpiryTab enabled isAdmin={isAdmin} />
+      )}
+
       {activeTab === "restock" && (
         <RestockTab
           restocks={restocks}
           suppliers={refs.suppliers}
           isAdmin={isAdmin}
-          newRestockOpen={newRestockOpen}
-          onNewRestockOpenChange={setNewRestockOpen}
         />
       )}
     </div>

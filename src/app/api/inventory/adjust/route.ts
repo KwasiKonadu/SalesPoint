@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { takeFromBatches } from '@/lib/batches'
 
 function getUserId(req: NextRequest): string | null {
   return req.headers.get('x-user-id')
@@ -13,7 +14,7 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json()
-    const { productId, quantity, type, note } = body
+    const { productId, quantity, type, note, batchId } = body
 
     if (!productId || quantity === undefined || !type) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
@@ -47,11 +48,15 @@ export async function POST(req: NextRequest) {
         include: { product: true },
       })
 
+      // A specific batch (e.g. the expired one) or, by default, earliest expiry first.
+      const allocations = await takeFromBatches(tx, productId, quantity, { batchId: batchId || undefined })
+
       await tx.inventoryMovement.create({
         data: {
           inventoryId: updated.id,
           type,
           quantity,
+          batches: allocations,
           note: note || null,
           productId,
         },

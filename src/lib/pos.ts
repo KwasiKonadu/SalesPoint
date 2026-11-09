@@ -7,6 +7,7 @@
 import { getBusinessInfo, type BusinessInfo } from '@/lib/business-info';
 import { formatCurrency } from '@/lib/format';
 import { paymentMethodLabel, type PaymentMethod } from '@/lib/payment';
+import { effectivePrice } from '@/lib/pricing';
 import { lowStockThreshold } from '@/lib/stock';
 
 export type { PaymentMethod };
@@ -20,6 +21,11 @@ export interface PosProduct {
   size?: string | null;
   sku: string;
   sellingPrice: number;
+  discountType?: string | null;
+  discountValue?: number | null;
+  discountStart?: string | null;
+  discountEnd?: string | null;
+  discountChannel?: string | null;
   wholesalePrice?: number | null;
   packSize?: number | null;
   image?: string | null;
@@ -70,7 +76,7 @@ export function lineUnitPrice(item: CartItem): number {
   if (item.mode === 'pack' && item.product.wholesalePrice != null) {
     return item.product.wholesalePrice;
   }
-  return item.product.sellingPrice;
+  return effectivePrice(item.product, new Date(), 'pos');
 }
 
 export function lineTotal(item: CartItem): number {

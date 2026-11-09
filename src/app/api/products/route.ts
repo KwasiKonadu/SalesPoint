@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { addBatch } from '@/lib/batches'
+import { slugify, uniqueSlug } from '@/lib/slug'
 
 function getUserId(req: NextRequest): string | null {
   return req.headers.get('x-user-id')
@@ -110,6 +112,13 @@ export async function POST(req: NextRequest) {
       taxRate,
       lowStockPercent,
       initialStock,
+      slug: providedSlug,
+      showOnWebsite,
+      featured,
+      perishable,
+      images,
+      details,
+      variantGroup,
     } = body
 
     if (!name || !String(name).trim()) {
@@ -133,10 +142,21 @@ export async function POST(req: NextRequest) {
     // running total up on every restock.
     const openingStock = Number(initialStock) || 0
 
+    const slug = await uniqueSlug(
+      slugify(providedSlug || [name, container, size].filter(Boolean).join(' ')),
+    )
+
     const product = await db.product.create({
       data: {
         name: String(name).trim(),
         sku,
+        slug,
+        showOnWebsite: !!showOnWebsite,
+        featured: !!featured,
+        perishable: !!perishable,
+        images: Array.isArray(images) ? images.filter(Boolean) : [],
+        details: Array.isArray(details) ? details : undefined,
+        variantGroup: variantGroup?.trim() || null,
         container: container?.trim() || null,
         size: size?.trim() || null,
         description: description || null,
@@ -161,6 +181,7 @@ export async function POST(req: NextRequest) {
     })
 
     if (tracksStock && openingStock > 0 && product.inventory) {
+      await addBatch(db, { productId: product.id, quantity: openingStock, label: 'Opening stock' })
       await db.inventoryMovement.create({
         data: {
           inventoryId: product.inventory.id,

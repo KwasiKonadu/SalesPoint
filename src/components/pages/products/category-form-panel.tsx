@@ -9,6 +9,7 @@ import { useSaveCategory } from "@/hooks/api/use-categories";
 import { Button } from "@/components/ui/button";
 import { TextField } from "@/components/atoms/text-field";
 import { FormPanel } from "@/components/molecules/form-panel";
+import { ImageUpload } from "@/components/molecules/image-upload";
 import { IconPicker } from "@/components/molecules/icon-picker";
 
 /** Slide-over form for creating or editing a product category. */
@@ -25,6 +26,7 @@ export function CategoryFormPanel({
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [icon, setIcon] = useState("");
+  const [image, setImage] = useState("");
   const saveCategory = useSaveCategory();
 
   // Seed the fields from the category each time the panel opens.
@@ -35,6 +37,7 @@ export function CategoryFormPanel({
       setName(category?.name || "");
       setDescription(category?.description || "");
       setIcon(category?.icon || "");
+      setImage(category?.image || "");
     }
   }
 
@@ -47,6 +50,7 @@ export function CategoryFormPanel({
         name: name.trim(),
         description: description.trim() || undefined,
         icon: icon || null,
+        image: image || null,
         ...(isEditing ? { isActive: category.isActive } : {}),
       });
 
@@ -112,6 +116,10 @@ export function CategoryFormPanel({
           rows={2}
         />
         <IconPicker value={icon} onChange={setIcon} />
+        <div className="space-y-1.5">
+          <ImageUpload label="Website picture (optional)" name={name} value={image} onChange={(u) => setImage(u ?? "")} />
+          <p className="text-xs text-muted-foreground">Without one, the website shows a collage of this category&apos;s products.</p>
+        </div>
       </form>
     </FormPanel>
   );

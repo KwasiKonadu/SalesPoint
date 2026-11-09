@@ -1,10 +1,5 @@
-import StaffPage from '@/components/pages/staff/staff-page';
-import { RoleGuard } from '@/components/auth/role-guard';
+import { redirect } from 'next/navigation';
 
 export default function Page() {
-  return (
-    <RoleGuard allow="admin">
-      <StaffPage />
-    </RoleGuard>
-  );
+  redirect('/settings');
 }

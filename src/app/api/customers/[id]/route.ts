@@ -30,7 +30,7 @@ export async function GET(
       orderBy: { createdAt: 'desc' },
     })
 
-    const totalSpent = sales.reduce((sum, s) => sum + s.totalAmount, 0)
+    const totalSpent = sales.reduce((sum, s) => (s.status === 'refunded' ? sum : sum + s.totalAmount), 0)
 
     // What the customer still owes us: the unpaid portion of every sale that
     // wasn't fully refunded. Credit sales record amountReceived = 0, so their

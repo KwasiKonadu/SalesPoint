@@ -6,6 +6,8 @@ import { Package, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/lib/format";
 import { variantLabel, type ProductItem } from "@/lib/products";
+import { channelShort, channelStyle } from "@/lib/discount-channel";
+import { discountStatus, effectivePrice } from "@/lib/pricing";
 import { lowStockThreshold } from "@/lib/stock";
 import { cn } from "@/lib/utils";
 
@@ -110,10 +112,25 @@ export function ProductCard({
               {product.category?.name ?? "—"}
             </span>
           </div>
+          {discountStatus(product) === "active" && channelShort(product.discountChannel) && (
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Discount</span>
+              <span className={`font-medium ${channelStyle(product.discountChannel).text}`}>{channelShort(product.discountChannel)}</span>
+            </div>
+          )}
           <div className="flex justify-between">
             <span className="text-muted-foreground">Price</span>
             <span className="font-medium tabular-nums">
-              {formatCurrency(product.sellingPrice)}
+              {discountStatus(product) === "active" ? (
+                <>
+                  <span className="mr-1 text-muted-foreground line-through">
+                    {formatCurrency(product.sellingPrice)}
+                  </span>
+                  {formatCurrency(effectivePrice(product))}
+                </>
+              ) : (
+                formatCurrency(product.sellingPrice)
+              )}
             </span>
           </div>
           <div className="flex justify-between">

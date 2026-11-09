@@ -3,7 +3,8 @@ import { getToken } from 'next-auth/jwt';
 import type { NextRequest } from 'next/server';
 
 // Runs on every request except the ones excluded by `matcher` below (the
-// login page itself, NextAuth's own endpoints, and static assets).
+// login page itself, NextAuth's own endpoints, the read-only `/api/public/`
+// storefront catalogue, and static assets).
 //
 // - Page requests without a valid session are redirected to /login.
 // - API requests without a valid session get a 401 instead of a redirect.
@@ -40,6 +41,6 @@ export async function proxy(req: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!login|api/auth|_next/static|_next/image|favicon.ico|logo.svg).*)',
+    '/((?!login|api/auth|api/public/|_next/static|_next/image|favicon.ico|logo.svg).*)',
   ],
 };

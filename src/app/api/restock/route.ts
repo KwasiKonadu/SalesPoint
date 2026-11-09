@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { addBatch } from '@/lib/batches'
 
 const VALID_METHODS = ['cash', 'mobile_money', 'card', 'bank_transfer']
 
@@ -68,6 +69,18 @@ export async function POST(req: NextRequest) {
 
     if (!items || items.length === 0) {
       return NextResponse.json({ error: 'Restock items are required' }, { status: 400 })
+    }
+
+    // Perishable products need an expiry date on their line, so batches can be told apart.
+    const perishable = await db.product.findMany({
+      where: { id: { in: items.map((i: Record<string, unknown>) => i.productId as string) }, perishable: true },
+      select: { id: true, name: true },
+    })
+    const missing = perishable.find((p) =>
+      items.some((i: Record<string, unknown>) => i.productId === p.id && (Number(i.quantity) || 0) > 0 && !i.expiryDate),
+    )
+    if (missing) {
+      return NextResponse.json({ error: `${missing.name} needs an expiry date` }, { status: 400 })
     }
 
     // Calculate total cost
@@ -147,7 +160,7 @@ export async function POST(req: NextRequest) {
       }
 
       // Process each item: increase inventory, create movement
-      for (const item of items) {
+      for (const [index, item] of items.entries()) {
         const productId = item.productId as string
         const qty = item.quantity as number
 
@@ -163,6 +176,14 @@ export async function POST(req: NextRequest) {
         await tx.product.update({
           where: { id: productId },
           data: { targetStock: inv.quantity },
+        })
+
+        // One batch per line, carrying that line's expiry date.
+        await addBatch(tx, {
+          productId,
+          quantity: qty,
+          expiryDate: item.expiryDate ? new Date(item.expiryDate as string) : null,
+          restockItemId: restock.items[index]?.id,
         })
 
         // Create movement

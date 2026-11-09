@@ -1,0 +1,1 @@
+ALTER TABLE "PromoSlot" ADD COLUMN "imageUrl2" TEXT;

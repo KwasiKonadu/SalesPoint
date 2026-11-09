@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Plus, Truck } from "lucide-react";
 import { toast } from "sonner";
 
@@ -13,7 +14,6 @@ import { DataPagination } from "@/components/molecules/data-pagination";
 import { EmptyState } from "@/components/molecules/empty-state";
 import { SearchInput } from "@/components/molecules/search-input";
 import { SupplierFormPanel } from "./supplier-form-panel";
-import { SupplierProfileDialog } from "./supplier-profile-dialog";
 import { useDeleteSupplier, useSuppliersList } from "./use-suppliers";
 
 export default function SuppliersPage() {
@@ -22,10 +22,7 @@ export default function SuppliersPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [editingSupplier, setEditingSupplier] = useState<Supplier | null>(null);
 
-  const [viewOpen, setViewOpen] = useState(false);
-  const [viewingSupplierId, setViewingSupplierId] = useState<string | null>(
-    null,
-  );
+  const router = useRouter();
 
   const [deletingSupplier, setDeletingSupplier] = useState<Supplier | null>(
     null,
@@ -42,8 +39,7 @@ export default function SuppliersPage() {
   };
 
   const openView = (supplier: Supplier) => {
-    setViewingSupplierId(supplier.id);
-    setViewOpen(true);
+    router.push(`/suppliers/${supplier.id}`);
   };
 
   const confirmDelete = async () => {
@@ -138,12 +134,6 @@ export default function SuppliersPage() {
         open={formOpen}
         onOpenChange={setFormOpen}
         supplier={editingSupplier}
-      />
-
-      <SupplierProfileDialog
-        supplierId={viewingSupplierId}
-        open={viewOpen}
-        onOpenChange={setViewOpen}
       />
 
       <ConfirmDialog

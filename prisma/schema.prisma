@@ -48,6 +48,7 @@ model ProductCategory {
   name        String   @unique
   description String?
   icon        String?
+  image       String? // optional picture for the website; without one the tile is a collage of its products
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -100,6 +101,22 @@ model Product {
   isActive        Boolean  @default(true)
   targetStock     Int? // reference stock the low-stock % is measured against
   lowStockPercent Int      @default(20)
+
+  // --- Storefront ---
+  slug           String?  @unique // URL segment on the website
+  showOnWebsite  Boolean  @default(false)
+  featured       Boolean  @default(false)
+  images         String[] @default([]) // gallery; `image` stays the primary one
+  details        Json? // spec rows for the website, e.g. [["Origin","Ghana"]]
+  variantGroup   String? // groups sibling products (1L / 5L) into one page later
+  perishable     Boolean  @default(false) // restocks must give an expiry date for each line
+
+  // --- Scheduled discount (one at a time; base sellingPrice is never overwritten) ---
+  discountChannel String  @default("both") // where it applies: 'both' | 'web' | 'pos' (till)
+  discountType   String? // 'percent' | 'fixed'
+  discountValue  Float?
+  discountStart  DateTime?
+  discountEnd    DateTime?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
@@ -107,6 +124,7 @@ model Product {
   productType  ProductType?        @relation(fields: [productTypeId], references: [id])
   unit         Unit?               @relation(fields: [unitId], references: [id])
   inventory    Inventory?
+  batches      StockBatch[]
   saleItems    SaleItem[]
   returnItems  ReturnItem[]
   restockItems RestockItem[]
@@ -132,10 +150,30 @@ model InventoryMovement {
   quantity    Int
   note        String?
   referenceId String? // saleId, restockId, returnId, etc.
+  batches     Json? // [{ batchId, qty }] — which batches a deduction came from (so returns can go back)
   createdAt   DateTime @default(now())
 
   inventory Inventory @relation(fields: [inventoryId], references: [id])
   product   Product   @relation(fields: [productId], references: [id])
+}
+
+// A received lot of one product with its own expiry date. Product stock
+// (Inventory.quantity) is the sum of its batches' `remaining`; sales draw from
+// the earliest expiry first. See src/lib/batches.ts.
+model StockBatch {
+  id            String    @id @default(cuid())
+  productId     String
+  restockItemId String?   @unique // null for opening stock / returns
+  label         String? // "Opening stock", "Returned stock", ...
+  expiryDate    DateTime? // null = does not expire; sold last
+  received      Int
+  remaining     Int
+  createdAt     DateTime  @default(now())
+
+  product Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
+  item    RestockItem? @relation(fields: [restockItemId], references: [id], onDelete: SetNull)
+
+  @@index([productId, remaining, expiryDate])
 }
 
 // ==================== SUPPLIERS ====================
@@ -186,8 +224,9 @@ model RestockItem {
   costPrice  Float
   expiryDate DateTime?
 
-  restock Restock @relation(fields: [restockId], references: [id], onDelete: Cascade)
-  product Product @relation(fields: [productId], references: [id])
+  restock Restock     @relation(fields: [restockId], references: [id], onDelete: Cascade)
+  product Product     @relation(fields: [productId], references: [id])
+  batch   StockBatch?
 }
 
 // A payment recorded against a restock (settling the balance owed to a
@@ -376,4 +415,157 @@ model Expense {
 
   category  ExpenseCategory? @relation(fields: [expenseCategoryId], references: [id])
   createdBy User?            @relation(fields: [createdById], references: [id])
+}
+
+// ==================== WEBSITE (storefront CMS) ====================
+
+// The homepage promotion slots. There is exactly one row per `type`:
+// announcement | hero | product_of_week | collection
+model PromoSlot {
+  id          String    @id @default(cuid())
+  type        String    @unique
+  title       String
+  subtitle    String?
+  imageUrl    String? // uploaded picture (the hero poster)
+  buttonLabel String?
+  linkType    String? // product | category | sale | url
+  linkTarget  String? // product slug, category slug or URL (unused for sale)
+  productIds  String[]  @default([]) // product_of_week uses the first; hero uses up to two; collection uses all, in order
+  startAt     DateTime?
+  endAt       DateTime?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+// ==================== WEBSITE ORDERS ====================
+// Orders placed on the public website. Amounts are in major units (cedis), like Sale.
+
+model WebOrder {
+  id             String   @id @default(cuid())
+  ref            String   @unique
+  idempotencyKey String   @unique
+  status         String   @default("pending_confirmation") // pending_confirmation, confirmed, processing, ready_for_pickup, out_for_delivery, completed, cancelled
+  paymentStatus  String   @default("pending") // pending, paid
+  paymentMethod  String
+  fulfilment     String // delivery | pickup
+  areaId         String?
+  areaName       String?
+  customerName   String
+  customerEmail  String
+  customerPhone  String
+  address        Json?
+  instructions   String?
+  subtotal       Float
+  deliveryFee    Float    @default(0)
+  total          Float
+  history        Json // [{ status, at, note }]
+  saleId         String? @unique // the Sale recorded when the order was completed
+  accountId      String? // the website account that placed it, if signed in
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  items WebOrderItem[]
+
+  @@index([accountId])
+}
+
+model WebOrderItem {
+  id           String  @id @default(cuid())
+  orderId      String
+  productId    String
+  name         String
+  sku          String?
+  image        String?
+  variantLabel String?
+  unitPrice    Float
+  qty          Int
+  units        Int // single units taken from stock (qty x pack size)
+  lineTotal    Float
+
+  order WebOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+// ==================== WEBSITE ACCOUNTS ====================
+// Customers who register on the public website. Separate from POS `Customer`
+// (walk-in buyers); a completed website order links to a POS customer by phone.
+
+model WebAccount {
+  id              String   @id @default(cuid())
+  email           String   @unique // always lower case
+  name            String
+  phone           String   @default("")
+  passwordHash    String // scrypt
+  tokensValidFrom DateTime @default(now()) // sign-in tokens issued before this are refused (password change / reset)
+  cart            Json     @default("[]") // [{ productId, variantId, qty }] — follows the customer across devices
+  wishlist        Json     @default("[]") // [productId]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  addresses   WebAddress[]
+  resetTokens WebResetToken[]
+}
+
+model WebAddress {
+  id        String   @id @default(cuid())
+  accountId String
+  label     String
+  name      String
+  phone     String
+  line1     String
+  line2     String   @default("")
+  city      String
+  postal    String   @default("")
+  areaId    String
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  account WebAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@index([accountId])
+}
+
+model WebResetToken {
+  id        String    @id @default(cuid())
+  accountId String
+  tokenHash String    @unique // sha-256 of the emailed token
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  account WebAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+}
+
+// A message sent from the website's contact form.
+model WebMessage {
+  id        String    @id @default(cuid())
+  name      String
+  email     String
+  phone     String    @default("")
+  subject   String
+  message   String
+  status    String    @default("new") // new | handled
+  accountId String? // set when the sender was signed in
+  createdAt DateTime  @default(now())
+  handledAt DateTime?
+
+  @@index([status, createdAt])
+}
+
+// A customer's request to return items from a completed website order (one per order).
+model WebReturn {
+  id        String    @id @default(cuid())
+  orderId   String    @unique
+  orderRef  String
+  accountId String
+  items     Json // [{ productId, name, qty }]
+  reason    String
+  notes     String    @default("")
+  status    String    @default("requested") // requested | approved | rejected | completed
+  staffNote String    @default("")
+  createdAt DateTime  @default(now())
+  decidedAt DateTime?
+
+  @@index([accountId])
+  @@index([status, createdAt])
 }

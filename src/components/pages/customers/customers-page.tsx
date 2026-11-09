@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Plus, Users } from "lucide-react";
 import { toast } from "sonner";
 
@@ -14,7 +15,6 @@ import { DataPagination } from "@/components/molecules/data-pagination";
 import { EmptyState } from "@/components/molecules/empty-state";
 import { SearchInput } from "@/components/molecules/search-input";
 import { CustomerFormPanel } from "./customer-form-panel";
-import { CustomerProfileDialog } from "./customer-profile-dialog";
 import { useCustomersList, useDeleteCustomer } from "./use-customers";
 
 export default function CustomersPage() {
@@ -23,8 +23,7 @@ export default function CustomersPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
 
-  const [profileOpen, setProfileOpen] = useState(false);
-  const [profileId, setProfileId] = useState<string | null>(null);
+  const router = useRouter();
 
   const [deletingCustomer, setDeletingCustomer] = useState<Customer | null>(
     null,
@@ -40,8 +39,7 @@ export default function CustomersPage() {
     setFormOpen(true);
   };
   const openProfile = (customer: Customer) => {
-    setProfileId(customer.id);
-    setProfileOpen(true);
+    router.push(`/customers/${customer.id}`);
   };
 
   const handleDelete = async () => {
@@ -141,12 +139,6 @@ export default function CustomersPage() {
         open={formOpen}
         onOpenChange={setFormOpen}
         customer={editingCustomer}
-      />
-
-      <CustomerProfileDialog
-        open={profileOpen}
-        onOpenChange={setProfileOpen}
-        customerId={profileId}
       />
 
       <ConfirmDialog

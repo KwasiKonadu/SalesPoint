@@ -29,7 +29,7 @@ export function DashboardEmptyState() {
                 </Link>
               </Button>
               <Button asChild variant="outline">
-                <Link href="/customers">
+                <Link href="/contacts?tab=customers">
                   <UserPlus className="mr-2 h-4 w-4" />
                   Add Customer
                 </Link>

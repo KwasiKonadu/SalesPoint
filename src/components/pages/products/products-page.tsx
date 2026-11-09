@@ -9,6 +9,7 @@ import { TabBar } from "@/components/molecules/tab-bar";
 import { PageTabsSlot } from "@/components/molecules/page-tabs";
 import { ConfirmDialog } from "@/components/molecules/confirm-dialog";
 import { assignTypeChipColors } from "@/components/atoms/type-chip";
+import { ImportProductsDialog } from "./import-products-dialog";
 import { CategoriesTab } from "./categories-tab";
 import { CategoryFormPanel } from "./category-form-panel";
 import { ProductFormPanel } from "./product-form-panel";
@@ -20,12 +21,13 @@ import {
   ProductTableSkeleton,
 } from "./skeletons";
 import { useDeleteProduct, useProductsCatalog, useSaveProduct } from "./use-products";
+import { ChangeImageDialog } from "./change-image-dialog";
+import { ProductDetailsDialog } from "./product-details-dialog";
 import { ViewProductDialog } from "./view-product-dialog";
 
 export default function ProductsPage() {
-  const [activeTab, setActiveTab] = useState<"products" | "categories">(
-    "products",
-  );
+  const [activeTab, setActiveTab] = useState<"products" | "categories">("products");
+  const [importOpen, setImportOpen] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("table");
 
   const catalog = useProductsCatalog();
@@ -48,6 +50,10 @@ export default function ProductsPage() {
     null,
   );
   const [viewOpen, setViewOpen] = useState(false);
+  const [detailsProduct, setDetailsProduct] = useState<ProductItem | null>(null);
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [imageProduct, setImageProduct] = useState<ProductItem | null>(null);
+  const [imageOpen, setImageOpen] = useState(false);
   const [deletingProduct, setDeletingProduct] = useState<ProductItem | null>(
     null,
   );
@@ -69,6 +75,14 @@ export default function ProductsPage() {
   const openEditProduct = (product: ProductItem) => {
     setEditingProduct(product);
     setProductPanelOpen(true);
+  };
+  const openDetails = (product: ProductItem) => {
+    setDetailsProduct(product);
+    setDetailsOpen(true);
+  };
+  const openChangeImage = (product: ProductItem) => {
+    setImageProduct(product);
+    setImageOpen(true);
   };
   const openViewProduct = (product: ProductItem) => {
     setViewingProduct(product);
@@ -175,6 +189,7 @@ export default function ProductsPage() {
             viewMode={viewMode}
             onViewModeChange={setViewMode}
             onAddProduct={openAddProduct}
+            onImport={() => setImportOpen(true)}
           />
 
           {catalog.loading ? (
@@ -188,6 +203,8 @@ export default function ProductsPage() {
               {...viewProps}
               onView={openViewProduct}
               onToggleActive={toggleProductActive}
+              onDetails={openDetails}
+              onChangeImage={openChangeImage}
               onDelete={(product) => {
                 setDeletingProduct(product);
                 setDeleteOpen(true);
@@ -228,10 +245,27 @@ export default function ProductsPage() {
         units={catalog.units}
       />
 
+      <ImportProductsDialog open={importOpen} onOpenChange={setImportOpen} />
+
+      <ProductDetailsDialog
+        product={detailsProduct}
+        open={detailsOpen}
+        onOpenChange={setDetailsOpen}
+        onEdit={openEditProduct}
+      />
+
+      <ChangeImageDialog
+        product={imageProduct}
+        open={imageOpen}
+        onOpenChange={setImageOpen}
+        onProductChange={setImageProduct}
+      />
+
       <ViewProductDialog
         product={viewingProduct}
         open={viewOpen}
         onOpenChange={setViewOpen}
+        onProductChange={setViewingProduct}
       />
 
       <ConfirmDialog
