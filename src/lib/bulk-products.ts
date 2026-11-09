@@ -133,6 +133,11 @@ export async function createBulk(prepared: Prepared[]) {
       await tx.product.createMany({ data: prepared.map((p) => ({ id: p.id, ...p.data })) })
       const stocked = prepared.filter((p) => p.tracksStock).map((p) => ({ ...p, inventoryId: randomUUID() }))
       await tx.inventory.createMany({ data: stocked.map((p) => ({ id: p.inventoryId, productId: p.id, quantity: p.stock })) })
+      await tx.stockBatch.createMany({
+        data: stocked
+          .filter((p) => p.stock > 0)
+          .map((p) => ({ productId: p.id, label: 'Opening stock', received: p.stock, remaining: p.stock })),
+      })
       await tx.inventoryMovement.createMany({
         data: stocked
           .filter((p) => p.stock > 0)

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { addBatch } from '@/lib/batches'
 import { slugify, uniqueSlug } from '@/lib/slug'
 
 function getUserId(req: NextRequest): string | null {
@@ -114,6 +115,7 @@ export async function POST(req: NextRequest) {
       slug: providedSlug,
       showOnWebsite,
       featured,
+      perishable,
       images,
       details,
       variantGroup,
@@ -151,6 +153,7 @@ export async function POST(req: NextRequest) {
         slug,
         showOnWebsite: !!showOnWebsite,
         featured: !!featured,
+        perishable: !!perishable,
         images: Array.isArray(images) ? images.filter(Boolean) : [],
         details: Array.isArray(details) ? details : undefined,
         variantGroup: variantGroup?.trim() || null,
@@ -178,6 +181,7 @@ export async function POST(req: NextRequest) {
     })
 
     if (tracksStock && openingStock > 0 && product.inventory) {
+      await addBatch(db, { productId: product.id, quantity: openingStock, label: 'Opening stock' })
       await db.inventoryMovement.create({
         data: {
           inventoryId: product.inventory.id,

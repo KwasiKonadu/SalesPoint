@@ -8,12 +8,16 @@ import { PageTabsSlot } from "@/components/molecules/page-tabs";
 import { BusinessInfoTab } from "./business-info-tab";
 import { ProductConfigTab } from "./product-config-tab";
 import { ReceiptSettingsTab } from "./receipt-settings-tab";
-import type { SettingsTab } from "@/lib/settings";
+import type { SettingsTab as BaseSettingsTab } from "@/lib/settings";
+import StaffPage from "@/components/pages/staff/staff-page";
+
+type SettingsTab = BaseSettingsTab | "staff";
 
 const TABS: { key: SettingsTab; label: string }[] = [
   { key: "business-info", label: "Business Info" },
   { key: "product-config", label: "Product Config" },
   { key: "receipt-settings", label: "Receipt" },
+  { key: "staff", label: "Staff" },
 ];
 
 export default function SettingsPage() {
@@ -30,13 +34,17 @@ export default function SettingsPage() {
         />
       </PageTabsSlot>
 
-      <Card>
-        <CardContent className="pt-6">
-          {activeTab === "business-info" && <BusinessInfoTab />}
-          {activeTab === "product-config" && <ProductConfigTab />}
-          {activeTab === "receipt-settings" && <ReceiptSettingsTab />}
-        </CardContent>
-      </Card>
+      {activeTab === "staff" ? (
+        <StaffPage />
+      ) : (
+        <Card>
+          <CardContent className="pt-6">
+            {activeTab === "business-info" && <BusinessInfoTab />}
+            {activeTab === "product-config" && <ProductConfigTab />}
+            {activeTab === "receipt-settings" && <ReceiptSettingsTab />}
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

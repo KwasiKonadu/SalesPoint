@@ -64,6 +64,7 @@ export const queryKeys = {
   inventory: {
     overview: (params: Record<string, unknown>) => ['inventory', 'overview', params] as const,
     refs: ['inventory', 'refs'] as const,
+    batches: (filter: string) => ['inventory', 'batches', filter] as const,
     stockMovements: (params: Record<string, unknown>) => ['inventory', 'stock-movements', params] as const,
   },
   restocks: {

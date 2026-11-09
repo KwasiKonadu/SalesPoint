@@ -1,6 +1,7 @@
 import { effectivePrice } from '@/lib/pricing'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { takeFromBatches } from '@/lib/batches'
 import { nextReceiptNumber, nextTransactionNumber } from '@/lib/sale-numbers'
 import { productLabel } from '@/lib/products'
 
@@ -260,11 +261,13 @@ export async function POST(req: NextRequest) {
             data: { quantity: { decrement: qty } },
           })
 
+          const allocations = await takeFromBatches(tx, productId, qty)
           await tx.inventoryMovement.create({
             data: {
               inventoryId: product.inventory.id,
               type: 'sale',
               quantity: qty,
+              batches: allocations,
               note: `Sale ${transactionNumber}`,
               referenceId: sale.id,
               productId,

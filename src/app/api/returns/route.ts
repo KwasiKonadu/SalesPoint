@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { restoreToBatches } from '@/lib/batches'
 
 function getUserId(req: NextRequest): string | null {
   return req.headers.get('x-user-id')
@@ -164,6 +165,7 @@ export async function POST(req: NextRequest) {
             data: { quantity: { increment: p.quantity } },
           })
 
+          await restoreToBatches(tx, p.productId, p.quantity, { referenceId: sale.id })
           await tx.inventoryMovement.create({
             data: {
               inventoryId: inv.id,

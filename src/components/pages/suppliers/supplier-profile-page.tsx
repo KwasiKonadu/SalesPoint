@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import {
   AlertCircle,
   ArrowLeft,
@@ -20,7 +20,6 @@ import { formatCurrency, formatDate } from "@/lib/format";
 import type { SupplierRestock } from "@/lib/suppliers";
 import { useSupplierDetail } from "./use-suppliers";
 import { Button } from "@/components/ui/button";
-import { NewRestockDialog } from "../inventory/new-restock-dialog";
 import { RestockDetailDialog } from "../inventory/restock-detail-dialog";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -92,13 +91,13 @@ function InfoRow({
 export default function SupplierProfilePage() {
   const { id } = useParams<{ id: string }>();
   const { data: supplier, isPending } = useSupplierDetail(id ?? null);
-  const [orderOpen, setOrderOpen] = useState(false);
+  const router = useRouter();
   const [detailId, setDetailId] = useState<string | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
 
   const back = (
     <Link
-      href="/suppliers"
+      href="/contacts?tab=suppliers"
       className="mb-3 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
     >
       <ArrowLeft className="size-4" /> Suppliers
@@ -131,17 +130,11 @@ export default function SupplierProfilePage() {
             Supplier profile and purchase history
           </p>
         </div>
-        <Button onClick={() => setOrderOpen(true)}>
+        <Button onClick={() => router.push(`/inventory/restock/new?supplier=${supplier.id}`)}>
           <Plus className="mr-2 size-4" /> New order
         </Button>
       </div>
 
-      <NewRestockDialog
-        open={orderOpen}
-        onOpenChange={setOrderOpen}
-        onSubmitted={() => {}}
-        defaultSupplierId={supplier.id}
-      />
       <RestockDetailDialog
         open={detailOpen}
         onOpenChange={setDetailOpen}

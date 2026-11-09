@@ -14,6 +14,7 @@ import {
   type InventoryProduct,
   type Paginated,
   type Restock,
+  type StockBatchRow,
   type StockMovement,
   type Supplier,
 } from '@/lib/inventory';
@@ -249,6 +250,21 @@ export function useRestocks(enabled: boolean) {
   };
 }
 
+/** A supplier's most recent restocks (with items) — used to re-order from a past order. */
+export function useSupplierRecentRestocks(supplierId: string | null) {
+  return useQuery({
+    queryKey: [...queryKeys.restocks.all, 'supplier', supplierId ?? ''],
+    queryFn: async () => {
+      const json = await apiClient.get<{ data?: Restock[] }>(
+        `/api/restock?supplierId=${supplierId}&pageSize=5`,
+        'Failed to load previous orders',
+      );
+      return json.data ?? [];
+    },
+    enabled: !!supplierId,
+  });
+}
+
 export function useRestockDetail(restockId: string | null) {
   return useQuery({
     queryKey: queryKeys.restocks.detail(restockId ?? ''),
@@ -267,6 +283,8 @@ export interface AdjustStockInput {
   quantity: number;
   type: string;
   note?: string;
+  /** Deduct from this batch instead of earliest-expiry first. */
+  batchId?: string;
 }
 
 export function useAdjustStock() {
@@ -326,5 +344,18 @@ export function useRecordRestockPayment() {
       queryClient.invalidateQueries({ queryKey: queryKeys.suppliers.all });
       queryClient.setQueryData(queryKeys.restocks.detail(data.id), data);
     },
+  });
+}
+
+/** Expiry tab: batches that still have stock, with expired / expiring-soon counts. */
+export function useStockBatches(filter: string, enabled: boolean) {
+  return useQuery({
+    queryKey: queryKeys.inventory.batches(filter),
+    queryFn: () =>
+      apiClient.get<{ data: StockBatchRow[]; expired: number; expiringSoon: number }>(
+        `/api/inventory/batches?filter=${filter}`,
+        'Failed to load batches',
+      ),
+    enabled,
   });
 }

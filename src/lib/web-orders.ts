@@ -4,6 +4,7 @@
  */
 import { Prisma } from '@prisma/client'
 import { db } from '@/lib/db'
+import { restoreToBatches, takeFromBatches } from '@/lib/batches'
 import { effectivePrice } from '@/lib/pricing'
 import { packOffer, loadPromises, minor } from '@/lib/public-catalog'
 import { productLabel } from '@/lib/products'
@@ -232,7 +233,8 @@ export async function createWebOrder(input: OrderInput) {
         if (p.productType?.tracksStock === false || !p.inventory) continue
         const taken = await tx.inventory.updateMany({ where: { productId: id, quantity: { gte: units } }, data: { quantity: { decrement: units } } })
         if (taken.count === 0) throw new OrderError('Some items just ran out of stock. Please review your cart.', 409, [{ name: productLabel(p), reason: 'Just sold out' }])
-        await tx.inventoryMovement.create({ data: { inventoryId: p.inventory.id, productId: id, type: 'sale', quantity: units, note: `Website order ${ref}` } })
+        const allocations = await takeFromBatches(tx, id, units)
+        await tx.inventoryMovement.create({ data: { inventoryId: p.inventory.id, productId: id, type: 'sale', quantity: units, batches: allocations, note: `Website order ${ref}` } })
       }
       return tx.webOrder.create({
         data: {
@@ -305,6 +307,7 @@ export async function updateWebOrder(
           const inv = await tx.inventory.findUnique({ where: { productId: item.productId }, include: { product: { include: { productType: true } } } })
           if (!inv || inv.product.productType?.tracksStock === false) continue
           await tx.inventory.update({ where: { productId: item.productId }, data: { quantity: { increment: item.units } } })
+          await restoreToBatches(tx, item.productId, item.units, { note: `Website order ${o.ref}` })
           await tx.inventoryMovement.create({ data: { inventoryId: inv.id, productId: item.productId, type: 'return', quantity: item.units, note: `Website order ${o.ref} cancelled`, referenceId: o.id } })
         }
       }

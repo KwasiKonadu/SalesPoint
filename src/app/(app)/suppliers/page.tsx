@@ -1,10 +1,5 @@
-import SuppliersPage from '@/components/pages/suppliers/suppliers-page';
-import { RoleGuard } from '@/components/auth/role-guard';
+import { redirect } from 'next/navigation';
 
 export default function Page() {
-  return (
-    <RoleGuard allow="admin">
-      <SuppliersPage />
-    </RoleGuard>
-  );
+  redirect('/contacts?tab=suppliers');
 }

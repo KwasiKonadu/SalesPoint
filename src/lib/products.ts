@@ -30,6 +30,7 @@ export interface ProductItem {
   slug?: string | null;
   showOnWebsite?: boolean;
   featured?: boolean;
+  perishable?: boolean;
   images?: string[];
   variantGroup?: string | null;
   /** Scheduled discount; the base `sellingPrice` is never overwritten. */
@@ -146,6 +147,7 @@ export const productFormSchema = z.object({
   isActive: z.boolean(),
   showOnWebsite: z.boolean(),
   featured: z.boolean(),
+  perishable: z.boolean(),
   /** One extra image URL per line. */
   extraImages: z.string().optional(),
 });
@@ -182,6 +184,7 @@ export function productFormDefaults(
     isActive: product?.isActive !== false,
     showOnWebsite: product?.showOnWebsite ?? false,
     featured: product?.featured ?? false,
+    perishable: product?.perishable ?? false,
     extraImages: (product?.images ?? []).join('\n'),
   };
 }

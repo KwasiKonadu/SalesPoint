@@ -175,6 +175,7 @@ export function ProductFormPanel({
         lowStockPercent: Number(data.lowStockPercent),
         showOnWebsite: data.showOnWebsite,
         featured: data.featured,
+        perishable: data.perishable,
       };
       if (!isEditing && tracksStock) {
         body.initialStock = Number(data.initialStock) || 0;
@@ -452,6 +453,22 @@ export function ProductFormPanel({
         )}
 
         <Separator />
+
+        {/* Expiry */}
+        <div className="space-y-2">
+          <h4 className="text-sm font-medium text-muted-foreground">Expiry</h4>
+          <label className="flex items-center gap-3 text-sm font-medium">
+            <Switch
+              checked={values.perishable ?? false}
+              onCheckedChange={(c) => setValue("perishable", c)}
+            />
+            Has an expiry date
+          </label>
+          <p className="text-xs text-muted-foreground">
+            Restocks will ask for an expiry date on this product, and stock is
+            tracked by batch so the earliest expiry sells first.
+          </p>
+        </div>
 
         {/* Website */}
         <div className="space-y-2">

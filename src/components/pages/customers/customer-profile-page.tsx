@@ -74,7 +74,7 @@ export default function CustomerProfilePage() {
     <div className="space-y-6">
       <div>
         <Link
-          href="/customers"
+          href="/contacts?tab=customers"
           className="mb-3 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="size-4" /> Customers

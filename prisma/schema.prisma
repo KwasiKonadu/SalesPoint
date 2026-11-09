@@ -109,6 +109,7 @@ model Product {
   images         String[] @default([]) // gallery; `image` stays the primary one
   details        Json? // spec rows for the website, e.g. [["Origin","Ghana"]]
   variantGroup   String? // groups sibling products (1L / 5L) into one page later
+  perishable     Boolean  @default(false) // restocks must give an expiry date for each line
 
   // --- Scheduled discount (one at a time; base sellingPrice is never overwritten) ---
   discountChannel String  @default("both") // where it applies: 'both' | 'web' | 'pos' (till)
@@ -123,6 +124,7 @@ model Product {
   productType  ProductType?        @relation(fields: [productTypeId], references: [id])
   unit         Unit?               @relation(fields: [unitId], references: [id])
   inventory    Inventory?
+  batches      StockBatch[]
   saleItems    SaleItem[]
   returnItems  ReturnItem[]
   restockItems RestockItem[]
@@ -148,10 +150,30 @@ model InventoryMovement {
   quantity    Int
   note        String?
   referenceId String? // saleId, restockId, returnId, etc.
+  batches     Json? // [{ batchId, qty }] — which batches a deduction came from (so returns can go back)
   createdAt   DateTime @default(now())
 
   inventory Inventory @relation(fields: [inventoryId], references: [id])
   product   Product   @relation(fields: [productId], references: [id])
+}
+
+// A received lot of one product with its own expiry date. Product stock
+// (Inventory.quantity) is the sum of its batches' `remaining`; sales draw from
+// the earliest expiry first. See src/lib/batches.ts.
+model StockBatch {
+  id            String    @id @default(cuid())
+  productId     String
+  restockItemId String?   @unique // null for opening stock / returns
+  label         String? // "Opening stock", "Returned stock", ...
+  expiryDate    DateTime? // null = does not expire; sold last
+  received      Int
+  remaining     Int
+  createdAt     DateTime  @default(now())
+
+  product Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
+  item    RestockItem? @relation(fields: [restockItemId], references: [id], onDelete: SetNull)
+
+  @@index([productId, remaining, expiryDate])
 }
 
 // ==================== SUPPLIERS ====================
@@ -202,8 +224,9 @@ model RestockItem {
   costPrice  Float
   expiryDate DateTime?
 
-  restock Restock @relation(fields: [restockId], references: [id], onDelete: Cascade)
-  product Product @relation(fields: [productId], references: [id])
+  restock Restock     @relation(fields: [restockId], references: [id], onDelete: Cascade)
+  product Product     @relation(fields: [productId], references: [id])
+  batch   StockBatch?
 }
 
 // A payment recorded against a restock (settling the balance owed to a

@@ -1,1 +1,5 @@
-export { default } from '@/components/pages/customers/customers-page';
+import { redirect } from 'next/navigation';
+
+export default function Page() {
+  redirect('/contacts?tab=customers');
+}

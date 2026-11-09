@@ -71,6 +71,7 @@ export async function PUT(
         ...(slug ? { slug } : {}),
         ...(body.showOnWebsite === undefined ? {} : { showOnWebsite: !!body.showOnWebsite }),
         ...(body.featured === undefined ? {} : { featured: !!body.featured }),
+        ...(body.perishable === undefined ? {} : { perishable: !!body.perishable }),
         ...(body.images === undefined
           ? {}
           : { images: Array.isArray(body.images) ? body.images.filter(Boolean) : [] }),

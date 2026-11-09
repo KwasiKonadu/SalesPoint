@@ -92,7 +92,7 @@ export const QUICK_ACTIONS: {
   { href: '/pos', label: 'New Sale', icon: Plus, color: 'text-emerald-600' },
   { href: '/products', label: 'Add Product', icon: Package, color: 'text-blue-600' },
   { href: '/inventory', label: 'Restock', icon: PackagePlus, color: 'text-violet-600' },
-  { href: '/customers', label: 'Add Customer', icon: UserPlus, color: 'text-pink-600' },
+  { href: '/contacts?tab=customers', label: 'Add Customer', icon: UserPlus, color: 'text-pink-600' },
   { href: '/expenses', label: 'Add Expense', icon: Receipt, color: 'text-amber-600' },
 ];
 

@@ -117,6 +117,7 @@ export interface ProductSaveInput {
   isActive?: boolean;
   showOnWebsite?: boolean;
   featured?: boolean;
+  perishable?: boolean;
   images?: string[];
 }
 
