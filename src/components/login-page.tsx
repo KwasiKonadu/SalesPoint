@@ -46,9 +46,6 @@ export default function LoginPage() {
         <Card className="border-0 shadow-lg">
           <CardHeader className="pb-2">
             <h2 className="text-lg font-semibold">Welcome back</h2>
-            <p className="text-sm text-muted-foreground">
-              Admin: admin@pos.com / admin123
-            </p>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -95,9 +92,6 @@ export default function LoginPage() {
             </form>
           </CardContent>
         </Card>
-        <p className="text-center text-xs text-muted-foreground mt-6">
-          StorePOS v1.0 — Point of Sale & Inventory Management
-        </p>
       </div>
     </div>
   );
